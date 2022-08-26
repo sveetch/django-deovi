@@ -1,0 +1,9 @@
+{% extends "django_deovi/base.html" %}
+
+
+{% block app_content %}{% spaceless %}
+<div class="mediafile-detail">
+    <h2 class="path">{{ mediafile_object.path }}</h2>
+    <p class="stored_date"><em>{{ mediafile_object.stored_date }}</em></p>
+</div>
+{% endspaceless %}{% endblock app_content %}

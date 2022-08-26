@@ -3,20 +3,14 @@ Application API URLs
 """
 from rest_framework import routers
 
-from .viewsets import ArticleViewSet, BlogViewSet
+from .viewsets import MediaFileViewSet
 
 
 # API router
 router = routers.DefaultRouter()
 
 router.register(
-    r"blogs",
-    BlogViewSet,
-    basename="api-blog"
-)
-
-router.register(
-    r"articles",
-    ArticleViewSet,
-    basename="api-article"
+    r"files",
+    MediaFileViewSet,
+    basename="api-mediafile"
 )

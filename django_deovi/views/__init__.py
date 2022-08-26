@@ -1,9 +1,6 @@
-from .blog import BlogIndexView, BlogDetailView
-from .article import ArticleDetailView
+from .media import MediaFileDetailView
 
 
 __all__ = [
-    "BlogIndexView",
-    "BlogDetailView",
-    "ArticleDetailView",
+    "MediaFileDetailView",
 ]

@@ -1,0 +1,76 @@
+{
+    "series/ZouipWorld": {
+        "path": "/videos/series/ZouipWorld",
+        "name": "ZouipWorld",
+        "absolute_dir": "/videos/series",
+        "relative_dir": "series/ZouipWorld",
+        "size": 4096,
+        "mtime": "2022-08-20T23:26:49",
+        "children_files": [
+            {
+                "path": "/videos/series/ZouipWorld/ZouipWorld_S01E09.mkv",
+                "name": "ZouipWorld_S01E09.mkv",
+                "absolute_dir": "/videos/series/ZouipWorld",
+                "relative_dir": "series/ZouipWorld",
+                "directory": "ZouipWorld",
+                "extension": "mkv",
+                "container": "Matroska",
+                "size": 4309505757,
+                "mtime": "2022-07-31T15:44:33"
+            }
+        ]
+    },
+    "series/BillyBoy": {
+        "path": "/videos/series/BillyBoy",
+        "name": "BillyBoy",
+        "absolute_dir": "/videos/series",
+        "relative_dir": "series/BillyBoy",
+        "size": 4096,
+        "mtime": "2022-08-20T23:26:36",
+        "children_files": [
+            {
+                "path": "/videos/series/BillyBoy/BillyBoy_S01E01.mkv",
+                "name": "BillyBoy_S01E01.mkv",
+                "absolute_dir": "/videos/series/BillyBoy",
+                "relative_dir": "series/BillyBoy",
+                "directory": "BillyBoy",
+                "extension": "mkv",
+                "container": "Matroska",
+                "size": 1105021329,
+                "mtime": "2022-08-05T22:36:15"
+            },
+            {
+                "path": "/videos/series/BillyBoy/BillyBoy_S01E03.mkv",
+                "name": "BillyBoy_S01E03.mkv",
+                "absolute_dir": "/videos/series/BillyBoy",
+                "relative_dir": "series/BillyBoy",
+                "directory": "BillyBoy",
+                "extension": "mkv",
+                "container": "Matroska",
+                "size": 1233495447,
+                "mtime": "2022-08-05T22:42:14"
+            }
+        ]
+    },
+    "theatre": {
+        "path": "/videos/theatre",
+        "name": "theatre",
+        "absolute_dir": "/videos",
+        "relative_dir": "theatre",
+        "size": 4096,
+        "mtime": "2022-06-13T13:57:34",
+        "children_files": [
+            {
+                "path": "/videos/theatre/Coucou_1982.avi",
+                "name": "Coucou_1982.avi",
+                "absolute_dir": "/videos/theatre",
+                "relative_dir": "theatre",
+                "directory": "theatre",
+                "extension": "avi",
+                "container": "AVI",
+                "size": 765673496,
+                "mtime": "2022-06-13T13:57:34"
+            }
+        ]
+    }
+}

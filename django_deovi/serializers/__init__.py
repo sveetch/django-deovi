@@ -1,10 +1,6 @@
-from .blog import BlogSerializer, BlogResumeSerializer
-from .article import ArticleSerializer, ArticleResumeSerializer
+from .media import MediaFileSerializer
 
 
 __all__ = [
-    "BlogSerializer",
-    "BlogResumeSerializer",
-    "ArticleSerializer",
-    "ArticleResumeSerializer",
+    "MediaFileSerializer",
 ]

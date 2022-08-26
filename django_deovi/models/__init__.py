@@ -1,8 +1,6 @@
-from .blog import Blog
-from .article import Article
+from .media import MediaFile
 
 
 __all__ = [
-    "Blog",
-    "Article",
+    "MediaFile",
 ]

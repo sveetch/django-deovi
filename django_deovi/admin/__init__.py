@@ -1,8 +1,6 @@
-from .blog import BlogAdmin
-from .article import ArticleAdmin
+from .media import MediaFileAdmin
 
 
 __all__ = [
-    "BlogAdmin",
-    "ArticleAdmin",
+    "MediaFileAdmin",
 ]

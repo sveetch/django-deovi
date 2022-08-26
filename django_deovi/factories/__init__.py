@@ -1,10 +1,9 @@
-from .blog import BlogFactory
-from .article import ArticleFactory
 from .user import UserFactory
+from .media import DumpedFileFactory, MediaFileFactory
 
 
 __all__ = [
-    "ArticleFactory",
-    "BlogFactory",
     "UserFactory",
+    "DumpedFileFactory",
+    "MediaFileFactory",
 ]

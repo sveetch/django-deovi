@@ -1,8 +1,6 @@
-from .article import ArticleViewSet
-from .blog import BlogViewSet
+from .media import MediaFileViewSet
 
 
 __all__ = [
-    "ArticleViewSet",
-    "BlogViewSet",
+    "MediaFileViewSet",
 ]
