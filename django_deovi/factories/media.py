@@ -1,3 +1,4 @@
+import datetime
 from pathlib import Path
 
 from django.utils import timezone
@@ -103,14 +104,16 @@ class DumpedFileFactory(factory.Factory):
         Return current date.
 
         Returns:
-            datetime.datetime: Current time.
+            string: Current time in ISO format.
         """
-        return timezone.now()
+        # NOTE: Currently Deovi dump date are not timezone aware
+        # return timezone.now().isoformat()
+        return datetime.datetime.now()
 
 
 class MediaFileFactory(factory.django.DjangoModelFactory):
     """
-    Factory to create instance of an MediaFile.
+    Factory to create instance of a MediaFile.
 
     The factory does not validate you are given a proper absolute file path to 'path'
     attribute since it deduces almost all other attributes from path, you better to

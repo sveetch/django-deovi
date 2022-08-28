@@ -7,7 +7,7 @@ Specific application exceptions.
 """
 
 
-class MyAppBaseException(Exception):
+class DjangoDeoviBaseException(Exception):
     """
     Exception base.
 
@@ -17,8 +17,8 @@ class MyAppBaseException(Exception):
     pass
 
 
-class DummyError(MyAppBaseException):
+class DjangoDeoviError(DjangoDeoviBaseException):
     """
-    Dummy exception sample to raise from your code.
+    Common basic error.
     """
     pass

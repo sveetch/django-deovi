@@ -21,4 +21,7 @@ def _extract_version(package_name):
     return _conf["metadata"]["version"]
 
 
-__version__ = _extract_version("django-deovi")
+__pkgname__ = "django-deovi"
+
+
+__version__ = _extract_version(__pkgname__)

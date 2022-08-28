@@ -118,7 +118,6 @@ class MediaFile(models.Model):
     )
     """
     Required datetime for when the file has been loaded.
-    TODO: Autofill on save()
     """
 
     class Meta:

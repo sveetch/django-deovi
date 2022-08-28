@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from django.utils import timezone
@@ -50,7 +52,7 @@ def test_dumpedfile_creation(db):
 
     # With a non hashable object, the Factory.build() method also return an object
     # instead of a dict
-    mediafile = DumpedFileFactory.build(path="/home/bar/plip.mkv")
+    mediafile = DumpedFileFactory(path="/home/bar/plip.mkv")
 
     assert isinstance(mediafile, DumpedFile) is True
 
@@ -59,12 +61,10 @@ def test_dumpedfile_to_dict(db):
     """
     Dump model object can be returned as dictionnary
     """
-    now = timezone.now()
-
     mediafile = DumpedFileFactory(
         path="/home/foo/plop.mkv",
         size=42,
-        mtime=now,
+        mtime="2022-06-13T02:27:38",
     )
 
     assert mediafile.to_dict() == {
@@ -76,7 +76,7 @@ def test_dumpedfile_to_dict(db):
         "extension": "mkv",
         "container": "Matroska",
         "size": 42,
-        "mtime": now,
+        "mtime": "2022-06-13T02:27:38",
     }
 
 
@@ -84,12 +84,10 @@ def test_dumpedfile_from_dict(db):
     """
     Dump model object can be created from given dictionnary
     """
-    now = timezone.now()
-
     built = DumpedFileFactory(
         path="/home/foo/plop.mkv",
         size=42,
-        mtime=now,
+        mtime="2022-06-13T02:27:38",
     )
 
     mediafile = DumpedFile.from_dict(**built.to_dict())
@@ -103,7 +101,7 @@ def test_dumpedfile_from_dict(db):
         "extension": "mkv",
         "container": "Matroska",
         "size": 42,
-        "mtime": now,
+        "mtime": "2022-06-13T02:27:38",
     }
 
 
@@ -112,12 +110,16 @@ def test_dumpedfile_convert_to_orm_fields(db):
     Dump model object should be able to correctly convert its fields to the MediaFile
     model field names.
     """
-    now = timezone.now()
+    dummy_date = "2022-06-13T02:27:38"
+    default_tz = timezone.get_default_timezone()
+    localized_date = default_tz.localize(
+        datetime.datetime.fromisoformat(dummy_date)
+    )
 
     mediafile = DumpedFileFactory(
         path="/home/foo/plop.mkv",
         size=42,
-        mtime=now,
+        mtime=dummy_date,
     )
 
     assert mediafile.convert_to_orm_fields() == {
@@ -127,5 +129,5 @@ def test_dumpedfile_convert_to_orm_fields(db):
         "directory": "foo",
         "container": "mkv",
         "filesize": 42,
-        "stored_date": now,
+        "stored_date": localized_date,
     }

@@ -36,8 +36,19 @@
                 "directory": "BillyBoy",
                 "extension": "mkv",
                 "container": "Matroska",
-                "size": 1105021329,
+                "size": 101,
                 "mtime": "2022-08-05T22:36:15"
+            },
+            {
+                "path": "/videos/series/BillyBoy/BillyBoy_S01E02.mkv",
+                "name": "BillyBoy_S01E02.mkv",
+                "absolute_dir": "/videos/series/BillyBoy",
+                "relative_dir": "series/BillyBoy",
+                "directory": "BillyBoy",
+                "extension": "mkv",
+                "container": "Matroska",
+                "size": 201,
+                "mtime": "2022-08-05T22:40:05"
             },
             {
                 "path": "/videos/series/BillyBoy/BillyBoy_S01E03.mkv",
@@ -47,7 +58,7 @@
                 "directory": "BillyBoy",
                 "extension": "mkv",
                 "container": "Matroska",
-                "size": 1233495447,
+                "size": 301,
                 "mtime": "2022-08-05T22:42:14"
             }
         ]
@@ -68,7 +79,7 @@
                 "directory": "theatre",
                 "extension": "avi",
                 "container": "AVI",
-                "size": 765673496,
+                "size": 2982,
                 "mtime": "2022-06-13T13:57:34"
             }
         ]
