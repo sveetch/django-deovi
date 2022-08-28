@@ -14,6 +14,8 @@ class DumpedFile:
     """
     This is a basic NON Django model object.
 
+    DumpedFile is device agnostic.
+
     This use the Python dataclass to automatically implement comparaison as we could
     expect from a proper data object.
 

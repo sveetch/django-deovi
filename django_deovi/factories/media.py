@@ -6,16 +6,18 @@ from django.utils import timezone
 import factory
 
 from ..models import MediaFile
+from .device import DeviceFactory
 
 
 class MediaFileFactory(factory.django.DjangoModelFactory):
     """
     Factory to create instance of a MediaFile.
 
-    The factory does not validate you are given a proper absolute file path to 'path'
-    attribute since it deduces almost all other attributes from path, you better to
+    The factory does not validate you have given a proper absolute file path to 'path'
+    attribute but since it deduces almost all other attributes from path, you should
     ensure you give it right.
     """
+    device = factory.SubFactory(DeviceFactory)
     title = ""
     path = factory.Faker("file_path", depth=3, category="video", absolute=True)
     filesize = factory.Faker("random_int", min=128, max=40960)

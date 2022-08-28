@@ -16,11 +16,20 @@ from deovi.collector import MEDIAS_CONTAINERS
 class MediaFile(models.Model):
     """
     A media file
-
-    TODO: This needs a new field 'device'. Making it unique constraint along path would
-    be perfect but may more difficult to manage. This field will be filled with a
-    foreignkey to a 'Device' model.
     """
+    device = models.ForeignKey(
+        "Device",
+        verbose_name=_("Related device"),
+        default=None,
+        on_delete=models.CASCADE,
+        help_text=_(
+            "The device which holds this file."
+        ),
+    )
+    """
+    Required Device object relation.
+    """
+
     title = models.CharField(
         _("title"),
         blank=True,

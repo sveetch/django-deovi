@@ -11,7 +11,7 @@ from pathlib import Path
 from django.utils import timezone
 
 from .dump import DumpedFile
-from .models import MediaFile
+from .models import Device, MediaFile
 from .outputs import BaseOutput
 from .serializers import MediaFileSerializer
 
@@ -56,12 +56,13 @@ class DumpLoader:
 
         return json.loads(dump.read_text())
 
-    def file_distribution(self, files):
+    def file_distribution(self, device, files):
         """
         Distribute file entry for creation or edition depending if their path already
         exists in database or not.
 
         Arguments:
+            device (django_deovi.models.Device): Device object to assign all the files.
             files (list): List of dictionnaries for directory children files.
 
         Returns:
@@ -71,10 +72,13 @@ class DumpLoader:
         paths = [item["path"] for item in files]
 
         # Find existing file paths from db
-        existing = MediaFile.objects.order_by("path").in_bulk(paths, field_name="path")
+        # TODO: Device will be used to distinguish MediaFile once uniqueness device+path
+        # have been added
+        existing = MediaFile.objects.filter(device=device).order_by("path")
+        existing = existing.in_bulk(paths, field_name="path")
         if len(existing) > 0:
-            msg = "- Found {} existing MediaFile objects related to this dump".format(len(existing))
-            self.log.info(msg)
+            msg = "- Found {} existing MediaFile objects related to this dump"
+            self.log.info(msg.format(len(existing)))
 
         to_create = [
             DumpedFile(**item) for item in files
@@ -93,13 +97,14 @@ class DumpLoader:
 
         return to_create, to_edit
 
-    def create_files(self, files, batch_date):
+    def create_files(self, device, files, batch_date):
         """
         Create dump files in database using a bulk creation.
 
         NOTE: Remember that bulk discard the save() method.
 
         Arguments:
+            device (django_deovi.models.Device): Device object to assign all the files.
             files (list): List of DumpedFile objects for directory children files.
             batch_date (datetime.datetime): A datetime object to fill
                 ``MediaFile.loaded_date`` field value. It is used to ensure all the
@@ -108,13 +113,20 @@ class DumpLoader:
         self.log.debug("- Proceed to bulk creation")
 
         MediaFile.objects.bulk_create([
-            MediaFile(**item.convert_to_orm_fields(), loaded_date=batch_date)
+            MediaFile(
+                **item.convert_to_orm_fields(),
+                loaded_date=batch_date,
+                device=device,
+            )
             for item in files
         ], batch_size=self.batch_limit)
 
     def edit_files(self, files, batch_date):
         """
         Create dump files in database using a bulk edition.
+
+        This operation method does not care about device since it is not an editable
+        field from a dump loading.
 
         NOTE: Remember that bulk discard the save() method.
 
@@ -165,7 +177,7 @@ class DumpLoader:
             self.EDITABLE_FIELDS + ["loaded_date"]
         )
 
-    def load(self, dump):
+    def load(self, device, dump):
         """
         Load a Deovi dump to create and update MediaFile objects for the dump directory
         files.
@@ -173,6 +185,7 @@ class DumpLoader:
         All files from a same directory will share the same exact loaded datetime.
 
         Arguments:
+            device (django_deovi.models.Device): Device object to assign all the files.
             dump (pathlib.Path): The path object for the dump file to load.
         """
         dump_content = self.open_dump(dump)
@@ -180,9 +193,9 @@ class DumpLoader:
             batch_date = timezone.now()
 
             self.log.info("📂 Working on directory: {}".format(data["path"]))
-            to_create, to_edit = self.file_distribution(data["children_files"])
+            to_create, to_edit = self.file_distribution(device, data["children_files"])
 
             if len(to_create) > 0:
-                self.create_files(to_create, batch_date=batch_date)
+                self.create_files(device, to_create, batch_date=batch_date)
             if len(to_edit) > 0:
                 self.edit_files(to_edit, batch_date=batch_date)

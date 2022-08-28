@@ -8,14 +8,18 @@ from django.utils import timezone
 import pytest
 
 from django_deovi.dump import DumpedFile
-from django_deovi.models import MediaFile
+from django_deovi.models import Device, MediaFile
 
 
 def test_mediafile_basic(db):
     """
     Basic model saving with required fields should not fail
     """
+    device = Device(title="Foo", slug="foo")
+    device.save()
+
     mediafile = MediaFile(
+        device=device,
         path="/home/foo/bar/plop.mp4",
         absolute_dir="/home/foo/bar",
         filename="plop.mp4",
@@ -41,6 +45,7 @@ def test_mediafile_required_fields(db):
         mediafile.full_clean()
 
     assert excinfo.value.message_dict == {
+        "device": ["This field cannot be null."],
         "path": ["This field cannot be blank."],
         "absolute_dir": ["This field cannot be blank."],
         "filename": ["This field cannot be blank."],
@@ -53,7 +58,12 @@ def test_mediafile_path_uniqueness(db):
     """
     MediaFile.path uniqueness constraint should be respected.
     """
+    device_foo = Device(title="Foo", slug="foo")
+    device_foo.save()
+    device_bar = Device(title="Bar", slug="bar")
+
     dump_first = MediaFile(
+        device=device_foo,
         path="/home/foo/bar/plop.mp4",
         absolute_dir="/home/foo/bar",
         filename="plop.mp4",
@@ -65,6 +75,7 @@ def test_mediafile_path_uniqueness(db):
     dump_first.save()
 
     dump_bis = MediaFile(
+        device=device_foo,
         path="/home/foo/bar/plop.mp4",
         absolute_dir="/home/foo/bar",
         filename="plop.mp4",
@@ -82,50 +93,3 @@ def test_mediafile_path_uniqueness(db):
         assert str(excinfo.value) == (
             "UNIQUE constraint failed: django_deovi_mediafile.path"
         )
-
-
-def test_dumpedfile_basic(db):
-    """
-    Basic model creation with required fields should not fail
-    """
-    default_tz = timezone.get_default_timezone()
-
-    mediafile = DumpedFile(
-        path="/home/foo/bar/plop.mp4",
-        absolute_dir="/home/foo/bar",
-        relative_dir="foo/bar",
-        directory="bar",
-        name="plop.mp4",
-        extension="mp4",
-        container="MP4",
-        size=4096,
-        mtime="2022-08-11T12:00:35",
-    )
-
-    expected_stored_date = default_tz.localize(
-        datetime.datetime(2022, 8, 11, 12, 00, 35)
-    )
-
-    assert repr(mediafile) == "<DumpedFile: /home/foo/bar/plop.mp4>"
-
-    assert mediafile.to_dict() == {
-        "path": "/home/foo/bar/plop.mp4",
-        "absolute_dir": "/home/foo/bar",
-        "relative_dir": "foo/bar",
-        "directory": "bar",
-        "name": "plop.mp4",
-        "extension": "mp4",
-        "container": "MP4",
-        "size": 4096,
-        "mtime": "2022-08-11T12:00:35",
-    }
-
-    assert mediafile.convert_to_orm_fields() == {
-        "path": "/home/foo/bar/plop.mp4",
-        "absolute_dir": "/home/foo/bar",
-        "directory": "bar",
-        "filename": "plop.mp4",
-        "container": "mp4",
-        "filesize": 4096,
-        "stored_date": expected_stored_date,
-    }

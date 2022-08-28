@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from django_deovi import __pkgname__
 from django_deovi.models import MediaFile
-from django_deovi.factories import DumpedFileFactory, MediaFileFactory
+from django_deovi.factories import DeviceFactory, DumpedFileFactory, MediaFileFactory
 from django_deovi.loader import DumpLoader
 
 
@@ -20,24 +20,28 @@ def test_dumploader_file_distribution(db, caplog):
     """
     caplog.set_level(logging.DEBUG, logger=__pkgname__)
 
-    loader = DumpLoader()
+    device = DeviceFactory(title="Master", slug="master")
 
-    assert MediaFile.objects.all().count() == 0
+    loader = DumpLoader()
 
     # Create existing MediaFile objects
     MediaFileFactory(
+        device=device,
         path="/videos/BillyBoy_S01E01.mkv",
         filesize=1105021329,
     )
     MediaFileFactory(
+        device=device,
         path="/videos/BillyBoy_S01E02.mkv",
         filesize=777051908,
     )
     MediaFileFactory(
+        device=device,
         path="/videos/BillyBoy_S01E03.mkv",
         filesize=906120796,
     )
     MediaFileFactory(
+        device=device,
         path="/videos/BillyBoy_S02E01.mkv",
         filesize=1024,
     )
@@ -48,7 +52,7 @@ def test_dumploader_file_distribution(db, caplog):
     dump_s01e04 = DumpedFileFactory(path="/videos/BillyBoy_S01E04.mkv")
 
     # Distribute a dump of not yet loaded files
-    to_create, to_edit = loader.file_distribution([
+    to_create, to_edit = loader.file_distribution(device, [
         dump_s01e01.to_dict(),
         dump_s01e03.to_dict(),
         dump_s01e04.to_dict(),
@@ -83,6 +87,8 @@ def test_dumploader_create_files(db):
     now = timezone.now()
     yesterday = now - datetime.timedelta(days=1)
 
+    device = DeviceFactory(title="Master", slug="master")
+
     loader = DumpLoader()
 
     # Create dump files
@@ -91,7 +97,7 @@ def test_dumploader_create_files(db):
     BillyBoy_S01E04 = DumpedFileFactory(path="/videos/BillyBoy_S01E04.mkv")
 
     # Distribute a dump of not yet loaded files
-    loader.create_files([
+    loader.create_files(device, [
         BillyBoy_S01E01,
         BillyBoy_S01E03,
         BillyBoy_S01E04,
@@ -107,6 +113,8 @@ def test_dumploader_create_uniqueness_path(db):
     """
     now = timezone.now()
 
+    device = DeviceFactory(title="Master", slug="master")
+
     loader = DumpLoader()
 
     dump_first = DumpedFileFactory(path="/videos/BillyBoy_S01E01.mkv")
@@ -114,7 +122,7 @@ def test_dumploader_create_uniqueness_path(db):
 
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
-            loader.create_files([
+            loader.create_files(device, [
                 DumpedFileFactory(path="/videos/BillyBoy_S01E01.mkv"),
                 DumpedFileFactory(path="/videos/BillyBoy_S01E01.mkv"),
             ], batch_date=now)
@@ -133,6 +141,8 @@ def test_dumploader_batch_limit(db):
     """
     now = timezone.now()
 
+    device = DeviceFactory(title="Master", slug="master")
+
     loader = DumpLoader(batch_limit=2)
 
     # Create dump files
@@ -142,7 +152,7 @@ def test_dumploader_batch_limit(db):
     BillyBoy_S01E04 = DumpedFileFactory(path="/videos/BillyBoy_S01E04.mkv")
 
     # Distribute a dump of not yet loaded files
-    loader.create_files([
+    loader.create_files(device, [
         BillyBoy_S01E01,
         BillyBoy_S01E02,
         BillyBoy_S01E03,
@@ -232,27 +242,32 @@ def test_dumploader_load(db, caplog, tests_settings):
 
     dump_path = tests_settings.fixtures_path / "dump_series.json"
 
-    loader = DumpLoader()
+    device = DeviceFactory(title="Master", slug="master")
 
     # Create existing MediaFile objects
     BillyBoy_S01E01 = MediaFileFactory(
         path="/videos/series/BillyBoy/BillyBoy_S01E01.mkv",
+        device=device,
         filesize=100,
     )
     BillyBoy_S01E03 = MediaFileFactory(
         path="/videos/series/BillyBoy/BillyBoy_S01E03.mkv",
+        device=device,
         filesize=300,
     )
     BillyBoy_S02E01 = MediaFileFactory(
         path="/videos/series/BillyBoy/BillyBoy_S02E01.mkv",
+        device=device,
     )
     Coucou_1982 = MediaFileFactory(
         path="/videos/theatre/Coucou_1982.avi",
+        device=device,
         filesize=1982,
     )
 
     # Distribute a dump of not yet loaded files
-    loader.load(dump_path)
+    loader = DumpLoader()
+    loader.load(device, dump_path)
 
     assert MediaFile.objects.count() == 6
 
