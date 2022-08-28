@@ -56,11 +56,12 @@ def test_mediafile_required_fields(db):
 
 def test_mediafile_path_uniqueness(db):
     """
-    MediaFile.path uniqueness constraint should be respected.
+    MediaFile device + path uniqueness constraint should be respected.
     """
     device_foo = Device(title="Foo", slug="foo")
     device_foo.save()
     device_bar = Device(title="Bar", slug="bar")
+    device_bar.save()
 
     dump_first = MediaFile(
         device=device_foo,
@@ -74,7 +75,7 @@ def test_mediafile_path_uniqueness(db):
     )
     dump_first.save()
 
-    dump_bis = MediaFile(
+    dump_second = MediaFile(
         device=device_foo,
         path="/home/foo/bar/plop.mp4",
         absolute_dir="/home/foo/bar",
@@ -85,11 +86,26 @@ def test_mediafile_path_uniqueness(db):
         stored_date=timezone.now(),
     )
 
-    # Uniqueness constraint is respected
+    # Uniqueness constraint is respected, there can only be an unique path for the same
+    # device
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
-            dump_bis.save()
+            dump_second.save()
 
         assert str(excinfo.value) == (
-            "UNIQUE constraint failed: django_deovi_mediafile.path"
+            "UNIQUE constraint failed: django_deovi_mediafile.device_id, "
+            "django_deovi_mediafile.path"
         )
+
+    # However a same path can exist on another device
+    dump_third = MediaFile(
+        device=device_bar,
+        path="/home/foo/bar/plop.mp4",
+        absolute_dir="/home/foo/bar",
+        filename="plop.mp4",
+        directory="bar",
+        container="mp4",
+        filesize=4096,
+        stored_date=timezone.now(),
+    )
+    dump_third.save()

@@ -13,6 +13,42 @@ from django_deovi.factories import DeviceFactory, DumpedFileFactory, MediaFileFa
 from django_deovi.loader import DumpLoader
 
 
+def test_dumploader_get_existing(db, caplog):
+    """
+    Method should return every MediaFile corresponding to the given couple
+    device + path.
+    """
+    caplog.set_level(logging.DEBUG, logger=__pkgname__)
+
+    device_primary = DeviceFactory(title="Primary", slug="primary")
+    device_secondary = DeviceFactory(title="Secondary", slug="secondary")
+
+    loader = DumpLoader()
+
+    # Videos which will be found as existing
+    picsou = MediaFileFactory(device=device_primary, path="/videos/picsou.mkv")
+    donald = MediaFileFactory(device=device_primary, path="/videos/donald.mkv")
+    picsou_bis = MediaFileFactory(device=device_primary, path="/home/videos/picsou.mkv")
+    # Some other videos for filling
+    MediaFileFactory(device=device_primary, path="/home/videos/donald.mkv")
+    MediaFileFactory(device=device_secondary, path="/videos/donald.mkv")
+    MediaFileFactory(device=device_secondary, path="/videos/daisy.mkv")
+
+    existing = loader.get_existing(device_primary, [
+        {"path": "/home/donald.mkv"},
+        {"path": "/home/videos/picsou.mkv"},
+        {"path": "/videos/daisy.mkv"},
+        {"path": "/videos/donald.mkv"},
+        {"path": "/videos/picsou.mkv"},
+    ])
+
+    assert existing == {
+        picsou.path: picsou,
+        donald.path: donald,
+        picsou_bis.path: picsou_bis,
+    }
+
+
 def test_dumploader_file_distribution(db, caplog):
     """
     Given dumped files should be correctly distribued to edition and creation queue
@@ -109,30 +145,61 @@ def test_dumploader_create_files(db):
 
 def test_dumploader_create_uniqueness_path(db):
     """
-    MediaFile.path uniqueness constraint should be respected inside the bulk chain.
+    MediaFile device + path uniqueness constraint should make the bulk chain to fail.
+
+    TODO: This does not test the real uniqueness constraint, only the path uniqueness
+    for the same device.
     """
     now = timezone.now()
 
-    device = DeviceFactory(title="Master", slug="master")
+    device = DeviceFactory(title="Primary", slug="primary")
 
     loader = DumpLoader()
 
-    dump_first = DumpedFileFactory(path="/videos/BillyBoy_S01E01.mkv")
-    dump_bis = DumpedFileFactory(path="/videos/BillyBoy_S01E01.mkv")
+    # Create the dumps to pass to bulk chain
+    dump_first = DumpedFileFactory(path="/videos/foo_1.mkv")
+    dump_second = DumpedFileFactory(path="/videos/foo_2.mkv")
+    dump_third = DumpedFileFactory(path="/videos/foo_2.mkv")
 
+    # Create the first dump file as an existing MediaFile object
+    media_first = MediaFileFactory(
+        device=device,
+        **dump_first.convert_to_orm_fields()
+    )
+
+    # Against existing objects
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
             loader.create_files(device, [
-                DumpedFileFactory(path="/videos/BillyBoy_S01E01.mkv"),
-                DumpedFileFactory(path="/videos/BillyBoy_S01E01.mkv"),
+                dump_first,
+                dump_second,
             ], batch_date=now)
 
         assert str(excinfo.value) == (
-            "UNIQUE constraint failed: django_deovi_mediafile.path"
+            "UNIQUE constraint failed: django_deovi_mediafile.device_id, "
+            "django_deovi_mediafile.path"
         )
 
-    # The transaction don't let pass anything that was in the failed chain
-    assert MediaFile.objects.count() == 0
+    # The transaction don't let pass anything that was in the failed chain, there is
+    # only the previously existing object
+    assert MediaFile.objects.count() == 1
+
+    # TODO: Against identical couple inside the bulk chain
+    with transaction.atomic():
+        with pytest.raises(IntegrityError) as excinfo:
+            loader.create_files(device, [
+                dump_third,
+                dump_third,
+            ], batch_date=now)
+
+        assert str(excinfo.value) == (
+            "UNIQUE constraint failed: django_deovi_mediafile.device_id, "
+            "django_deovi_mediafile.path"
+        )
+
+    # The transaction don't let pass anything that was in the failed chain, there is
+    # only the previously existing object
+    assert MediaFile.objects.count() == 1
 
 
 def test_dumploader_batch_limit(db):

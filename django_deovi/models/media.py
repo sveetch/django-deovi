@@ -46,11 +46,15 @@ class MediaFile(models.Model):
         _("path"),
         blank=False,
         default="",
-        help_text="The full path where the file is stored.",
-        unique=True,
+        help_text=(
+            "The full path where the file is stored. There can be only an unique path "
+            "for the same device."
+        ),
     )
     """
-    Optionnal text content.
+    Required absolute file path which have to be unique along its device. There can be
+    many MediaFile objects with the same path but not related to the same Device
+    object.
     """
 
     absolute_dir = models.CharField(
@@ -135,6 +139,15 @@ class MediaFile(models.Model):
         ordering = [
             "stored_date",
         ]
+        constraints = [
+            # Enforce unique couple device + path
+            models.UniqueConstraint(
+                fields=[
+                    "device", "path"
+                ],
+                name="deovi_mediafile_device_path"
+            ),
+        ]
 
     def __str__(self):
-        return self.filename
+        return self.path

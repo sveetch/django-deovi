@@ -13,6 +13,8 @@ from django.urls import reverse
 class Device(models.Model):
     """
     A device container to hold MediaFile objects.
+
+    TODO: Add a field to store the device size capacity.
     """
     title = models.CharField(
         _("title"),

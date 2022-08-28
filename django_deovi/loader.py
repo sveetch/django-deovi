@@ -23,6 +23,10 @@ class DumpLoader:
     File with a path which already exists in database are considered to be updated
     since MediaFile.path have an 'unique' constraint. The other files will be created.
 
+    Since device is not a concept from Deovi and only at Django Deovi level, a dump
+    is only about files from a single device. There is no way to import dump content
+    for many devices.
+
     Keyword Arguments:
         batch_limit (integer): Limit of entries to create or update in a single batch
             during bulk operations. If entry length is over the limit, they will be
@@ -56,6 +60,30 @@ class DumpLoader:
 
         return json.loads(dump.read_text())
 
+    def get_existing(self, device, files):
+        """
+        Retrieve and return every existing MediaFile for the given couple device+path.
+
+        Arguments:
+            device (django_deovi.models.Device): Device object to assign all the files.
+            files (list): List of dictionnaries for directory children files.
+
+        Returns:
+            dict: A dictionnary where each item key is a path and item value is the
+                related MediaFile object.
+        """
+        paths = [item["path"] for item in files]
+
+        existing = MediaFile.objects.filter(
+            device=device,
+            path__in=paths,
+        ).order_by("path")
+
+        return {
+            item.path: item
+            for item in existing
+        }
+
     def file_distribution(self, device, files):
         """
         Distribute file entry for creation or edition depending if their path already
@@ -69,29 +97,25 @@ class DumpLoader:
             tuple: List of "to create" file items and list of "to edit" file items.
             File item is the file payload as retrieved from dump.
         """
-        paths = [item["path"] for item in files]
-
         # Find existing file paths from db
-        # TODO: Device will be used to distinguish MediaFile once uniqueness device+path
-        # have been added
-        existing = MediaFile.objects.filter(device=device).order_by("path")
-        existing = existing.in_bulk(paths, field_name="path")
+        existing = self.get_existing(device, files)
         if len(existing) > 0:
             msg = "- Found {} existing MediaFile objects related to this dump"
             self.log.info(msg.format(len(existing)))
 
+        # Push non existing items to the creation list
         to_create = [
             DumpedFile(**item) for item in files
             if item["path"] not in existing
         ]
+        if len(to_create) > 0:
+            self.log.info("- Files entry to create: {}".format(len(to_create)))
 
+        # Push existing items to the edition list
         to_edit = [
             DumpedFile(**item, mediafile=existing[item["path"]]) for item in files
             if item["path"] in existing
         ]
-
-        if len(to_create) > 0:
-            self.log.info("- Files entry to create: {}".format(len(to_create)))
         if len(to_edit) > 0:
             self.log.info("- Files entry to edit: {}".format(len(to_edit)))
 
