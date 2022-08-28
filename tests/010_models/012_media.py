@@ -6,7 +6,6 @@ from django.db import transaction
 from django.utils import timezone
 
 import pytest
-import pytz
 
 from django_deovi.dump import DumpedFile
 from django_deovi.models import MediaFile

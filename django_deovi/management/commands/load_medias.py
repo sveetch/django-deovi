@@ -12,7 +12,9 @@ class Command(BaseCommand):
     Deovi dump loader
     """
     help = (
-        "This should load a Deovi collection dump into database."
+        "Load a Deovi collection dump into database. Since file paths are unique, "
+        "they are edited if they already exists in database. The other ones will be "
+        "created."
     )
 
     def add_arguments(self, parser):

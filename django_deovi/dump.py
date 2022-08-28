@@ -51,17 +51,32 @@ class DumpedFile:
 
     def __init__(self, *args, **kwargs):
         self._mediafile = kwargs.pop("mediafile", None)
+        self._set_fields(**kwargs)
 
-        # Argument validation
-        # TODO: Would be worth to be pushed to its own method and then tested
+    def _set_fields(self, **kwargs):
+        """
+        Set field attributes from given kwargs and then validate them if needed
+
+        Arguments:
+            **kwargs: Items to set field attributes. Only allowed field names from
+                ``DumpedFile.FIELDNAMES`` are set as object attribute. Every field value
+                are expected to be strings except for the few integer like ``size``.
+        """
         _missing_kwargs = []
+
         for item in self.FIELDNAMES:
             if kwargs.get(item, None) is None:
+                # Add field to the missing field list
                 _missing_kwargs.append(item)
             else:
-                # TODO: Validate type, especially the date which must be string
+                # Validate some field value
+                if item == "mtime" and not isinstance(kwargs.get(item), str):
+                    msg = "DumpedFile.mtime must be a string in ISO format."
+                    raise DjangoDeoviError(msg)
+
                 setattr(self, item, kwargs.get(item))
 
+        # If there is any missing required field, raise an error
         if _missing_kwargs:
             msg = "DumpedFile missed some required arguments: {}".format(
                 ", ".join(_missing_kwargs)
@@ -131,9 +146,7 @@ class DumpedFile:
             object: The value in the right type.
         """
         if modelname == "stored_date":
-            parsed = value
-            if isinstance(value, str):
-                parsed = datetime.datetime.fromisoformat(value)
+            parsed = datetime.datetime.fromisoformat(value)
 
             if timezone.is_naive(parsed):
                 return timezone.get_default_timezone().localize(parsed)

@@ -1,5 +1,6 @@
 from .user import UserFactory
-from .media import DumpedFileFactory, MediaFileFactory
+from .dump import DumpedFileFactory
+from .media import MediaFileFactory
 
 
 __all__ = [

@@ -197,7 +197,7 @@ def test_dumploader_edit_files(db):
         path="/videos/BillyBoy_S01E03.mkv",
         mediafile=mediafile_s01e03,
         size=301,
-        mtime=tomorrow,
+        mtime=tomorrow.isoformat(),
     )
 
     # Edit MediaFile objects corresponding to dumped files
@@ -226,7 +226,7 @@ def test_dumploader_edit_files(db):
 
 def test_dumploader_load(db, caplog, tests_settings):
     """
-    TODO
+    Loader should correctly load files from given dump.
     """
     caplog.set_level(logging.DEBUG, logger=__pkgname__)
 
