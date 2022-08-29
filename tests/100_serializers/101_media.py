@@ -36,7 +36,7 @@ def test_mediafile_serialize_single(db):
         "title": "",
         "path": "/home/foo/bar/plop.mp4",
         "absolute_dir": "/home/foo/bar",
-        "directory": "bar",
+        "dirname": "bar",
         "filename": "plop.mp4",
         "container": "mp4",
         "filesize": 42,
@@ -56,7 +56,7 @@ def test_mediafile_deserialize_json(db):
     data = {
         "path": "/home/foo/bar/plop.mp4",
         "absolute_dir": "/home/foo/bar",
-        "directory": "bar",
+        "dirname": "bar",
         "filename": "plop.mp4",
         "container": "mp4",
         "filesize": 42,

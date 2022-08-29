@@ -184,7 +184,7 @@ def test_dumploader_create_uniqueness_path(db):
     # only the previously existing object
     assert MediaFile.objects.count() == 1
 
-    # TODO: Against identical couple inside the bulk chain
+    # Against identical couple inside the bulk chain
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
             loader.create_files(device, [

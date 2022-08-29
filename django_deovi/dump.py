@@ -45,7 +45,7 @@ class DumpedFile:
         "path": "path",
         "name": "filename",
         "absolute_dir": "absolute_dir",
-        "directory": "directory",
+        "directory": "dirname",
         "extension": "container",
         "size": "filesize",
         "mtime": "stored_date",

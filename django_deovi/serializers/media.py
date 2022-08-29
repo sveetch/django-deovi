@@ -21,6 +21,7 @@ class MediaFileSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             # DRF does not consider fields with ``blank=True`` and ``default=""`` as
             # required
+            # TODO: This miss a lot of required files
             "path": {
                 "required": True
             },

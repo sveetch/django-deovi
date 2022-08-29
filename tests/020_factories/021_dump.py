@@ -108,7 +108,7 @@ def test_dumpedfile_convert_to_orm_fields(db):
         "path": "/home/foo/plop.mkv",
         "filename": "plop.mkv",
         "absolute_dir": "/home/foo",
-        "directory": "foo",
+        "dirname": "foo",
         "container": "mkv",
         "filesize": 42,
         "stored_date": localized_date,

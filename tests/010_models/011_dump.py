@@ -47,7 +47,7 @@ def test_dumpedfile_basic(db):
     assert mediafile.convert_to_orm_fields() == {
         "path": "/home/foo/bar/plop.mp4",
         "absolute_dir": "/home/foo/bar",
-        "directory": "bar",
+        "dirname": "bar",
         "filename": "plop.mp4",
         "container": "mp4",
         "filesize": 4096,

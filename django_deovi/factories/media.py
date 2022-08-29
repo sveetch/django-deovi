@@ -36,7 +36,7 @@ class MediaFileFactory(factory.django.DjangoModelFactory):
         return str(Path(self.path).parent)
 
     @factory.lazy_attribute
-    def directory(self):
+    def dirname(self):
         """
         Return file parent directory name from 'path' attribute value.
 

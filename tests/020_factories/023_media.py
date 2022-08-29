@@ -15,7 +15,7 @@ def test_mediafile_creation(db):
     mediafile = MediaFileFactory(path="/home/foo/plop.avi")
 
     assert mediafile.filename == "plop.avi"
-    assert mediafile.directory == "foo"
+    assert mediafile.dirname == "foo"
     assert mediafile.container == "avi"
 
     # TODO: MediaFile model and factory have to be modified to relate to a Directory

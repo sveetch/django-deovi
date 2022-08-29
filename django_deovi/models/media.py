@@ -71,8 +71,8 @@ class MediaFile(models.Model):
     Required filename string.
     """
 
-    directory = models.CharField(
-        _("directory"),
+    dirname = models.CharField(
+        _("directory name"),
         blank=True,
         max_length=200,
         default="",
