@@ -20,6 +20,13 @@ class DumpLoader:
     """
     Load files datas from a dump of directories.
 
+    TODO:
+        The Directory model is on the way to be implemented with basic tests. Once
+        done the loader will have to create/edit directories found from Deovi dump.
+        This will change the loading process: first the directories and then their
+        children. The directory path can be safely retrieved from dump directory
+        "absolute_dir" item.
+
     File with a path which already exists in database are considered to be updated
     since MediaFile.path have an 'unique' constraint. The other files will be created.
 

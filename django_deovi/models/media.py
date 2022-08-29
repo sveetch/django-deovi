@@ -16,6 +16,9 @@ from deovi.collector import MEDIAS_CONTAINERS
 class MediaFile(models.Model):
     """
     A media file
+
+    TODO:
+        Relate to a Directory instead of a Device.
     """
     device = models.ForeignKey(
         "Device",
@@ -141,6 +144,7 @@ class MediaFile(models.Model):
         ]
         constraints = [
             # Enforce unique couple device + path
+            # TODO: Change to be couped to directory
             models.UniqueConstraint(
                 fields=[
                     "device", "path"

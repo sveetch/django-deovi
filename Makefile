@@ -126,6 +126,15 @@ superuser:
 	$(DJANGO_MANAGE) createsuperuser
 .PHONY: superuser
 
+reset-migrations:
+	@echo ""
+	@echo "==== Remove all application migrations and local databases ===="
+	@echo ""
+	rm -Rf $(APPLICATION_NAME)/migrations
+	rm -Rf var/db/*.sqlite3
+	${MAKE} migrations
+.PHONY: reset-migrations
+
 run:
 	@echo ""
 	@echo "==== Running development server ===="

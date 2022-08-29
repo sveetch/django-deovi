@@ -14,10 +14,7 @@ def test_device_basic(db):
     """
     Basic model saving with required fields should not fail
     """
-    device = Device(
-        title="Foo bar",
-        slug="foo-bar",
-    )
+    device = Device(title="Foo bar", slug="foo-bar")
     device.full_clean()
     device.save()
 
