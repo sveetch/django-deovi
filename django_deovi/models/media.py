@@ -20,13 +20,13 @@ class MediaFile(models.Model):
     TODO:
         Relate to a Directory instead of a Device.
     """
-    device = models.ForeignKey(
-        "Device",
-        verbose_name=_("Related device"),
+    directory = models.ForeignKey(
+        "Directory",
+        verbose_name=_("Related directory"),
         default=None,
         on_delete=models.CASCADE,
         help_text=_(
-            "The device which holds this file."
+            "The directory which holds this file."
         ),
     )
     """
@@ -51,12 +51,12 @@ class MediaFile(models.Model):
         default="",
         help_text=(
             "The full path where the file is stored. There can be only an unique path "
-            "for the same device."
+            "for the same directory."
         ),
     )
     """
-    Required absolute file path which have to be unique along its device. There can be
-    many MediaFile objects with the same path but not related to the same Device
+    Required absolute file path which have to be unique along its directory. There can
+    be many MediaFile objects with the same path but not related to the same Directory
     object.
     """
 
@@ -143,13 +143,12 @@ class MediaFile(models.Model):
             "stored_date",
         ]
         constraints = [
-            # Enforce unique couple device + path
-            # TODO: Change to be couped to directory
+            # Enforce unique couple directory + path
             models.UniqueConstraint(
                 fields=[
-                    "device", "path"
+                    "directory", "path"
                 ],
-                name="deovi_mediafile_device_path"
+                name="deovi_mediafile_directory_path"
             ),
         ]
 

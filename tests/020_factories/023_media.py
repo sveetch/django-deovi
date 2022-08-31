@@ -1,4 +1,4 @@
-from django_deovi.factories import MediaFileFactory
+from django_deovi.factories import DeviceFactory, DirectoryFactory, MediaFileFactory
 
 
 def test_mediafile_creation(db):
@@ -12,12 +12,14 @@ def test_mediafile_creation(db):
     assert mediafile.path.endswith(mediafile.container) is True
     assert mediafile.filesize > 0
 
-    mediafile = MediaFileFactory(path="/home/foo/plop.avi")
+    directory = DirectoryFactory()
+    mediafile = MediaFileFactory(
+        directory=directory,
+        path="/home/foo/plop.avi",
+    )
 
+    assert mediafile.directory == directory
+    assert mediafile.path == "/home/foo/plop.avi"
     assert mediafile.filename == "plop.avi"
     assert mediafile.dirname == "foo"
     assert mediafile.container == "avi"
-
-    # TODO: MediaFile model and factory have to be modified to relate to a Directory
-    # instead of a Device
-    assert 1 == 42

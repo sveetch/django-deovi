@@ -32,7 +32,7 @@ def test_mediafile_serialize_single(db):
 
     expected = {
         "id": plop.id,
-        "device": 1,
+        "directory": 1,
         "title": "",
         "path": "/home/foo/bar/plop.mp4",
         "absolute_dir": "/home/foo/bar",

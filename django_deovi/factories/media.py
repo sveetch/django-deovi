@@ -6,7 +6,7 @@ from django.utils import timezone
 import factory
 
 from ..models import MediaFile
-from .device import DeviceFactory
+from .directory import DirectoryFactory
 
 
 class MediaFileFactory(factory.django.DjangoModelFactory):
@@ -17,7 +17,7 @@ class MediaFileFactory(factory.django.DjangoModelFactory):
     attribute but since it deduces almost all other attributes from path, you should
     ensure you give it right.
     """
-    device = factory.SubFactory(DeviceFactory)
+    directory = factory.SubFactory(DirectoryFactory)
     title = ""
     path = factory.Faker("file_path", depth=3, category="video", absolute=True)
     filesize = factory.Faker("random_int", min=128, max=40960)

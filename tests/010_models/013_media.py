@@ -8,18 +8,21 @@ from django.utils import timezone
 import pytest
 
 from django_deovi.dump import DumpedFile
-from django_deovi.models import Device, MediaFile
+from django_deovi.models import Device, Directory, MediaFile
 
 
 def test_mediafile_basic(db):
     """
     Basic model saving with required fields should not fail
     """
-    device = Device(title="Foo", slug="foo")
+    device = Device(title="Foo bar", slug="foo-bar")
     device.save()
 
+    directory = Directory(device=device, title="Foo", path="/home/foo/bar")
+    directory.save()
+
     mediafile = MediaFile(
-        device=device,
+        directory=directory,
         path="/home/foo/bar/plop.mp4",
         absolute_dir="/home/foo/bar",
         filename="plop.mp4",
@@ -45,7 +48,7 @@ def test_mediafile_required_fields(db):
         mediafile.full_clean()
 
     assert excinfo.value.message_dict == {
-        "device": ["This field cannot be null."],
+        "directory": ["This field cannot be null."],
         "path": ["This field cannot be blank."],
         "absolute_dir": ["This field cannot be blank."],
         "filename": ["This field cannot be blank."],
@@ -56,17 +59,18 @@ def test_mediafile_required_fields(db):
 
 def test_mediafile_path_uniqueness(db):
     """
-    MediaFile device + path uniqueness constraint should be respected.
+    MediaFile directory + path uniqueness constraint should be respected.
     """
-    device_foo = Device(title="Foo", slug="foo")
-    device_foo.save()
-    device_bar = Device(title="Bar", slug="bar")
-    device_bar.save()
+    device = Device(title="Foo bar", slug="foo-bar")
+    device.save()
+
+    directory_foo = Directory(device=device, title="Foo", path="/home/foo")
+    directory_foo.save()
 
     dump_first = MediaFile(
-        device=device_foo,
-        path="/home/foo/bar/plop.mp4",
-        absolute_dir="/home/foo/bar",
+        directory=directory_foo,
+        path="/home/foo/plop.mp4",
+        absolute_dir="/home/foo",
         filename="plop.mp4",
         dirname="bar",
         container="mp4",
@@ -76,9 +80,9 @@ def test_mediafile_path_uniqueness(db):
     dump_first.save()
 
     dump_second = MediaFile(
-        device=device_foo,
-        path="/home/foo/bar/plop.mp4",
-        absolute_dir="/home/foo/bar",
+        directory=directory_foo,
+        path="/home/foo/plop.mp4",
+        absolute_dir="/home/foo",
         filename="plop.mp4",
         dirname="bar",
         container="mp4",
@@ -87,19 +91,22 @@ def test_mediafile_path_uniqueness(db):
     )
 
     # Uniqueness constraint is respected, there can only be an unique path for the same
-    # device
+    # directory
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
             dump_second.save()
 
         assert str(excinfo.value) == (
-            "UNIQUE constraint failed: django_deovi_mediafile.device_id, "
+            "UNIQUE constraint failed: django_deovi_mediafile.directory_id, "
             "django_deovi_mediafile.path"
         )
 
-    # However a same path can exist on another device
+    # However a same path can exist on another directory
+    directory_bar = Directory(device=device, title="Bar", path="/home/foo/bar")
+    directory_bar.save()
+
     dump_third = MediaFile(
-        device=device_bar,
+        directory=directory_bar,
         path="/home/foo/bar/plop.mp4",
         absolute_dir="/home/foo/bar",
         filename="plop.mp4",

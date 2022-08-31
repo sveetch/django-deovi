@@ -1,5 +1,6 @@
 import datetime
 import logging
+import json
 
 import pytest
 
@@ -9,7 +10,9 @@ from django.utils import timezone
 
 from django_deovi import __pkgname__
 from django_deovi.models import MediaFile
-from django_deovi.factories import DeviceFactory, DumpedFileFactory, MediaFileFactory
+from django_deovi.factories import (
+    DeviceFactory, DirectoryFactory, DumpedFileFactory, MediaFileFactory
+)
 from django_deovi.loader import DumpLoader
 
 
@@ -20,32 +23,41 @@ def test_dumploader_get_existing(db, caplog):
     """
     caplog.set_level(logging.DEBUG, logger=__pkgname__)
 
-    device_primary = DeviceFactory(title="Primary", slug="primary")
-    device_secondary = DeviceFactory(title="Secondary", slug="secondary")
+    device = DeviceFactory()
+    goods = DirectoryFactory(
+        device=device,
+        title="Primary",
+        path="/videos/goods"
+    )
+    bads = DirectoryFactory(
+        device=device,
+        title="Secondary",
+        path="/videos/bads"
+    )
 
     loader = DumpLoader()
 
     # Videos which will be found as existing
-    picsou = MediaFileFactory(device=device_primary, path="/videos/picsou.mkv")
-    donald = MediaFileFactory(device=device_primary, path="/videos/donald.mkv")
-    picsou_bis = MediaFileFactory(device=device_primary, path="/home/videos/picsou.mkv")
+    picsou = MediaFileFactory(directory=goods, path="/videos/goods/picsou.mkv")
+    donald = MediaFileFactory(directory=goods, path="/videos/goods/donald.mkv")
+    daisy = MediaFileFactory(directory=goods, path="/videos/goods/daisy.mkv")
     # Some other videos for filling
-    MediaFileFactory(device=device_primary, path="/home/videos/donald.mkv")
-    MediaFileFactory(device=device_secondary, path="/videos/donald.mkv")
-    MediaFileFactory(device=device_secondary, path="/videos/daisy.mkv")
+    MediaFileFactory(directory=goods, path="/videos/goods/popop.mkv")
+    MediaFileFactory(directory=bads, path="/videos/bads/miss-Tick.mkv")
+    MediaFileFactory(directory=bads, path="/videos/bads/gripsou.mkv")
 
-    existing = loader.get_existing(device_primary, [
+    existing = loader.get_existing(goods, [
+        {"path": "/videos/goods/picsou.mkv"},
+        {"path": "/videos/goods/donald.mkv"},
+        {"path": "/videos/goods/daisy.mkv"},
+        {"path": "/videos/goods/gontran.mkv"},
         {"path": "/home/donald.mkv"},
-        {"path": "/home/videos/picsou.mkv"},
-        {"path": "/videos/daisy.mkv"},
-        {"path": "/videos/donald.mkv"},
-        {"path": "/videos/picsou.mkv"},
     ])
 
     assert existing == {
         picsou.path: picsou,
         donald.path: donald,
-        picsou_bis.path: picsou_bis,
+        daisy.path: daisy,
     }
 
 
@@ -56,28 +68,28 @@ def test_dumploader_file_distribution(db, caplog):
     """
     caplog.set_level(logging.DEBUG, logger=__pkgname__)
 
-    device = DeviceFactory(title="Master", slug="master")
+    directory = DirectoryFactory(path="/videos")
 
     loader = DumpLoader()
 
     # Create existing MediaFile objects
     MediaFileFactory(
-        device=device,
+        directory=directory,
         path="/videos/BillyBoy_S01E01.mkv",
         filesize=1105021329,
     )
     MediaFileFactory(
-        device=device,
+        directory=directory,
         path="/videos/BillyBoy_S01E02.mkv",
         filesize=777051908,
     )
     MediaFileFactory(
-        device=device,
+        directory=directory,
         path="/videos/BillyBoy_S01E03.mkv",
         filesize=906120796,
     )
     MediaFileFactory(
-        device=device,
+        directory=directory,
         path="/videos/BillyBoy_S02E01.mkv",
         filesize=1024,
     )
@@ -88,7 +100,7 @@ def test_dumploader_file_distribution(db, caplog):
     dump_s01e04 = DumpedFileFactory(path="/videos/BillyBoy_S01E04.mkv")
 
     # Distribute a dump of not yet loaded files
-    to_create, to_edit = loader.file_distribution(device, [
+    to_create, to_edit = loader.file_distribution(directory, [
         dump_s01e01.to_dict(),
         dump_s01e03.to_dict(),
         dump_s01e04.to_dict(),
@@ -123,7 +135,7 @@ def test_dumploader_create_files(db):
     now = timezone.now()
     yesterday = now - datetime.timedelta(days=1)
 
-    device = DeviceFactory(title="Master", slug="master")
+    directory = DirectoryFactory(path="/videos")
 
     loader = DumpLoader()
 
@@ -133,7 +145,7 @@ def test_dumploader_create_files(db):
     BillyBoy_S01E04 = DumpedFileFactory(path="/videos/BillyBoy_S01E04.mkv")
 
     # Distribute a dump of not yet loaded files
-    loader.create_files(device, [
+    loader.create_files(directory, [
         BillyBoy_S01E01,
         BillyBoy_S01E03,
         BillyBoy_S01E04,
@@ -145,14 +157,11 @@ def test_dumploader_create_files(db):
 
 def test_dumploader_create_uniqueness_path(db):
     """
-    MediaFile device + path uniqueness constraint should make the bulk chain to fail.
-
-    TODO: This does not test the real uniqueness constraint, only the path uniqueness
-    for the same device.
+    MediaFile directory + path uniqueness constraint should make the bulk chain to fail.
     """
     now = timezone.now()
 
-    device = DeviceFactory(title="Primary", slug="primary")
+    directory = DirectoryFactory(path="/videos")
 
     loader = DumpLoader()
 
@@ -163,20 +172,20 @@ def test_dumploader_create_uniqueness_path(db):
 
     # Create the first dump file as an existing MediaFile object
     media_first = MediaFileFactory(
-        device=device,
+        directory=directory,
         **dump_first.convert_to_orm_fields()
     )
 
     # Against existing objects
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
-            loader.create_files(device, [
+            loader.create_files(directory, [
                 dump_first,
                 dump_second,
             ], batch_date=now)
 
         assert str(excinfo.value) == (
-            "UNIQUE constraint failed: django_deovi_mediafile.device_id, "
+            "UNIQUE constraint failed: django_deovi_mediafile.directory_id, "
             "django_deovi_mediafile.path"
         )
 
@@ -187,13 +196,13 @@ def test_dumploader_create_uniqueness_path(db):
     # Against identical couple inside the bulk chain
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
-            loader.create_files(device, [
+            loader.create_files(directory, [
                 dump_third,
                 dump_third,
             ], batch_date=now)
 
         assert str(excinfo.value) == (
-            "UNIQUE constraint failed: django_deovi_mediafile.device_id, "
+            "UNIQUE constraint failed: django_deovi_mediafile.directory_id, "
             "django_deovi_mediafile.path"
         )
 
@@ -208,7 +217,7 @@ def test_dumploader_batch_limit(db):
     """
     now = timezone.now()
 
-    device = DeviceFactory(title="Master", slug="master")
+    directory = DirectoryFactory(path="/videos")
 
     loader = DumpLoader(batch_limit=2)
 
@@ -219,7 +228,7 @@ def test_dumploader_batch_limit(db):
     BillyBoy_S01E04 = DumpedFileFactory(path="/videos/BillyBoy_S01E04.mkv")
 
     # Distribute a dump of not yet loaded files
-    loader.create_files(device, [
+    loader.create_files(directory, [
         BillyBoy_S01E01,
         BillyBoy_S01E02,
         BillyBoy_S01E03,
@@ -301,40 +310,50 @@ def test_dumploader_edit_files(db):
     assert fetched_s01e03.stored_date == tomorrow
 
 
-def test_dumploader_load(db, caplog, tests_settings):
+def test_dumploader_process_directory(db, caplog, tests_settings):
     """
-    Loader should correctly load files from given dump.
+    Dump should process directories and their files
     """
     caplog.set_level(logging.DEBUG, logger=__pkgname__)
 
-    dump_path = tests_settings.fixtures_path / "dump_series.json"
-
-    device = DeviceFactory(title="Master", slug="master")
+    device = DeviceFactory()
+    series_dir = DirectoryFactory(
+        device=device,
+        title="BillyBoy serie",
+        path="/videos/series/BillyBoy"
+    )
+    theatre_dir = DirectoryFactory(
+        device=device,
+        title="Theatre",
+        path="/videos/theatre"
+    )
 
     # Create existing MediaFile objects
     BillyBoy_S01E01 = MediaFileFactory(
         path="/videos/series/BillyBoy/BillyBoy_S01E01.mkv",
-        device=device,
+        directory=series_dir,
         filesize=100,
     )
     BillyBoy_S01E03 = MediaFileFactory(
         path="/videos/series/BillyBoy/BillyBoy_S01E03.mkv",
-        device=device,
+        directory=series_dir,
         filesize=300,
     )
     BillyBoy_S02E01 = MediaFileFactory(
         path="/videos/series/BillyBoy/BillyBoy_S02E01.mkv",
-        device=device,
+        directory=series_dir,
     )
     Coucou_1982 = MediaFileFactory(
         path="/videos/theatre/Coucou_1982.avi",
-        device=device,
+        directory=theatre_dir,
         filesize=1982,
     )
 
-    # Distribute a dump of not yet loaded files
+    dump_path = tests_settings.fixtures_path / "dump_directories.json"
+
     loader = DumpLoader()
-    loader.load(device, dump_path)
+    dump_content = loader.open_dump(dump_path)
+    loader.process_directory(device, dump_content)
 
     assert MediaFile.objects.count() == 6
 
@@ -356,6 +375,11 @@ def test_dumploader_load(db, caplog, tests_settings):
         ),
         (
             __pkgname__,
+            logging.DEBUG,
+            "- New directory created"
+        ),
+        (
+            __pkgname__,
             logging.INFO,
             "- Files entry to create: 1"
         ),
@@ -368,6 +392,11 @@ def test_dumploader_load(db, caplog, tests_settings):
             __pkgname__,
             logging.INFO,
             "📂 Working on directory: /videos/series/BillyBoy"
+        ),
+        (
+            __pkgname__,
+            logging.DEBUG,
+            "- Got an existing directory"
         ),
         (
             __pkgname__,
@@ -401,6 +430,11 @@ def test_dumploader_load(db, caplog, tests_settings):
         ),
         (
             __pkgname__,
+            logging.DEBUG,
+            "- Got an existing directory"
+        ),
+        (
+            __pkgname__,
             logging.INFO,
             "- Found 1 existing MediaFile objects related to this dump"
         ),
@@ -414,4 +448,79 @@ def test_dumploader_load(db, caplog, tests_settings):
             logging.DEBUG,
             "- Proceed to bulk edition"
         )
+    ]
+
+
+def test_dumploader_load(db, caplog, tests_settings):
+    """
+    Loader should correctly load directories and files from given dump.
+    """
+    caplog.set_level(logging.DEBUG, logger=__pkgname__)
+
+    # Simplify dump to only keep a single directory
+    dump_path = tests_settings.fixtures_path / "dump_directories.json"
+    dump_content = {
+        "series/BillyBoy": json.loads(dump_path.read_text())["series/BillyBoy"]
+    }
+
+    device = DeviceFactory()
+    directory = DirectoryFactory(
+        device=device,
+        title="BillyBoy serie",
+        path="/videos/series/BillyBoy"
+    )
+
+    # Create existing MediaFile objects
+    BillyBoy_S01E01 = MediaFileFactory(
+        path="/videos/series/BillyBoy/BillyBoy_S01E01.mkv",
+        directory=directory,
+        filesize=100,
+    )
+
+    # Proceed to loading
+    loader = DumpLoader()
+    loader.load(device, dump_content)
+
+    assert MediaFile.objects.count() == 3
+
+    # Ensure each difference have been applied and nothing have been dropped
+    fetched_s01e01 = MediaFile.objects.get(path=BillyBoy_S01E01.path)
+    assert fetched_s01e01.filesize == 101
+
+    assert caplog.record_tuples == [
+        (
+            __pkgname__,
+            logging.INFO,
+            "📂 Working on directory: /videos/series/BillyBoy"
+        ),
+        (
+            __pkgname__,
+            logging.DEBUG,
+            "- Got an existing directory"
+        ),
+        (
+            __pkgname__,
+            logging.INFO,
+            "- Found 1 existing MediaFile objects related to this dump"
+        ),
+        (
+            __pkgname__,
+            logging.INFO,
+            "- Files entry to create: 2"
+        ),
+        (
+            __pkgname__,
+            logging.INFO,
+            "- Files entry to edit: 1"
+        ),
+        (
+            __pkgname__,
+            logging.DEBUG,
+            "- Proceed to bulk creation"
+        ),
+        (
+            __pkgname__,
+            logging.DEBUG,
+            "- Proceed to bulk edition"
+        ),
     ]

@@ -29,6 +29,7 @@ class Directory(models.Model):
 
     title = models.CharField(
         _("title"),
+        blank=True,
         max_length=150,
         default="",
     )
@@ -77,4 +78,4 @@ class Directory(models.Model):
         ]
 
     def __str__(self):
-        return self.title
+        return self.path

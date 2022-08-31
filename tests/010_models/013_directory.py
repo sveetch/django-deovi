@@ -40,7 +40,6 @@ def test_directory_required_fields(db):
 
     assert excinfo.value.message_dict == {
         "device": ["This field cannot be null."],
-        "title": ["This field cannot be blank."],
         "path": ["This field cannot be blank."],
     }
 

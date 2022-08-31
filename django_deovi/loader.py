@@ -11,7 +11,7 @@ from pathlib import Path
 from django.utils import timezone
 
 from .dump import DumpedFile
-from .models import Device, MediaFile
+from .models import Device, Directory, MediaFile
 from .outputs import BaseOutput
 from .serializers import MediaFileSerializer
 
@@ -31,8 +31,8 @@ class DumpLoader:
     since MediaFile.path have an 'unique' constraint. The other files will be created.
 
     Since device is not a concept from Deovi and only at Django Deovi level, a dump
-    is only about files from a single device. There is no way to import dump content
-    for many devices.
+    is only about directories and files from a single device. There is no way to import
+    dump content for many devices.
 
     Keyword Arguments:
         batch_limit (integer): Limit of entries to create or update in a single batch
@@ -67,12 +67,13 @@ class DumpLoader:
 
         return json.loads(dump.read_text())
 
-    def get_existing(self, device, files):
+    def get_existing(self, directory, files):
         """
         Retrieve and return every existing MediaFile for the given couple device+path.
 
         Arguments:
-            device (django_deovi.models.Device): Device object to assign all the files.
+            directory (django_deovi.models.Directory): Directory object to assign all
+                the files.
             files (list): List of dictionnaries for directory children files.
 
         Returns:
@@ -82,7 +83,7 @@ class DumpLoader:
         paths = [item["path"] for item in files]
 
         existing = MediaFile.objects.filter(
-            device=device,
+            directory=directory,
             path__in=paths,
         ).order_by("path")
 
@@ -91,51 +92,15 @@ class DumpLoader:
             for item in existing
         }
 
-    def file_distribution(self, device, files):
-        """
-        Distribute file entry for creation or edition depending if their path already
-        exists in database or not.
-
-        Arguments:
-            device (django_deovi.models.Device): Device object to assign all the files.
-            files (list): List of dictionnaries for directory children files.
-
-        Returns:
-            tuple: List of "to create" file items and list of "to edit" file items.
-            File item is the file payload as retrieved from dump.
-        """
-        # Find existing file paths from db
-        existing = self.get_existing(device, files)
-        if len(existing) > 0:
-            msg = "- Found {} existing MediaFile objects related to this dump"
-            self.log.info(msg.format(len(existing)))
-
-        # Push non existing items to the creation list
-        to_create = [
-            DumpedFile(**item) for item in files
-            if item["path"] not in existing
-        ]
-        if len(to_create) > 0:
-            self.log.info("- Files entry to create: {}".format(len(to_create)))
-
-        # Push existing items to the edition list
-        to_edit = [
-            DumpedFile(**item, mediafile=existing[item["path"]]) for item in files
-            if item["path"] in existing
-        ]
-        if len(to_edit) > 0:
-            self.log.info("- Files entry to edit: {}".format(len(to_edit)))
-
-        return to_create, to_edit
-
-    def create_files(self, device, files, batch_date):
+    def create_files(self, directory, files, batch_date):
         """
         Create dump files in database using a bulk creation.
 
         NOTE: Remember that bulk discard the save() method.
 
         Arguments:
-            device (django_deovi.models.Device): Device object to assign all the files.
+            directory (django_deovi.models.Directory): Directory object to assign all
+                the files.
             files (list): List of DumpedFile objects for directory children files.
             batch_date (datetime.datetime): A datetime object to fill
                 ``MediaFile.loaded_date`` field value. It is used to ensure all the
@@ -147,7 +112,7 @@ class DumpLoader:
             MediaFile(
                 **item.convert_to_orm_fields(),
                 loaded_date=batch_date,
-                device=device,
+                directory=directory,
             )
             for item in files
         ], batch_size=self.batch_limit)
@@ -156,7 +121,7 @@ class DumpLoader:
         """
         Create dump files in database using a bulk edition.
 
-        This operation method does not care about device since it is not an editable
+        This operation method does not care about directory since it is not an editable
         field from a dump loading.
 
         NOTE: Remember that bulk discard the save() method.
@@ -208,6 +173,80 @@ class DumpLoader:
             self.EDITABLE_FIELDS + ["loaded_date"]
         )
 
+    def file_distribution(self, directory, files):
+        """
+        Distribute file entry for creation or edition depending if their path already
+        exists in database or not.
+
+        Arguments:
+            directory (django_deovi.models.Directory): Directory object to assign all
+                the files.
+            files (list): List of dictionnaries for directory children files.
+
+        Returns:
+            tuple: List of "to create" file items and list of "to edit" file items.
+            File item is the file payload as retrieved from dump.
+        """
+        # Find existing file paths from db
+        existing = self.get_existing(directory, files)
+        if len(existing) > 0:
+            msg = "- Found {} existing MediaFile objects related to this dump"
+            self.log.info(msg.format(len(existing)))
+
+        # Push non existing items to the creation list
+        to_create = [
+            DumpedFile(**item) for item in files
+            if item["path"] not in existing
+        ]
+        if len(to_create) > 0:
+            self.log.info("- Files entry to create: {}".format(len(to_create)))
+
+        # Push existing items to the edition list
+        to_edit = [
+            DumpedFile(**item, mediafile=existing[item["path"]]) for item in files
+            if item["path"] in existing
+        ]
+        if len(to_edit) > 0:
+            self.log.info("- Files entry to edit: {}".format(len(to_edit)))
+
+        return to_create, to_edit
+
+    def process_directory(self, device, directories):
+        """
+        Process a directory entry from a dump to create Directory and process its
+        children files.
+
+        Arguments:
+            device (django_deovi.models.Device): Device object to assign all the files.
+            directories (dict): Dictionnary of dumped directories.
+
+        Returns:
+            list: List of created Directory objects ?
+        """
+        for dump_dir_name, dump_dir_data in directories.items():
+            batch_date = timezone.now()
+
+            self.log.info("📂 Working on directory: {}".format(dump_dir_data["path"]))
+            directory, created = Directory.objects.get_or_create(
+                device=device,
+                path=dump_dir_data["path"],
+            )
+            if created:
+                self.log.debug("- New directory created")
+            else:
+                self.log.debug("- Got an existing directory")
+
+            # Distribute file to bulk chains
+            to_create, to_edit = self.file_distribution(
+                directory, dump_dir_data["children_files"]
+            )
+
+            if len(to_create) > 0:
+                self.create_files(directory, to_create, batch_date=batch_date)
+
+            if len(to_edit) > 0:
+                self.edit_files(to_edit, batch_date=batch_date)
+
     def load(self, device, dump):
         """
         Load a Deovi dump to create and update MediaFile objects for the dump directory
@@ -217,16 +256,20 @@ class DumpLoader:
 
         Arguments:
             device (django_deovi.models.Device): Device object to assign all the files.
+                TODO: This should be a slug to use with a get_or_create
             dump (pathlib.Path): The path object for the dump file to load.
         """
         dump_content = self.open_dump(dump)
-        for directory, data in dump_content.items():
-            batch_date = timezone.now()
 
-            self.log.info("📂 Working on directory: {}".format(data["path"]))
-            to_create, to_edit = self.file_distribution(device, data["children_files"])
+        self.process_directory(device, dump_content)
 
-            if len(to_create) > 0:
-                self.create_files(device, to_create, batch_date=batch_date)
-            if len(to_edit) > 0:
-                self.edit_files(to_edit, batch_date=batch_date)
+        #for directory, data in dump_content.items():
+            #batch_date = timezone.now()
+
+            #self.log.info("📂 Working on directory: {}".format(data["path"]))
+            #to_create, to_edit = self.file_distribution(device, data["children_files"])
+
+            #if len(to_create) > 0:
+                #self.create_files(device, to_create, batch_date=batch_date)
+            #if len(to_edit) > 0:
+                #self.edit_files(to_edit, batch_date=batch_date)
