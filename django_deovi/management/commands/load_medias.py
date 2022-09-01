@@ -3,7 +3,7 @@ from pathlib import Path
 from django.core.management.base import BaseCommand, CommandError
 
 from ...loader import DumpLoader
-from ...models import MediaFile
+from ...models import Device
 from ...outputs import DjangoCommandOutput
 
 
@@ -12,12 +12,22 @@ class Command(BaseCommand):
     Deovi dump loader
     """
     help = (
-        "Load a Deovi collection dump into database. Since file paths are unique, "
+        "Load a Deovi device dump into database. Since file paths are unique, "
         "they are edited if they already exists in database. The other ones will be "
         "created."
     )
 
     def add_arguments(self, parser):
+        parser.add_argument(
+            "device",
+            default=None,
+            help=(
+                "Device slug name to attach all collected directories from given "
+                "dump. If the slug does not already exists it will be created, so be"
+                "sure to use the exact slug to avoid importing stuff in a new device"
+                "if you just planned to update things."
+            ),
+        )
         parser.add_argument(
             "source",
             type=Path,
@@ -25,7 +35,7 @@ class Command(BaseCommand):
             help="Path to the Deovi collection dump",
         )
 
-    def collect_dump(self, filepath):
+    def collect_dump(self, device, filepath):
         """
         Load the dump contents into database.
         """
@@ -34,7 +44,7 @@ class Command(BaseCommand):
         )
         logger = DjangoCommandOutput(command=self)
         loader = DumpLoader(output_interface=logger)
-        loader.load(filepath)
+        loader.load(device, filepath)
 
     def handle(self, *args, **options):
         self.stdout.write(
@@ -42,7 +52,9 @@ class Command(BaseCommand):
         )
 
         if not options["source"].exists():
-            msg = "Given source does not exists: {}".format(str(options["source"]))
+            msg = "Given dump path does not exists: {}".format(
+                str(options["source"])
+            )
             raise CommandError(msg)
 
-        self.collect_dump(options["source"])
+        self.collect_dump(options["device"], options["source"])

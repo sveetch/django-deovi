@@ -20,19 +20,17 @@ class DumpLoader:
     """
     Load files datas from a dump of directories.
 
-    TODO:
-        The Directory model is on the way to be implemented with basic tests. Once
-        done the loader will have to create/edit directories found from Deovi dump.
-        This will change the loading process: first the directories and then their
-        children. The directory path can be safely retrieved from dump directory
-        "absolute_dir" item.
-
     File with a path which already exists in database are considered to be updated
     since MediaFile.path have an 'unique' constraint. The other files will be created.
 
     Since device is not a concept from Deovi and only at Django Deovi level, a dump
     is only about directories and files from a single device. There is no way to import
     dump content for many devices.
+
+    Attributes:
+        EDITABLE_FIELDS (list): Only those MediaFile fields are allowed to be edited
+            from dumped file data Field 'loaded_date' should never be editable since it
+            is already forced from 'create_files' and 'edit_files' methods.
 
     Keyword Arguments:
         batch_limit (integer): Limit of entries to create or update in a single batch
@@ -42,9 +40,6 @@ class DumpLoader:
             output operation messages. It defaults on the basic interface which use
             Python logging.
     """
-    # Only those MediaFile fields are allowed to be edited from dumped file data
-    # Field 'loaded_date' should never be editable since it is already forced from
-    # 'create_files' and 'edit_files' methods.
     EDITABLE_FIELDS = [
         "filename", "absolute_dir", "container", "filesize", "stored_date"
     ]
@@ -247,29 +242,29 @@ class DumpLoader:
             if len(to_edit) > 0:
                 self.edit_files(to_edit, batch_date=batch_date)
 
-    def load(self, device, dump):
+    def load(self, device_slug, dump):
         """
         Load a Deovi dump to create and update MediaFile objects for the dump directory
-        files.
+        and files.
 
         All files from a same directory will share the same exact loaded datetime.
 
         Arguments:
-            device (django_deovi.models.Device): Device object to assign all the files.
-                TODO: This should be a slug to use with a get_or_create
+            device_slug (string): Slug name for the Device object to attach all the
+                directories and files.
             dump (pathlib.Path): The path object for the dump file to load.
         """
+        self.log.info("🏷️Using device slug: {}".format(device_slug))
+        device, created = Device.objects.get_or_create(
+            slug=device_slug,
+        )
+
+        if created:
+            msg = "- New device created for given slug"
+        else:
+            msg = "- Got an existing device for given slug"
+        self.log.debug(msg)
+
         dump_content = self.open_dump(dump)
 
         self.process_directory(device, dump_content)
-
-        #for directory, data in dump_content.items():
-            #batch_date = timezone.now()
-
-            #self.log.info("📂 Working on directory: {}".format(data["path"]))
-            #to_create, to_edit = self.file_distribution(device, data["children_files"])
-
-            #if len(to_create) > 0:
-                #self.create_files(device, to_create, batch_date=batch_date)
-            #if len(to_edit) > 0:
-                #self.edit_files(to_edit, batch_date=batch_date)

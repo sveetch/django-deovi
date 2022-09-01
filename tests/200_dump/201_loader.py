@@ -463,7 +463,7 @@ def test_dumploader_load(db, caplog, tests_settings):
         "series/BillyBoy": json.loads(dump_path.read_text())["series/BillyBoy"]
     }
 
-    device = DeviceFactory()
+    device = DeviceFactory(slug="donald")
     directory = DirectoryFactory(
         device=device,
         title="BillyBoy serie",
@@ -479,7 +479,7 @@ def test_dumploader_load(db, caplog, tests_settings):
 
     # Proceed to loading
     loader = DumpLoader()
-    loader.load(device, dump_content)
+    loader.load(device.slug, dump_content)
 
     assert MediaFile.objects.count() == 3
 
@@ -488,6 +488,16 @@ def test_dumploader_load(db, caplog, tests_settings):
     assert fetched_s01e01.filesize == 101
 
     assert caplog.record_tuples == [
+        (
+            __pkgname__,
+            logging.INFO,
+            "🏷️Using device slug: donald"
+        ),
+        (
+            __pkgname__,
+            logging.DEBUG,
+            "- Got an existing device for given slug"
+        ),
         (
             __pkgname__,
             logging.INFO,
@@ -522,5 +532,32 @@ def test_dumploader_load(db, caplog, tests_settings):
             __pkgname__,
             logging.DEBUG,
             "- Proceed to bulk edition"
+        ),
+    ]
+
+
+def test_dumploader_load_new_device_no_dirs(db, caplog, tests_settings):
+    """
+    Check loader behavior with not existing yet device and an empty fake dump,
+    everything should goes well without error.
+    """
+    caplog.set_level(logging.DEBUG, logger=__pkgname__)
+
+    # Proceed to loading
+    loader = DumpLoader()
+    loader.load("nope", {})
+
+    assert MediaFile.objects.count() == 0
+
+    assert caplog.record_tuples == [
+        (
+            __pkgname__,
+            logging.INFO,
+            "🏷️Using device slug: nope"
+        ),
+        (
+            __pkgname__,
+            logging.DEBUG,
+            "- New device created for given slug"
         ),
     ]

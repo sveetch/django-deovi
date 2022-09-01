@@ -65,7 +65,7 @@ class Directory(models.Model):
         verbose_name = _("Directory")
         verbose_name_plural = _("Directories")
         ordering = [
-            "title",
+            "-title",
         ]
         constraints = [
             # Enforce unique couple device + path
