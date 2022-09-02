@@ -4,6 +4,8 @@ Directory model
 ============
 
 """
+from pathlib import Path
+
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -13,10 +15,15 @@ from django.urls import reverse
 class Directory(models.Model):
     """
     A directory container to hold MediaFile objects.
+
+    TODO:
+    * Remove deprecated title field;
+    * Need created and updated dates (may involve stopping using bulk chains);
     """
     device = models.ForeignKey(
         "Device",
         verbose_name=_("Related device"),
+        related_name="directories",
         default=None,
         on_delete=models.CASCADE,
         help_text=_(
@@ -34,7 +41,7 @@ class Directory(models.Model):
         default="",
     )
     """
-    Required title string.
+    Optional title string.
     """
 
     path = models.TextField(
@@ -61,11 +68,16 @@ class Directory(models.Model):
     Required datetime for when the directory has been loaded.
     """
 
+    COMMON_ORDER_BY = ["path"]
+    """
+    List of field order commonly used in frontend view/api
+    """
+
     class Meta:
         verbose_name = _("Directory")
         verbose_name_plural = _("Directories")
         ordering = [
-            "-title",
+            "path",
         ]
         constraints = [
             # Enforce unique couple device + path
@@ -79,3 +91,50 @@ class Directory(models.Model):
 
     def __str__(self):
         return self.path
+
+    def get_absolute_url(self):
+        """
+        Return absolute URL to the detail view.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("django_deovi:directory-detail", kwargs={
+            "device_slug": self.device.slug,
+            "directory_pk": self.id,
+        })
+
+    def directory_parent(self):
+        """
+        Return directory parent path.
+
+        Returns:
+            string: Parent path.
+        """
+        return str(Path(self.path).parent)
+
+    def directory_name(self):
+        """
+        Return directory name from path
+
+        Returns:
+            string: Directory name.
+        """
+        return str(Path(self.path).name)
+
+    def resume(self):
+        """
+        Return a resume of some directory informations.
+
+        Returns:
+            dict: Payload.
+        """
+        mediafiles = self.mediafiles.annotate(
+            total_filesize=models.Sum("filesize"),
+        )
+
+        return {
+            "mediafiles": len(mediafiles),
+            "filesize": sum([item.total_filesize for item in mediafiles]),
+            "last_update": sorted([item.loaded_date for item in mediafiles])[-1],
+        }

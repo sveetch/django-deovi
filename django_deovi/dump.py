@@ -2,8 +2,6 @@ import datetime
 
 from dataclasses import dataclass
 
-import pytz
-
 from django.utils import timezone
 
 from .exceptions import DjangoDeoviError
@@ -151,7 +149,7 @@ class DumpedFile:
             parsed = datetime.datetime.fromisoformat(value)
 
             if timezone.is_naive(parsed):
-                return timezone.get_default_timezone().localize(parsed)
+                return parsed.replace(tzinfo=timezone.get_default_timezone())
             else:
                 return parsed
 

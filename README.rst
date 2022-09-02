@@ -11,9 +11,9 @@ A Django application around Deovi
 Dependancies
 ************
 
-* `Python`_>=3.7;
-* `Django`_>=2.2;
-* `Django REST framework`_>=3.12.0;
+* `Python`_>=3.8;
+* `Django`_>=4.0;
+* `Django REST framework`_>=3.13.0;
 
 Links
 *****

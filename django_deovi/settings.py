@@ -6,14 +6,20 @@ These are the default settings you can override in your own project settings
 right after the line which load the default app settings.
 
 """
-BLOG_PAGINATION = 5
+DEVICE_PAGINATION = 20
 """
-Blog entry per page limit for pagination, set it to ``None`` to disable
+Device entry per page limit for pagination, set it to ``None`` to disable
 pagination.
 """
 
-ARTICLE_PAGINATION = 6
+DIRECTORY_PAGINATION = 50
 """
-Article entry per page limit for pagination, set it to ``None`` to disable
+Directory entry per page limit for pagination, set it to ``None`` to disable
+pagination.
+"""
+
+MEDIAFILE_PAGINATION = 50
+"""
+MediaFile entry per page limit for pagination, set it to ``None`` to disable
 pagination.
 """

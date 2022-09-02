@@ -3,7 +3,9 @@ Application URLs
 """
 from django.urls import path, include
 
-from .views import MediaFileDetailView
+from .views import (
+    DeviceIndexView, DeviceDetailView, DirectoryDetailView, MediaFileDetailView,
+)
 from .routers import router
 
 
@@ -11,11 +13,16 @@ app_name = "django_deovi"
 
 
 urlpatterns = [
-    # path("", MediaFileIndexView.as_view(), name="mediafile-index"),
+    path("", DeviceIndexView.as_view(), name="device-index"),
     path("api/", include(router.urls)),
     path(
-        "<int:mediafile_pk>/",
-        MediaFileDetailView.as_view(),
-        name="mediafile-detail"
+        "<slug:device_slug>/",
+        DeviceDetailView.as_view(),
+        name="device-detail"
+    ),
+    path(
+        "<slug:device_slug>/<slug:directory_pk>/",
+        DirectoryDetailView.as_view(),
+        name="directory-detail"
     ),
 ]

@@ -1,0 +1,83 @@
+{% extends "django_deovi/base.html" %}
+{% load i18n %}
+
+{% block head_title %}{{ directory_object }} - {{ block.super }}{% endblock head_title %}
+
+{% block app_content %}{% spaceless %}
+<div class="directory-detail">
+    <h2 class="directory-title mt-4 mb-5 text-center">
+        {{ directory_object.name }}
+        <span>{{ directory_object.directory_name }}</span><br>
+        <small class="text-muted sm-2 fw-normal user-select-all">{{ directory_object.path }}</small>
+    </h2>
+
+    {% with directory_object.resume as resume %}
+    <div class="row g-5 justify-content-md-center mb-5">
+        <div class="col-md-auto text-center">
+            <div><i class="h5 bi bi-device-hdd"></i></div>
+            <div><small class="text-muted sm-2 fw-normal">{% trans "Device" %}</small></div>
+            <h3 class="fw-bold mb-0 fs-6 user-select-all">{{ directory_object.device }}</h3>
+        </div>
+        <div class="col-md-auto text-center">
+            <div><i class="h5 bi bi-folder"></i></div>
+            <div><small class="text-muted sm-2 fw-normal">{% trans "Parent" %}</small></div>
+            <h3 class="fw-bold mb-0 fs-6 user-select-all">{{ directory_object.directory_parent }}</h3>
+        </div>
+        <div class="col-md-auto text-center">
+            <div><i class="h5 bi bi-bar-chart-fill"></i></div>
+            <div><small class="text-muted sm-2 fw-normal">{% trans "Total size" %}</small></div>
+            <h3 class="fw-bold mb-0 fs-6">{{ resume.filesize|filesizeformat }}</h3>
+        </div>
+        <div class="col-md-auto text-center">
+            <div><i class="h5 bi bi-film"></i></div>
+            <div><small class="text-muted sm-2 fw-normal">{% trans "Medias" %}</small></div>
+            <h3 class="fw-bold mb-0 fs-6">{{ resume.mediafiles }}</h3>
+        </div>
+        <div class="col-md-auto text-center">
+            <div><i class="h5 bi bi-activity"></i></div>
+            <div><small class="text-muted sm-2 fw-normal">{% trans "Last update" %}</small></div>
+            <h3 class="fw-bold mb-0 fs-6">
+                <abbr class="text-decoration-none" title="{{ resume.last_update }}">
+                    {{ resume.last_update|date:"SHORT_DATE_FORMAT" }}
+                </abbr>
+            </h3>
+        </div>
+        <div class="col-md-auto text-center">
+            <div><i class="h5 bi bi-balloon"></i></div>
+            <div><small class="text-muted sm-2 fw-normal">{% trans "Created" %}</small></div>
+            <h3 class="fw-bold mb-0 fs-6">
+                <abbr class="text-decoration-none" title="{{ device_object.created_date }}">
+                    {{ device_object.created_date|date:"SHORT_DATE_FORMAT" }}
+                </abbr>
+            </h3>
+        </div>
+    </div>
+    {% endwith %}
+
+    <div class="container px-4">
+        <div class="directory-mediafiles list-group">
+            {% for mediafile_object in object_list %}
+            <div class="mediafile-item list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h3 class="h6 mb-1 user-select-all">{{ mediafile_object.filename }}</h3>
+                    <small>{{ mediafile_object.filesize|filesizeformat }}</small>
+                </div>
+                <div class="d-flex w-100">
+                    <p class="mb-0 me-4">
+                        <abbr class="sm-2 text-decoration-none" title="Stored on">
+                            <i class="bi bi-download me-1"></i> {{ mediafile_object.stored_date }}
+                        </abbr>
+                    </p>
+                    <p class="mb-0">
+                        <abbr class="sm-2 text-decoration-none" title="Loaded on">
+                            <i class="bi bi-node-plus me-1"></i> {{ mediafile_object.loaded_date }}
+                        </abbr>
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% include "django_deovi/pagination.html" %}
+</div>
+{% endspaceless %}{% endblock app_content %}

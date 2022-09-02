@@ -93,9 +93,8 @@ def test_dumpedfile_convert_to_orm_fields(db):
     model field names.
     """
     dummy_date = "2022-06-13T02:27:38"
-    default_tz = timezone.get_default_timezone()
-    localized_date = default_tz.localize(
-        datetime.datetime.fromisoformat(dummy_date)
+    localized_date = datetime.datetime.fromisoformat(dummy_date).replace(
+        tzinfo=timezone.get_default_timezone()
     )
 
     mediafile = DumpedFileFactory(

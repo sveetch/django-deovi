@@ -1,0 +1,60 @@
+{% extends "django_deovi/base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Devices" %} - {{ block.super }}{% endblock head_title %}
+
+{% block app_content %}{% spaceless %}
+<div class="device-index">
+    <h2 class="mt-4 mb-5 display-1 text-center">{% trans "Devices" %}</h2>
+    <div class="container px-4">
+        <div class="index-devices row g-4 row-cols-1 row-cols-lg-3">
+            {% for device_object in device_list %}
+            <div class="device-item col">
+                <div class="card h-100">
+                    <h3 class="card-header h5 device-title">
+                        {{ device_object }}
+                    </h3>
+                    <div class="card-body">
+                        {% with device_object.resume as resume %}
+                        <div class="row gx-1 mt-3 mb-1">
+                            <div class="device-directories col-3 text-center">
+                                <div><i class="h4 bi bi-folder"></i></div>
+                                <div><small class="sm-2">{% trans "Directories" %}</small></div>
+                                <div class="h3">{{ resume.directories }}</div>
+                            </div>
+                            <div class="device-medias col-3 text-center">
+                                <div><i class="h4 bi bi-film"></i></div>
+                                <div><small class="sm-2">{% trans "Medias" %}</small></div>
+                                <div class="h3">{{ resume.mediafiles }}</div>
+                            </div>
+                            <div class="device-size col-6 text-center">
+                                <div><i class="h4 bi bi-bar-chart-fill"></i></div>
+                                <div><small class="sm-2">{% trans "Total size" %}</small></div>
+                                <div class="h3">{{ resume.filesize|filesizeformat }}</div>
+                            </div>
+                        </div>
+                        {% endwith %}
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col align-middle">
+                                <small class="text-muted">
+                                    {% comment %}TODO: This should be the last update directory or a new Device.modified field{% endcomment %}
+                                    Last updated {{ device_object.created_date|timesince }}
+                                </small>
+                            </div>
+                            <div class="col-md-auto text-end">
+                                <a href="{{ device_object.get_absolute_url }}" class="device-link stretched-link btn btn-outline-dark">
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endspaceless %}{% endblock app_content %}

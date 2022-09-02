@@ -26,12 +26,10 @@ def test_dumploader_get_existing(db, caplog):
     device = DeviceFactory()
     goods = DirectoryFactory(
         device=device,
-        title="Primary",
         path="/videos/goods"
     )
     bads = DirectoryFactory(
         device=device,
-        title="Secondary",
         path="/videos/bads"
     )
 
@@ -319,12 +317,10 @@ def test_dumploader_process_directory(db, caplog, tests_settings):
     device = DeviceFactory()
     series_dir = DirectoryFactory(
         device=device,
-        title="BillyBoy serie",
         path="/videos/series/BillyBoy"
     )
     theatre_dir = DirectoryFactory(
         device=device,
-        title="Theatre",
         path="/videos/theatre"
     )
 
@@ -466,7 +462,6 @@ def test_dumploader_load(db, caplog, tests_settings):
     device = DeviceFactory(slug="donald")
     directory = DirectoryFactory(
         device=device,
-        title="BillyBoy serie",
         path="/videos/series/BillyBoy"
     )
 

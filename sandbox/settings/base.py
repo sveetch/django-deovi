@@ -2,7 +2,6 @@
 Base Django settings for sandbox
 """
 
-from os import listdir
 from os.path import abspath, dirname, join, normpath
 
 
@@ -97,7 +96,7 @@ STATICFILES_DIRS = [
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    join(PROJECT_PATH, "static"),
+    join(PROJECT_PATH, "static-sources"),
 ]
 
 
@@ -169,6 +168,20 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+"""
+django-view-breadcrumbs optional part
+"""
+try:
+    import view_breadcrumbs  # noqa: F401
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS[0:0] = [
+        "view_breadcrumbs",
+    ]
+
+
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW
 """
