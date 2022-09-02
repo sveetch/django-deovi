@@ -12,8 +12,6 @@ def test_dumpedfile_basic(db):
     """
     Basic model creation with required fields should not fail
     """
-    default_tz = timezone.get_default_timezone()
-
     mediafile = DumpedFile(
         path="/home/foo/bar/plop.mp4",
         absolute_dir="/home/foo/bar",
@@ -26,8 +24,8 @@ def test_dumpedfile_basic(db):
         mtime="2022-08-11T12:00:35",
     )
 
-    expected_stored_date = default_tz.localize(
-        datetime.datetime(2022, 8, 11, 12, 00, 35)
+    expected_stored_date = datetime.datetime(2022, 8, 11, 12, 00, 35).replace(
+        tzinfo=timezone.get_default_timezone()
     )
 
     assert repr(mediafile) == "<DumpedFile: /home/foo/bar/plop.mp4>"

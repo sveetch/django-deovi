@@ -1,0 +1,14 @@
+{% extends "django_deovi/base.html" %}
+
+
+{% block app_content %}{% spaceless %}
+<div class="mediafile-detail">
+    <h2>Index</h2>
+
+    <ul>
+        {% for device in device_list %}
+            <li>{{ device }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endspaceless %}{% endblock app_content %}

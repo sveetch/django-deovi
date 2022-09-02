@@ -1,0 +1,101 @@
+// Generated from template "icomoon/icon_map.scss"
+$icon-alert: "\e904";
+$icon-arrow-down: "\e900";
+$icon-arrow-left: "\e901";
+$icon-arrow-right: "\e902";
+$icon-arrow-up: "\e903";
+$icon-arrowbl: "\e929";
+$icon-arrowbr: "\e92a";
+$icon-bookmark: "\e92c";
+$icon-burger: "\e905";
+$icon-certif: "\e906";
+$icon-check: "\e907";
+$icon-chevron-down: "\e908";
+$icon-chevron-left: "\e909";
+$icon-chevron-right: "\e90a";
+$icon-chevron-up: "\e90b";
+$icon-clear: "\e90c";
+$icon-close: "\e90d";
+$icon-close-alt: "\e90e";
+$icon-collaborate: "\e90f";
+$icon-correct: "\e910";
+$icon-document: "\e911";
+$icon-download: "\e912";
+$icon-eye: "\e913";
+$icon-filters: "\e914";
+$icon-globe: "\e915";
+$icon-info: "\e92b";
+$icon-instagram: "\e916";
+$icon-like: "\e917";
+$icon-linkedin: "\e918";
+$icon-list: "\e919";
+$icon-logo: "\e91a";
+$icon-mail: "\e91b";
+$icon-other: "\e91c";
+$icon-out-link: "\e91d";
+$icon-player: "\e91e";
+$icon-printer: "\e91f";
+$icon-quiz: "\e920";
+$icon-quiz2: "\e921";
+$icon-request: "\e922";
+$icon-search: "\e923";
+$icon-time: "\e924";
+$icon-twitter: "\e925";
+$icon-volume: "\e926";
+$icon-wrong: "\e927";
+$icon-youtube: "\e928";
+$icons: (
+    "icon-alert": $icon-alert,
+    "icon-arrow-down": $icon-arrow-down,
+    "icon-arrow-left": $icon-arrow-left,
+    "icon-arrow-right": $icon-arrow-right,
+    "icon-arrow-up": $icon-arrow-up,
+    "icon-arrowbl": $icon-arrowbl,
+    "icon-arrowbr": $icon-arrowbr,
+    "icon-bookmark": $icon-bookmark,
+    "icon-burger": $icon-burger,
+    "icon-certif": $icon-certif,
+    "icon-check": $icon-check,
+    "icon-chevron-down": $icon-chevron-down,
+    "icon-chevron-left": $icon-chevron-left,
+    "icon-chevron-right": $icon-chevron-right,
+    "icon-chevron-up": $icon-chevron-up,
+    "icon-clear": $icon-clear,
+    "icon-close": $icon-close,
+    "icon-close-alt": $icon-close-alt,
+    "icon-collaborate": $icon-collaborate,
+    "icon-correct": $icon-correct,
+    "icon-document": $icon-document,
+    "icon-download": $icon-download,
+    "icon-eye": $icon-eye,
+    "icon-filters": $icon-filters,
+    "icon-globe": $icon-globe,
+    "icon-info": $icon-info,
+    "icon-instagram": $icon-instagram,
+    "icon-like": $icon-like,
+    "icon-linkedin": $icon-linkedin,
+    "icon-list": $icon-list,
+    "icon-logo": $icon-logo,
+    "icon-mail": $icon-mail,
+    "icon-other": $icon-other,
+    "icon-out-link": $icon-out-link,
+    "icon-player": $icon-player,
+    "icon-printer": $icon-printer,
+    "icon-quiz": $icon-quiz,
+    "icon-quiz2": $icon-quiz2,
+    "icon-request": $icon-request,
+    "icon-search": $icon-search,
+    "icon-time": $icon-time,
+    "icon-twitter": $icon-twitter,
+    "icon-volume": $icon-volume,
+    "icon-wrong": $icon-wrong,
+    "icon-youtube": $icon-youtube,
+);
+
+@mixin include-icons() {
+    @each $name, $value in $icons {
+        .#{$name}::before {
+            content: "#{$value}";
+        }
+    }
+}

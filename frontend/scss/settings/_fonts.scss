@@ -1,0 +1,30 @@
+///
+/// Font face definitions
+///
+
+///
+// Nunito Sans - latin
+///
+@font-face {
+    font-family: "Nunito Sans";
+    font-style: normal;
+    font-weight: 400;
+    src: font-url("nunito-sans/nunito-sans-regular.woff2") format("woff2"), font-url("nunito-sans/nunito-sans-regular.woff") format("woff"), font-url("nunito-sans/nunito-sans-regular.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Nunito Sans";
+    font-style: normal;
+    font-weight: 800;
+    src: font-url("nunito-sans/nunito-sans-800.woff2") format("woff2"), font-url("nunito-sans/nunito-sans-800.woff") format("woff"), font-url("nunito-sans/nunito-sans-800.ttf") format("truetype");
+}
+
+///
+// LVMH web
+///
+@font-face {
+    font-family: LVMH;
+    font-style: normal;
+    font-weight: 400;
+    src: font-url("lvmh/lvmh-regular.woff2") format("woff2"), font-url("lvmh/lvmh-regular.woff") format("woff"), font-url("lvmh/lvmh-regular.ttf") format("truetype");
+}

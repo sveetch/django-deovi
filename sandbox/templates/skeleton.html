@@ -1,12 +1,20 @@
-<!DOCTYPE html>
+{% load i18n static %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html lang="{{ LANGUAGE_CODE }}">
 <head>{% spaceless %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block head_title %}Sandbox{% endblock head_title %}</title>
+    <title>{% block head_title %}{% trans "Django Deovi" %}{% endblock head_title %}</title>
+    {% block head_metas %}{% endblock head_metas %}
+    {% block head_styles %}
+    <link href="{% static "css/main.css" %}" rel="stylesheet">
+    {% endblock head_styles %}
 {% endspaceless %}
 </head>
 
 <body>{% spaceless %}
 {% block content %}Sandbox skeleton{% endblock %}
+
+{% block javascript %}
+    <script src="{% static "js/main.js" %}"></script>
+{% endblock javascript %}
 {% endspaceless %}</body>
 </html>

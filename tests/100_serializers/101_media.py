@@ -1,9 +1,7 @@
 import datetime
 import json
 
-import pytz
-
-from django.conf import settings
+from django.utils import timezone
 
 from django_deovi.factories import MediaFileFactory
 from django_deovi.serializers import MediaFileSerializer
@@ -13,14 +11,14 @@ def test_mediafile_serialize_single(db):
     """
     Single object serialization.
     """
-    default_tz = pytz.timezone(settings.TIME_ZONE)
+    default_tz = timezone.get_default_timezone()
 
     # Create mediafile
     plop = MediaFileFactory(
         path="/home/foo/bar/plop.mp4",
         filesize=42,
-        stored_date=default_tz.localize(datetime.datetime(2012, 10, 15, 12, 00)),
-        loaded_date=default_tz.localize(datetime.datetime(2020, 8, 23, 19, 00)),
+        stored_date=datetime.datetime(2012, 10, 15, 12, 00).replace(tzinfo=default_tz),
+        loaded_date=datetime.datetime(2020, 8, 23, 19, 00).replace(tzinfo=default_tz),
     )
 
     # Serialize mediafile
@@ -51,8 +49,6 @@ def test_mediafile_deserialize_json(db):
     """
     Python deserialization.
     """
-    default_tz = pytz.timezone(settings.TIME_ZONE)
-
     data = {
         "path": "/home/foo/bar/plop.mp4",
         "absolute_dir": "/home/foo/bar",
