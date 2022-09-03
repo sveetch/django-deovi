@@ -9,17 +9,6 @@
 /* stylelint-disable color-no-hex */
 $white: #ffffff;
 $black: #000000;
-$dark: #212529;
-$midnight-blue: #131e29;
-$gold: #cfb18b;
-$greige: #968c83;
-$greige-light: #dfddda;
-$grey: #f8f7f6;
-$platinum: #e5e5e5;
-$blue-mh: #00577b;
-$blue-primary: #003594;
-$blue-secondary: #151f6d;
-$black-ghost: rgba($black, 0.1);
 /* stylelint-enable color-no-hex */
 
 ///
@@ -27,15 +16,6 @@ $black-ghost: rgba($black, 0.1);
 ///
 $site-colors: (
     "black": $black,
-    "midnight-blue": $midnight-blue,
-    "blue-secondary": $blue-secondary,
-    "blue-primary": $blue-primary,
-    "blue-mh": $blue-mh,
-    "greige": $greige,
-    "gold": $gold,
-    "greige-light": $greige-light,
-    "platinum": $platinum,
-    "grey": $grey,
     "white": $white,
 );
 
@@ -52,48 +32,8 @@ $bb-schemes: (
         "font-color": $white,
         "background": $black,
     ),
-    "dark": (
-        "font-color": $white,
-        "background": $dark,
-    ),
-    "midnight-blue": (
-        "font-color": $white,
-        "background": $midnight-blue,
-    ),
-    "blue-secondary": (
-        "font-color": $white,
-        "background": $blue-secondary,
-    ),
-    "blue-primary": (
-        "font-color": $white,
-        "background": $blue-primary,
-    ),
-    "blue-mh": (
-        "font-color": $white,
-        "background": $blue-mh,
-    ),
-    "greige": (
-        "font-color": $midnight-blue,
-        "background": $greige,
-    ),
-    "gold": (
-        "font-color": $midnight-blue,
-        "background": $gold,
-    ),
-    "greige-light": (
-        "font-color": $midnight-blue,
-        "background": $greige-light,
-    ),
-    "platinum": (
-        "font-color": $midnight-blue,
-        "background": $platinum,
-    ),
-    "grey": (
-        "font-color": $midnight-blue,
-        "background": $grey,
-    ),
     "white": (
-        "font-color": $midnight-blue,
+        "font-color": $black,
         "background": $white,
     ),
 );

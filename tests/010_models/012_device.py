@@ -8,6 +8,7 @@ from django.utils import timezone
 import pytest
 
 from django_deovi.models import Device
+from django_deovi.factories import DeviceFactory, DirectoryFactory, MediaFileFactory
 
 
 def test_device_basic(db):
@@ -59,3 +60,42 @@ def test_device_path_uniqueness(db):
         assert str(excinfo.value) == (
             "UNIQUE constraint failed: django_deovi_device.slug"
         )
+
+
+def test_device_resume(db):
+    """
+    Computed informations should be accurate.
+    """
+    primary = DeviceFactory(slug="primary")
+    secondary = DeviceFactory(slug="secondary")
+    empty = DeviceFactory(slug="empty")
+
+    goods = DirectoryFactory(device=primary, path="/videos/goods")
+    bads = DirectoryFactory(device=primary, path="/videos/bads")
+    nopes = DirectoryFactory(device=secondary, path="/videos/nopes")
+
+    # Create some files for directories
+    MediaFileFactory(directory=goods, filesize=128)
+    MediaFileFactory(directory=goods, filesize=128)
+    MediaFileFactory(directory=goods, filesize=256)
+    MediaFileFactory(directory=bads, filesize=100)
+    MediaFileFactory(directory=bads, filesize=11)
+    MediaFileFactory(directory=nopes, filesize=555)
+
+    assert primary.resume() == {
+        "directories": 2,
+        "mediafiles": 5,
+        "filesize": 623
+    }
+
+    assert secondary.resume() == {
+        "directories": 1,
+        "mediafiles": 1,
+        "filesize": 555
+    }
+
+    assert empty.resume() == {
+        "directories": 0,
+        "mediafiles": 0,
+        "filesize": 0
+    }

@@ -263,11 +263,23 @@ $bb-image-directory: "../images/" !default;
 ///
 $bb-font-directory: "../fonts/" !default;
 
+/// Map of font icons
+///
+/// @type Map
+///
+$icons: () !default;
+
 /// Enabled icon sizes for modifiers
 ///
 /// @type Map
 ///
 $bb-icon-sizes: () !default;
+
+/// Additional small sizes
+///
+/// @type Map
+///
+$small-sizes: () !default;
 
 /// Enabled font families
 ///

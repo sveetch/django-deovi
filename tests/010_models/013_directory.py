@@ -9,6 +9,7 @@ import pytest
 
 from django_deovi.models import Device
 from django_deovi.models import Directory
+from django_deovi.factories import DeviceFactory, DirectoryFactory, MediaFileFactory
 
 
 def test_directory_basic(db):
@@ -73,3 +74,37 @@ def test_directory_path_uniqueness(db):
             "UNIQUE constraint failed: django_deovi_directory.device_id, "
             "django_deovi_directory.path"
         )
+
+
+def test_device_resume(db):
+    """
+    Computed informations should be accurate.
+    """
+    device = DeviceFactory()
+
+    goods = DirectoryFactory(device=device, path="/videos/goods")
+    bads = DirectoryFactory(device=device, path="/videos/bads")
+    nopes = DirectoryFactory(device=device, path="/videos/nopes")
+
+    # Create some files for directories
+    MediaFileFactory(directory=goods, filesize=128)
+    MediaFileFactory(directory=goods, filesize=128)
+    MediaFileFactory(directory=goods, filesize=256)
+    MediaFileFactory(directory=bads, filesize=100)
+    MediaFileFactory(directory=bads, filesize=11)
+    MediaFileFactory(directory=nopes, filesize=555)
+
+    assert goods.resume() == {
+        "mediafiles": 3,
+        "filesize": 512
+    }
+
+    assert bads.resume() == {
+        "mediafiles": 2,
+        "filesize": 111
+    }
+
+    assert nopes.resume() == {
+        "mediafiles": 1,
+        "filesize": 555
+    }

@@ -18,14 +18,17 @@
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/maps";
 @import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
 
 // Internal addons
 @import "../bootbutt/tools/flexbox";
 
 // Finish to build Bootstrap utilities and computed variables from site settings
-@import "../settings/utilities_addons";
-@import "bootstrap/scss/utilities";
-@import "../settings/post-bootstrap";
+@import "../settings/bootstrap";
+// Icon map
+@import "bootstrap-icons/font/bootstrap-icons.scss";
+// Finish to build Bootbutt from site settings
+@import "../settings/bootbutt";
 
 // Bootstrap breakpoint mixins
 @import "bootstrap/scss/mixins/breakpoints";

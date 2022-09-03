@@ -44,6 +44,11 @@ class Device(models.Model):
     Required datetime for when the file has been loaded.
     """
 
+    COMMON_ORDER_BY = ["title"]
+    """
+    List of field order commonly used in frontend view/api
+    """
+
     class Meta:
         verbose_name = _("Device")
         verbose_name_plural = _("Devices")
@@ -53,3 +58,32 @@ class Device(models.Model):
 
     def __str__(self):
         return self.slug
+
+    def get_absolute_url(self):
+        """
+        Return absolute URL to the detail view.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("django_deovi:device-detail", kwargs={
+            "device_slug": self.slug,
+        })
+
+    def resume(self):
+        """
+        Return a resume of some device informations.
+
+        Returns:
+            dict: Payload.
+        """
+        directories = self.directories.filter(device=self).annotate(
+            num_mediafiles=models.Count("mediafiles"),
+            total_filesize=models.Sum("mediafiles__filesize"),
+        )
+
+        return {
+            "directories": len(directories),
+            "mediafiles": sum([item.num_mediafiles for item in directories]),
+            "filesize": sum([item.total_filesize for item in directories]),
+        }

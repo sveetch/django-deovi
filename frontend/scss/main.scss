@@ -25,6 +25,7 @@
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/maps";
 @import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
 
 // Bootbutt functions and mixins
 @import "./bootbutt/tools/colors";
@@ -33,9 +34,11 @@
 @import "./bootbutt/tools/spacing";
 
 // Finish to build Bootstrap utilities and computed variables from site settings
-@import "./settings/utilities_addons";
-@import "bootstrap/scss/utilities";
-@import "./settings/post-bootstrap";
+@import "./settings/bootstrap";
+// Icon map
+@import "bootstrap-icons/font/bootstrap-icons.scss";
+// Finish to build Bootbutt from site settings
+@import "./settings/bootbutt";
 
 // Bootstrap layout & components
 @import "bootstrap/scss/root";
@@ -69,9 +72,6 @@
 @import "bootstrap/scss/spinners";
 @import "bootstrap/scss/offcanvas";
 @import "bootstrap/scss/placeholders";
-// Icon maps, not ready yet since a problem with icon font path hardcoded, it seems ?
-// https://github.com/twbs/icons/issues/563
-@import "bootstrap-icons/font/bootstrap-icons.scss";
 
 // Bootstrap helpers
 @import "bootstrap/scss/helpers";

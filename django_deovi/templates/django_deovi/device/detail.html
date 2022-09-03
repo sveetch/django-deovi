@@ -1,0 +1,28 @@
+{% extends "django_deovi/base.html" %}
+{% load i18n %}
+
+{% block app_content %}{% spaceless %}
+<div class="device-detail">
+    <h2 class="device-title">{{ device_object }}</h2>
+
+    <div class="container px-4">
+        <div class="device-directories row g-1">
+            {% for directory_object in object_list %}
+            <div class="directory-item col col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="directory-title h4 card-title">{{ directory_object.path }}</h3>
+                        {% with directory_object.resume as resume %}
+                        <p class="directory-medias card-text">{% trans "Medias:" %} {{ resume.mediafiles }}</p>
+                        <p class="directory-size card-text">{% trans "Total size:" %} {{ resume.filesize|filesizeformat }}</p>
+                        {% endwith %}
+                        <a href="{{ directory_object.get_absolute_url }}" class="directory-link btn btn-primary">{% trans "See medias" %}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% include "django_deovi/pagination.html" %}
+</div>
+{% endspaceless %}{% endblock app_content %}

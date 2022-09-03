@@ -1,0 +1,22 @@
+{% extends "django_deovi/base.html" %}
+
+{% block app_content %}{% spaceless %}
+<div class="directory-detail">
+    <h2 class="directory-title">{{ directory_object }}</h2>
+
+    <div class="container px-4">
+        <div class="directory-mediafiles row g-1">
+            {% for mediafile_object in object_list %}
+            <div class="mediafile-item col col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="mediafile-title h4 card-title">{{ mediafile_object.path }}</h3>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% include "django_deovi/pagination.html" %}
+</div>
+{% endspaceless %}{% endblock app_content %}

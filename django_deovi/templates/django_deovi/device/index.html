@@ -1,14 +1,28 @@
 {% extends "django_deovi/base.html" %}
-
+{% load i18n %}
 
 {% block app_content %}{% spaceless %}
-<div class="mediafile-detail">
+<div class="device-index">
     <h2>Index</h2>
 
-    <ul>
-        {% for device in device_list %}
-            <li>{{ device }}</li>
-        {% endfor %}
-    </ul>
+    <div class="container px-4">
+        <div class="index-devices row gx-5">
+            {% for device_object in device_list %}
+            <div class="device-item col col-md-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="device-title h4 card-title">{{ device_object }}</h3>
+                        {% with device_object.resume as resume %}
+                        <p class="device-directories card-text">{% trans "Directories:" %} {{ resume.directories }}</p>
+                        <p class="device-medias card-text">{% trans "Medias:" %} {{ resume.mediafiles }}</p>
+                        <p class="device-size card-text">{% trans "Total size:" %} {{ resume.filesize|filesizeformat }}</p>
+                        {% endwith %}
+                        <a href="{{ device_object.get_absolute_url }}" class="device-link btn btn-primary">{% trans "See directories" %}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 {% endspaceless %}{% endblock app_content %}

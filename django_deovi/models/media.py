@@ -18,11 +18,13 @@ class MediaFile(models.Model):
     A media file
 
     TODO:
-        Relate to a Directory instead of a Device.
+    * Remove deprecated title field;
+    * Need created and updated dates (may involve stopping using bulk chains);
     """
     directory = models.ForeignKey(
         "Directory",
         verbose_name=_("Related directory"),
+        related_name="mediafiles",
         default=None,
         on_delete=models.CASCADE,
         help_text=_(
@@ -136,11 +138,16 @@ class MediaFile(models.Model):
     Required datetime for when the file has been loaded.
     """
 
+    COMMON_ORDER_BY = ["path"]
+    """
+    List of field order commonly used in frontend view/api
+    """
+
     class Meta:
         verbose_name = _("MediaFile")
         verbose_name_plural = _("MediaFiles")
         ordering = [
-            "stored_date",
+            "path",
         ]
         constraints = [
             # Enforce unique couple directory + path

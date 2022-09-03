@@ -19,11 +19,14 @@
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/maps";
 @import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
 
 // Finish to build Bootstrap utilities and computed variables from site settings
-@import "../settings/utilities_addons";
-@import "bootstrap/scss/utilities";
-@import "../settings/post-bootstrap";
+@import "../settings/bootstrap";
+// Icon map
+@import "bootstrap-icons/font/bootstrap-icons.scss";
+// Finish to build Bootbutt from site settings
+@import "../settings/bootbutt";
 
 // py-css-styleguide helpers
 @import "../tools/styleguide_helpers";
