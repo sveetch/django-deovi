@@ -4,6 +4,8 @@ Directory model
 ============
 
 """
+from pathlib import Path
+
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -101,6 +103,24 @@ class Directory(models.Model):
             "device_slug": self.device.slug,
             "directory_pk": self.id,
         })
+
+    def directory_parent(self):
+        """
+        Return directory parent path.
+
+        Returns:
+            string: Parent path.
+        """
+        return str(Path(self.path).parent)
+
+    def directory_name(self):
+        """
+        Return directory name from path
+
+        Returns:
+            string: Directory name.
+        """
+        return str(Path(self.path).name)
 
     def resume(self):
         """

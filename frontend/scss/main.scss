@@ -20,6 +20,9 @@
 // after Bootbutt defaults and functions so we can use them in settings
 @import "./settings/site";
 
+// Bootswatch theme variables
+@import "./themes/zephyr/variables";
+
 // Bootstrap functions and mixins
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
@@ -78,6 +81,9 @@
 
 // Bootstrap utilities
 @import "bootstrap/scss/utilities/api";
+
+// Bootswatch theme patcher
+@import "./themes/zephyr/bootswatch";
 
 // Generic rules
 @import "./bootbutt/generic/type";

@@ -16,8 +16,17 @@ $bb-fonts: (
     "monospace": $font-family-monospace,
 );
 
-// There is no additional small sizes
-$small-sizes: ();
+// Some additional small sizes
+$small1-font-size: 0.875rem;
+$small2-font-size: 0.75rem;
+$small3-font-size: 0.625rem;
+
+// Set all the font sizes from bigger to smaller
+$bb-small-sizes: (
+    1: $small1-font-size,
+    2: $small2-font-size,
+    3: $small3-font-size,
+);
 
 // Binded icons on Bootstrap Icons map
 $icons: $bootstrap-icons-map;

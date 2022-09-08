@@ -82,8 +82,8 @@
 // Bootstrap: Small font sizes
 .styleguide-reference-bt_small_sizes {
     --structure: "flat";
-    --keys: "#{get-names($small-sizes)}";
-    --values: "#{get-values($small-sizes)}";
+    --keys: "#{get-names($bb-small-sizes)}";
+    --values: "#{get-values($bb-small-sizes)}";
 }
 
 

@@ -1,0 +1,234 @@
+// Zephyr 5.2.0
+// Bootswatch
+// Patched to local host the font instead or relying Google hosting
+
+
+// Variables
+
+/* inter-regular - latin-ext_latin */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""),
+       font-url("inter/inter-v12-latin-ext_latin-regular.woff2") format("woff2"), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       font-url("inter/inter-v12-latin-ext_latin-regular.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* inter-500 - latin-ext_latin */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  src: local(""),
+       font-url("inter/inter-v12-latin-ext_latin-500.woff2") format("woff2"), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       font-url("inter/inter-v12-latin-ext_latin-500.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* inter-700 - latin-ext_latin */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  src: local(""),
+       font-url("inter/inter-v12-latin-ext_latin-700.woff2") format("woff2"), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       font-url("inter/inter-v12-latin-ext_latin-700.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+
+// Navbar
+
+.navbar {
+  font-size: $font-size-sm;
+  font-weight: 500;
+
+  .nav-item {
+    margin-right: .5rem;
+    margin-left: .5rem;
+  }
+
+  .navbar-nav {
+    .nav-link {
+      border-radius: $border-radius;
+    }
+  }
+}
+
+.navbar-dark {
+  .navbar-nav {
+    .nav-link {
+      &:hover {
+        background-color: rgba(255, 255, 255, .1);
+      }
+
+      &.active {
+        background-color: rgba(0, 0, 0, .5);
+      }
+    }
+  }
+}
+
+.navbar-light {
+  .navbar-nav {
+    .nav-link {
+      &:hover {
+        background-color: rgba(0, 0, 0, .03);
+      }
+
+      &.active {
+        background-color: rgba(0, 0, 0, .05);
+      }
+    }
+  }
+}
+
+// Buttons
+
+.btn-secondary,
+.btn-light,
+.btn-outline-secondary,
+.btn-outline-light {
+  color: $gray-900;
+
+  &:disabled,
+  &.disabled {
+    border: 1px solid shade-color($secondary, 10%);
+  }
+}
+
+.btn-secondary,
+.btn-outline-secondary {
+  border-color: shade-color($secondary, 10%);
+
+  &:hover,
+  &:active {
+    background-color: shade-color($secondary, 10%);
+    border-color: shade-color($secondary, 10%);
+  }
+}
+
+.btn-light,
+.btn-outline-light {
+  border-color: shade-color($light, 10%);
+
+  &:hover,
+  &:active {
+    background-color: shade-color($light, 10%);
+    border-color: shade-color($light, 10%);
+  }
+}
+
+// Tables
+
+.table {
+  font-size: $font-size-sm;
+  box-shadow: $box-shadow-lg;
+}
+
+thead th {
+  font-size: $font-size-sm;
+  text-transform: uppercase;
+}
+
+// Forms
+
+.input-group-text {
+  box-shadow: $box-shadow;
+}
+
+// Navs
+
+.nav-tabs {
+  font-weight: 500;
+
+  .nav-link {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-width: 0 0 1px;
+  }
+
+  .nav-link.active,
+  .nav-item.show .nav-link {
+    box-shadow: inset 0 -2px 0 $primary;
+  }
+}
+
+.nav-pills {
+  font-weight: 500;
+}
+
+.pagination {
+  font-size: $font-size-sm;
+  font-weight: 500;
+
+  .page-link {
+    box-shadow: $box-shadow;
+  }
+}
+
+.breadcrumb {
+  font-size: $font-size-sm;
+  font-weight: 500;
+  border: 1px solid $gray-300;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+
+  &-item {
+    padding: 1rem .5rem 1rem 0;
+  }
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  padding-right: 1rem;
+}
+
+// Indicators
+
+.alert {
+  .btn-close {
+    color: inherit;
+  }
+}
+
+.badge {
+  &.bg-secondary,
+  &.bg-light {
+    color: $gray-900;
+  }
+}
+
+// Containers
+
+.list-group-item,
+.card {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .h1,
+  .h2,
+  .h3,
+  .h4,
+  .h5,
+  .h6 {
+    color: inherit;
+  }
+}
+
+.list-group {
+  box-shadow: $box-shadow-lg;
+}
+
+.card {
+  box-shadow: $box-shadow-lg;
+}
+
+.modal-footer {
+  background-color: $gray-100;
+}
+
+.modal-content {
+  box-shadow: $box-shadow-lg;
+}
