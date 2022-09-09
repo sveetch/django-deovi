@@ -20,18 +20,18 @@
                         <div class="row gx-1 mt-3 mb-1">
                             <div class="device-directories col-3 text-center">
                                 <div><i class="h4 bi bi-folder"></i></div>
-                                <div class="h3">{{ resume.directories }}</div>
                                 <div><small class="sm-2">{% trans "Directories" %}</small></div>
+                                <div class="h3">{{ resume.directories }}</div>
                             </div>
                             <div class="device-medias col-3 text-center">
                                 <div><i class="h4 bi bi-film"></i></div>
-                                <div class="h3">{{ resume.mediafiles }}</div>
                                 <div><small class="sm-2">{% trans "Medias" %}</small></div>
+                                <div class="h3">{{ resume.mediafiles }}</div>
                             </div>
                             <div class="device-size col-6 text-center">
                                 <div><i class="h4 bi bi-bar-chart-fill"></i></div>
-                                <div class="h3">{{ resume.filesize|filesizeformat }}</div>
                                 <div><small class="sm-2">{% trans "Total size" %}</small></div>
+                                <div class="h3">{{ resume.filesize|filesizeformat }}</div>
                             </div>
                         </div>
                         {% endwith %}
@@ -40,6 +40,7 @@
                         <div class="row">
                             <div class="col align-middle">
                                 <small class="text-muted">
+                                    {% comment %}TODO: This should be the last update directory or a new Device.modified field{% endcomment %}
                                     Last updated {{ device_object.created_date|timesince }}
                                 </small>
                             </div>

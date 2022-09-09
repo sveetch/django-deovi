@@ -136,4 +136,5 @@ class Directory(models.Model):
         return {
             "mediafiles": len(mediafiles),
             "filesize": sum([item.total_filesize for item in mediafiles]),
+            "last_update": sorted([item.loaded_date for item in mediafiles])[-1],
         }

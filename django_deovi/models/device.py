@@ -80,10 +80,17 @@ class Device(models.Model):
         directories = self.directories.filter(device=self).annotate(
             num_mediafiles=models.Count("mediafiles"),
             total_filesize=models.Sum("mediafiles__filesize"),
+            last_update=models.Max("mediafiles__loaded_date"),
         )
+        last_update = sorted([item.last_update for item in directories])
+        if last_update:
+            last_update = last_update[-1]
+        else:
+            last_update = None
 
         return {
             "directories": len(directories),
             "mediafiles": sum([item.num_mediafiles for item in directories]),
             "filesize": sum([item.total_filesize for item in directories]),
+            "last_update": last_update,
         }

@@ -9,35 +9,36 @@
     <div class="container px-4">
 
         {% with device_object.resume as resume %}
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 py-5">
-            <div class="col d-flex align-items-start">
-                <div class="flex-shrink-0 me-3" width="1.75em" height="1.75em">
-                    <i class="h4 bi bi-folder"></i>
-                </div>
-                <div>
-                    <h3 class="fw-bold mb-0 fs-4">11{{ resume.directories }} {% trans "directories" %}</h3>
-                </div>
+        <div class="row g-4 justify-content-md-center mb-5">
+            <div class="col-md-auto text-center">
+                <div><i class="h5 bi bi-bar-chart-fill"></i></div>
+                <div><small class="text-muted sm-2 fw-normal">{% trans "Total size" %}</small></div>
+                <h3 class="fw-bold mb-0 fs-5">{{ resume.filesize|filesizeformat }}</h3>
             </div>
-            <div class="col d-flex align-items-start">
-                <div class="flex-shrink-0 me-3" width="1.75em" height="1.75em">
-                    <i class="h4 bi bi-film"></i>
-                </div>
-                <div>
-                    <h3 class="fw-bold mb-0 fs-4">11{{ resume.mediafiles }} {% trans "medias" %}</h3>
-                </div>
+            <div class="col-md-auto text-center">
+                <div><i class="h5 bi bi-folder"></i></div>
+                <div><small class="text-muted sm-2 fw-normal">{% trans "Directories" %}</small></div>
+                <h3 class="fw-bold mb-0 fs-5">{{ resume.directories }}</h3>
             </div>
-            <div class="col d-flex align-items-start">
-                <div class="flex-shrink-0 me-3" width="1.75em" height="1.75em">
-                    <i class="h4 bi bi-bar-chart-fill"></i>
-                </div>
-                <div>
-                    <h3 class="fw-bold mb-0 fs-4">11{{ resume.filesize|filesizeformat }}</h3>
-                </div>
+            <div class="col-md-auto text-center">
+                <div><i class="h5 bi bi-film"></i></div>
+                <div><small class="text-muted sm-2 fw-normal">{% trans "Medias" %}</small></div>
+                <h3 class="fw-bold mb-0 fs-5">{{ resume.mediafiles }}</h3>
+            </div>
+            <div class="col-md-auto text-center">
+                <div><i class="h5 bi bi-activity"></i></div>
+                <div><small class="text-muted sm-2 fw-normal">{% trans "Last update" %}</small></div>
+                <h3 class="fw-bold mb-0 fs-5">{{ device_object.created_date|timesince }}</h3>
+            </div>
+            <div class="col-md-auto text-center">
+                <div><i class="h5 bi bi-balloon"></i></div>
+                <div><small class="text-muted sm-2 fw-normal">{% trans "Created" %}</small></div>
+                <h3 class="fw-bold mb-0 fs-5">{{ device_object.created_date|timesince }}</h3>
             </div>
         </div>
         {% endwith %}
 
-        <div class="device-directories row g-3 row-cols-1 row-cols-md-3 row-cols-lg-5">
+        <div class="device-directories row g-3 row-cols-1 row-cols-md-3 row-cols-lg-5 mb-5">
             {% for directory_object in object_list %}
             <div class="directory-item col">
                 <div class="card h-100">

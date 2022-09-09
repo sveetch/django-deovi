@@ -23,7 +23,7 @@ class DeviceIndexView(DeoviBreadcrumMixin, ListView):
     @property
     def crumbs(self):
         return [
-            (self.crumb_title, reverse(self.crumb_urlname)),
+            #(self.crumb_title, reverse(self.crumb_urlname)),
         ]
 
     def get_queryset(self):
