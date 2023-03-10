@@ -118,8 +118,6 @@ clean-frontend-build:
 	rm -Rf $(STATICFILES_DIR)/webpack-stats.json
 	rm -Rf $(STATICFILES_DIR)/css
 	rm -Rf $(STATICFILES_DIR)/js
-	rm -Rf $(STATICFILES_DIR)/fonts
-	rm -Rf $(STATICFILES_DIR)/media
 .PHONY: clean-frontend-build
 
 clean-frontend-install:
@@ -161,7 +159,7 @@ install-backend:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing backend requirements <---$(FORMATRESET)\n"
 	@echo ""
-	$(PIP) install -e .[breadcrumbs,dev]
+	$(PIP) install -e .[breadcrumbs,dev,quality,doc,release]
 .PHONY: install-backend
 
 install-frontend:

@@ -9,6 +9,8 @@ from .device import DeviceFactory
 class DirectoryFactory(factory.django.DjangoModelFactory):
     """
     Factory to create instance of a Directory.
+
+    TODO: Implement the new fields.
     """
     device = factory.SubFactory(DeviceFactory)
     title = factory.Sequence(lambda n: "Directory {0}".format(n))

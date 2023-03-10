@@ -7,18 +7,28 @@ Directory model
 from pathlib import Path
 
 from django.db import models
+from django.db.models.signals import post_delete, pre_save
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
+from smart_media.modelfields import SmartMediaField
+from smart_media.mixins import SmartFormatMixin
+from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
 
-class Directory(models.Model):
+
+class Directory(SmartFormatMixin, models.Model):
     """
     A directory container to hold MediaFile objects.
 
     TODO:
-    * Remove deprecated title field;
-    * Need created and updated dates (may involve stopping using bulk chains);
+    * 'genres' from payload should be a many2many, we ignore this feature for now;
+    * Payload should contains:
+        tmdb_id: 14009
+        tmdb_type: tv
+        number_of_episodes: 64
+        number_of_seasons: 2
+        status: Ended
     """
     device = models.ForeignKey(
         "Device",
@@ -59,13 +69,84 @@ class Directory(models.Model):
     object.
     """
 
+    checksum = models.CharField(
+        _("checksum"),
+        blank=True,
+        max_length=50,
+        default="",
+        help_text=_(
+            "A blake2 hash for directory information checksum."
+        ),
+    )
+    """
+    Optional checksum string.
+    """
+
+    cover = SmartMediaField(
+        "cover image",
+        max_length=255,
+        null=True,
+        blank=True,
+        default=None,
+        upload_to="directory/cover/%y/%m",
+        help_text=_(
+            "Directory cover image."
+        ),
+    )
+    """
+    Optional cover image.
+    """
+
+    payload = models.TextField(
+        _("JSON payload"),
+        blank=True,
+        default="{}",
+        help_text=_(
+            "Extra directory informations. Structure may vary from a directory to "
+            "another."
+        ),
+    )
+    """
+    Optional JSON payload for extra informations to store, they won't be searchable
+    """
+
     created_date = models.DateTimeField(
         _("created date"),
         db_index=True,
         default=timezone.now,
+        help_text=_(
+            "The creation date for this object."
+        ),
     )
     """
     Required datetime for when the directory has been loaded.
+    """
+
+    last_update = models.DateTimeField(
+        _("last update"),
+        db_index=True,
+        default=timezone.now,
+        help_text=_(
+            "The last update date for this object."
+        ),
+    )
+    """
+    Last edition date.
+    """
+
+    released = models.DateField(
+        _("released date"),
+        default=None,
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text=_(
+            "Released/On Air date for a serie directory or video set directory. This "
+            "is not related to media collection or file creation."
+        ),
+    )
+    """
+    Optional release date.
     """
 
     COMMON_ORDER_BY = ["path"]
@@ -126,8 +207,10 @@ class Directory(models.Model):
         """
         Return a resume of some directory informations.
 
+        TODO: Payload field content should be there to
+
         Returns:
-            dict: Payload.
+            dict: Directory informations.
         """
         mediafiles = self.mediafiles.annotate(
             total_filesize=models.Sum("filesize"),
@@ -138,3 +221,27 @@ class Directory(models.Model):
             "filesize": sum([item.total_filesize for item in mediafiles]),
             "last_update": sorted([item.loaded_date for item in mediafiles])[-1],
         }
+
+    def get_cover_format(self):
+        return self.media_format(self.cover)
+
+    def save(self, *args, **kwargs):
+        # Auto update 'last_update' value on each save
+        self.last_update = timezone.now()
+
+        super().save(*args, **kwargs)
+
+
+# Connect signals for automatic media purge
+post_delete.connect(
+    auto_purge_files_on_delete(["cover"]),
+    dispatch_uid="directory_medias_on_delete",
+    sender=Directory,
+    weak=False,
+)
+pre_save.connect(
+    auto_purge_files_on_change(["cover"]),
+    dispatch_uid="directory_medias_on_change",
+    sender=Directory,
+    weak=False,
+)

@@ -148,8 +148,10 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.forms",
-    "django_deovi.apps.django_deoviConfig",
+    "django_deovi",
     "rest_framework",
+    "sorl.thumbnail",
+    "smart_media",
 ]
 
 LOGIN_REDIRECT_URL = "/"
@@ -185,4 +187,5 @@ else:
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW
 """
+from smart_media.settings import *
 from django_deovi.settings import *

@@ -4,22 +4,28 @@ Media
 =====
 
 """
+from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models.signals import post_delete, pre_save
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
-from django.core.validators import MinValueValidator
+
+from smart_media.modelfields import SmartMediaField
+from smart_media.mixins import SmartFormatMixin
+from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
 
 from deovi.collector import MEDIAS_CONTAINERS
 
 
-class MediaFile(models.Model):
+class MediaFile(SmartFormatMixin, models.Model):
     """
     A media file
 
     TODO:
     * Remove deprecated title field;
     * Need created and updated dates (may involve stopping using bulk chains);
+    * Add cover field for further usages;
     """
     directory = models.ForeignKey(
         "Directory",
@@ -119,6 +125,21 @@ class MediaFile(models.Model):
     Required file size integer.
     """
 
+    cover = SmartMediaField(
+        "cover image",
+        max_length=255,
+        null=True,
+        blank=True,
+        default=None,
+        upload_to="media/cover/%y/%m",
+        help_text=_(
+            "Media cover image."
+        ),
+    )
+    """
+    Optional cover image.
+    """
+
     stored_date = models.DateTimeField(
         _("stored date"),
         blank=False,
@@ -161,3 +182,21 @@ class MediaFile(models.Model):
 
     def __str__(self):
         return self.path
+
+    def get_cover_format(self):
+        return self.media_format(self.cover)
+
+
+# Connect signals for automatic media purge
+post_delete.connect(
+    auto_purge_files_on_delete(["cover"]),
+    dispatch_uid="mediafile_medias_on_delete",
+    sender=MediaFile,
+    weak=False,
+)
+pre_save.connect(
+    auto_purge_files_on_change(["cover"]),
+    dispatch_uid="mediafile_medias_on_change",
+    sender=MediaFile,
+    weak=False,
+)

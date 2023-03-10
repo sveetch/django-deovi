@@ -29,7 +29,7 @@ class DumpLoader:
 
     Attributes:
         EDITABLE_FIELDS (list): Only those MediaFile fields are allowed to be edited
-            from dumped file data Field 'loaded_date' should never be editable since it
+            from loaded payload. Field 'loaded_date' should never be editable since it
             is already forced from 'create_files' and 'edit_files' methods.
 
     Keyword Arguments:
@@ -130,6 +130,10 @@ class DumpLoader:
             Also, any file from given batch files will be edited even if it does not
             have any changes.
 
+        TODO: On deovi>=0.5.1 a directory checksum should be available to be able to
+              quickly check for changes with current object, obviously model will need
+              to store it.
+
         Arguments:
             files (list): List of DumpedFile objects for directory children files.
                 Opposed to ``create_files``, the DumpedFile objects are expected to
@@ -220,6 +224,8 @@ class DumpLoader:
         """
         for dump_dir_name, dump_dir_data in directories.items():
             batch_date = timezone.now()
+            # TODO: Checksum may be introduced here to avoid processing unchanged
+            #       directory
 
             self.log.info("📂 Working on directory: {}".format(dump_dir_data["path"]))
             directory, created = Directory.objects.get_or_create(
