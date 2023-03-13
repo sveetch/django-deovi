@@ -1,9 +1,4 @@
-"""
-=====
-Media
-=====
-
-"""
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
@@ -21,11 +16,6 @@ from deovi.collector import MEDIAS_CONTAINERS
 class MediaFile(SmartFormatMixin, models.Model):
     """
     A media file
-
-    TODO:
-    * Remove deprecated title field;
-    * Need created and updated dates (may involve stopping using bulk chains);
-    * Add cover field for further usages;
     """
     directory = models.ForeignKey(
         "Directory",
@@ -111,7 +101,6 @@ class MediaFile(SmartFormatMixin, models.Model):
     )
     """
     Required media container file extension string.
-    TODO: Should be validated to not starts with a dot since we don't want it.
     """
 
     filesize = models.BigIntegerField(
@@ -131,7 +120,7 @@ class MediaFile(SmartFormatMixin, models.Model):
         null=True,
         blank=True,
         default=None,
-        upload_to="media/cover/%y/%m",
+        upload_to="mediafile/cover/%y/%m",
         help_text=_(
             "Media cover image."
         ),
@@ -185,6 +174,13 @@ class MediaFile(SmartFormatMixin, models.Model):
 
     def get_cover_format(self):
         return self.media_format(self.cover)
+
+    def clean(self):
+        # Container should not starts with a dot
+        if self.container and self.container.startswith("."):
+            raise ValidationError({
+                "container": _("Container must not starts with a dot."),
+            })
 
 
 # Connect signals for automatic media purge

@@ -37,6 +37,7 @@ def test_mediafile_serialize_single(db):
         "dirname": "bar",
         "filename": "plop.mp4",
         "container": "mp4",
+        "cover": plop.cover.url,
         "filesize": 42,
         "stored_date": "2012-10-15T12:00:00-05:00",
         "loaded_date": "2020-08-23T19:00:00-05:00"

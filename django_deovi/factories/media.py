@@ -5,6 +5,8 @@ from django.utils import timezone
 
 import factory
 
+from smart_media.utils.factories import create_image_file
+
 from ..models import MediaFile
 from .directory import DirectoryFactory
 
@@ -36,6 +38,27 @@ class MediaFileFactory(factory.django.DjangoModelFactory):
         return str(Path(self.path).parent)
 
     @factory.lazy_attribute
+    def container(self):
+        """
+        Return file extension from 'path' attribute value.
+
+        Returns:
+            string: File extension without leading dot.
+        """
+        return str(Path(self.path).suffix)[1:]
+
+    @factory.lazy_attribute
+    def cover(self):
+        """
+        Fill file field with generated image.
+
+        Returns:
+            django.core.files.File: File object.
+        """
+
+        return create_image_file()
+
+    @factory.lazy_attribute
     def dirname(self):
         """
         Return file parent directory name from 'path' attribute value.
@@ -54,16 +77,6 @@ class MediaFileFactory(factory.django.DjangoModelFactory):
             string: Filename.
         """
         return str(Path(self.path).name)
-
-    @factory.lazy_attribute
-    def container(self):
-        """
-        Return file extension from 'path' attribute value.
-
-        Returns:
-            string: File extension without leading dot.
-        """
-        return str(Path(self.path).suffix)[1:]
 
     @factory.lazy_attribute
     def stored_date(self):

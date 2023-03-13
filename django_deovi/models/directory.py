@@ -1,11 +1,7 @@
-"""
-============
-Directory model
-============
-
-"""
+import json
 from pathlib import Path
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils import timezone
@@ -203,11 +199,25 @@ class Directory(SmartFormatMixin, models.Model):
         """
         return str(Path(self.path).name)
 
+    def get_payload_object(self):
+        """
+        Return deserialized JSON payload as a Python object (a dict is always
+        expected).
+
+        Returns:
+            dict: Payload as Python object.
+        """
+        if not self.payload:
+            return {}
+
+        return json.loads(self.payload)
+
     def resume(self):
         """
         Return a resume of some directory informations.
 
-        TODO: Payload field content should be there to
+        Payload items can not overwrite computed informations so these item names will
+        be ignored: ``mediafiles``, ``filesize`` and ``last_media_update``.
 
         Returns:
             dict: Directory informations.
@@ -216,14 +226,38 @@ class Directory(SmartFormatMixin, models.Model):
             total_filesize=models.Sum("filesize"),
         )
 
-        return {
+        resume = {
             "mediafiles": len(mediafiles),
             "filesize": sum([item.total_filesize for item in mediafiles]),
-            "last_update": sorted([item.loaded_date for item in mediafiles])[-1],
+            "last_media_update": sorted([item.loaded_date for item in mediafiles])[-1],
         }
+
+        if self.payload:
+            resume.update({
+                k: v
+                for k, v in self.get_payload_object().items()
+                if k not in ("mediafiles", "filesize", "last_media_update")
+            })
+
+        return resume
 
     def get_cover_format(self):
         return self.media_format(self.cover)
+
+    def clean(self):
+        # If given, payload should be a valid JSON Object
+        if self.payload:
+            try:
+                loaded = json.loads(self.payload)
+            except json.decoder.JSONDecodeError:
+                raise ValidationError({
+                    "payload": _("Given payload is not a valid JSON format."),
+                })
+            else:
+                if not isinstance(loaded, dict):
+                    raise ValidationError({
+                        "payload": _("Given payload is not a valid JSON Object."),
+                    })
 
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save

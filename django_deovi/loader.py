@@ -130,10 +130,6 @@ class DumpLoader:
             Also, any file from given batch files will be edited even if it does not
             have any changes.
 
-        TODO: On deovi>=0.5.1 a directory checksum should be available to be able to
-              quickly check for changes with current object, obviously model will need
-              to store it.
-
         Arguments:
             files (list): List of DumpedFile objects for directory children files.
                 Opposed to ``create_files``, the DumpedFile objects are expected to
@@ -210,28 +206,66 @@ class DumpLoader:
 
         return to_create, to_edit
 
+    def _is_directory_elligible(self, from_checksum, to_checksum, created):
+        """
+        Check if directory is elligible to creation/edition depending its checksum
+        and creation state.
+
+        * Whatever checksum if item is created, it must be elligible;
+        * If any of checksum is empty, item is elligible;
+        * If item is not created (edited), if checksum differ, item is elligible;
+
+        Arguments:
+            from_checksum (string):
+            to_checksum (string):
+            created (boolean):
+
+        Returns:
+            boolean:
+        """
+        if created:
+            return True
+
+        if not from_checksum or not to_checksum:
+            return True
+
+        return from_checksum != to_checksum
+
     def process_directory(self, device, directories):
         """
         Process a directory entry from a dump to create Directory and process its
         children files.
+
+        TODO: On deovi>=0.5.1 a directory checksum should be available to be able to
+              quickly check for changes with current object, obviously model will need
+              to store it.
 
         Arguments:
             device (django_deovi.models.Device): Device object to assign all the files.
             directories (dict): Dictionnary of dumped directories.
 
         Returns:
-            list: List of created Directory objects ?
+            list: List of tuple for each saved directory. Tuple has two elements, the
+            directory object and boolean for creation state.
         """
+        saved = []
+
+        print()
         for dump_dir_name, dump_dir_data in directories.items():
             batch_date = timezone.now()
-            # TODO: Checksum may be introduced here to avoid processing unchanged
-            #       directory
 
             self.log.info("📂 Working on directory: {}".format(dump_dir_data["path"]))
             directory, created = Directory.objects.get_or_create(
                 device=device,
                 path=dump_dir_data["path"],
             )
+
+            # Don't process directory if not elligible
+            if not self._is_directory_elligible(
+                directory.checksum, dump_dir_data.get("checksum"), created=None
+            ):
+                continue
+
             if created:
                 self.log.debug("- New directory created")
             else:
@@ -247,6 +281,11 @@ class DumpLoader:
 
             if len(to_edit) > 0:
                 self.edit_files(to_edit, batch_date=batch_date)
+
+            if len(to_create) > 0 or len(to_edit) > 0:
+                saved.append((directory, created))
+
+        return saved
 
     def load(self, device_slug, dump):
         """

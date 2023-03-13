@@ -60,7 +60,7 @@ class DumpedFile:
         Arguments:
             **kwargs: Items to set field attributes. Only allowed field names from
                 ``DumpedFile.FIELDNAMES`` are set as object attribute. Every field value
-                are expected to be strings except for the few integer like ``size``.
+                is expected to be a string except for the few integer ones like ``size``.
         """
         _missing_kwargs = []
 
@@ -108,8 +108,6 @@ class DumpedFile:
     def from_dict(cls, **kwargs):
         """
         Static method to return a DumpedFile created from given payload dict
-
-        NOTE: It does not seems more useful than to use directly "DumpedFile(**kwargs)"
 
         Returns:
             DumpedFile: A DumpedFile object initialized with given kwargs.

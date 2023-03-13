@@ -92,19 +92,19 @@ def test_device_resume(db):
         "directories": 2,
         "mediafiles": 5,
         "filesize": 623,
-        "last_update": good_last.loaded_date,
+        "last_media_update": good_last.loaded_date,
     }
 
     assert secondary.resume() == {
         "directories": 1,
         "mediafiles": 1,
         "filesize": 555,
-        "last_update": nope_last.loaded_date,
+        "last_media_update": nope_last.loaded_date,
     }
 
     assert empty.resume() == {
         "directories": 0,
         "mediafiles": 0,
         "filesize": 0,
-        "last_update": None,
+        "last_media_update": None,
     }

@@ -57,6 +57,33 @@ def test_mediafile_required_fields(db):
     }
 
 
+def test_mediafile_container_validation(db):
+    """
+    Container value should be validated to not starts with a dot.
+    """
+    device = Device(title="Foo bar", slug="foo-bar")
+    device.save()
+
+    directory = Directory(device=device, title="Foo", path="/home/foo/bar")
+    directory.save()
+
+    mediafile = MediaFile(
+        directory=directory,
+        path="/home/foo/bar/plop.mp4",
+        absolute_dir="/home/foo/bar",
+        filename="plop.mp4",
+        container=".foo",
+        stored_date=timezone.now(),
+    )
+
+    with pytest.raises(ValidationError) as excinfo:
+        mediafile.full_clean()
+
+    assert excinfo.value.message_dict == {
+        "container": ["Container must not starts with a dot."],
+    }
+
+
 def test_mediafile_path_uniqueness(db):
     """
     MediaFile directory + path uniqueness constraint should be respected.

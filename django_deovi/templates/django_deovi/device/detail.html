@@ -29,8 +29,8 @@
                 <div><i class="h5 bi bi-activity"></i></div>
                 <div><small class="text-muted sm-2 fw-normal">{% trans "Last update" %}</small></div>
                 <h3 class="fw-bold mb-0 fs-5">
-                    <abbr class="text-decoration-none" title="{{ resume.last_update }}">
-                        {{ resume.last_update|date:"SHORT_DATE_FORMAT" }}
+                    <abbr class="text-decoration-none" title="{{ resume.last_media_update }}">
+                        {{ resume.last_media_update|date:"SHORT_DATE_FORMAT" }}
                     </abbr>
                 </h3>
             </div>
@@ -76,7 +76,7 @@
                     <div class="card-footer">
                         <small>
                             <i class="bi bi-activity me-1"></i>
-                            <span class="directory-last_update">{{ resume.last_update }}</span>
+                            <span class="directory-last_media_update">{{ resume.last_media_update }}</span>
                         </small>
                     </div>
                     {% endwith %}

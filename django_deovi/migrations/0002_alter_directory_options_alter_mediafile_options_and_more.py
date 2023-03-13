@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='mediafile',
             name='cover',
-            field=smart_media.modelfields.SmartMediaField(blank=True, default=None, help_text='Media cover image.', max_length=255, null=True, upload_to='media/cover/%y/%m', verbose_name='cover image'),
+            field=smart_media.modelfields.SmartMediaField(blank=True, default=None, help_text='Media cover image.', max_length=255, null=True, upload_to='mediafile/cover/%y/%m', verbose_name='cover image'),
         ),
         migrations.AlterField(
             model_name='directory',

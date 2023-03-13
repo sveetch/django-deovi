@@ -1,9 +1,3 @@
-"""
-============
-Device model
-============
-
-"""
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -80,17 +74,18 @@ class Device(models.Model):
         directories = self.directories.filter(device=self).annotate(
             num_mediafiles=models.Count("mediafiles"),
             total_filesize=models.Sum("mediafiles__filesize"),
-            last_update=models.Max("mediafiles__loaded_date"),
+            last_media_update=models.Max("mediafiles__loaded_date"),
         )
-        last_update = sorted([item.last_update for item in directories])
-        if last_update:
-            last_update = last_update[-1]
+        # Get the most latter media update computed from all directories
+        last_media_update = sorted([item.last_media_update for item in directories])
+        if last_media_update:
+            last_media_update = last_media_update[-1]
         else:
-            last_update = None
+            last_media_update = None
 
         return {
             "directories": len(directories),
             "mediafiles": sum([item.num_mediafiles for item in directories]),
             "filesize": sum([item.total_filesize for item in directories]),
-            "last_update": last_update,
+            "last_media_update": last_media_update,
         }
