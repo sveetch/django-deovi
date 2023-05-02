@@ -328,6 +328,9 @@ class DumpLoader:
                     directory.save()
 
             # Distribute file to bulk chains
+            # TODO: Should the directory have to be processed if checksum is not
+            # different ? Have to check if directory checksum computed medias files for
+            # changes (probably not)
             to_create, to_edit = self.file_distribution(
                 directory, dump_dir_data["children_files"]
             )

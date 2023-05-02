@@ -44,8 +44,9 @@ class Command(BaseCommand):
         )
         logger = DjangoCommandOutput(command=self)
         loader = DumpLoader(output_interface=logger)
-        # TODO: Give the basepath computed from the dump path
-        loader.load(device, filepath)
+
+        # Give the basepath computed from the dump path
+        loader.load(device, filepath, covers_basepath=filepath.parent.resolve())
 
     def handle(self, *args, **options):
         self.stdout.write(
