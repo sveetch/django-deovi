@@ -1,9 +1,3 @@
-"""
-=================
-Output interfaces
-=================
-
-"""
 import logging
 
 from django.core.management.base import CommandError

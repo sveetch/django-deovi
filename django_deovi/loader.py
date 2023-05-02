@@ -8,6 +8,7 @@ import json
 
 from pathlib import Path
 
+from django.core.files import File
 from django.utils import timezone
 
 from .dump import DumpedFile
@@ -208,7 +209,7 @@ class DumpLoader:
 
     def _is_directory_elligible(self, from_checksum, to_checksum, created):
         """
-        Check if directory is elligible to creation/edition depending its checksum
+        Check if directory is elligible to write operation depending its checksum
         and creation state.
 
         * Whatever checksum if item is created, it must be elligible;
@@ -216,12 +217,13 @@ class DumpLoader:
         * If item is not created (edited), if checksum differ, item is elligible;
 
         Arguments:
-            from_checksum (string):
-            to_checksum (string):
-            created (boolean):
+            from_checksum (string): Current object checksum.
+            to_checksum (string): Checksum to compare against ``from_checksum``.
+            created (boolean): Define if method is called for a new created object or
+                not.
 
         Returns:
-            boolean:
+            boolean: True if object is elligible to write operation or not.
         """
         if created:
             return True
@@ -231,18 +233,53 @@ class DumpLoader:
 
         return from_checksum != to_checksum
 
-    def process_directory(self, device, directories):
+    def get_attached_file(self, path, basepath=None):
+        """
+        Try to get file from given path and return a Django File object ready
+        to save in model.
+
+        Arguments:
+            path (string or pathlib.Path): Path to the file to get. Path string will
+                be converted to Path object.
+            basepath (pathlib.Path): Base directory path used to resolve relative path.
+
+        Returns:
+            django.core.files.File: Django file object filled with file from resolved
+            path.
+        """
+        if path:
+            # Convert to Path object if needed
+            if isinstance(path, str):
+                path = Path(path)
+
+            # Prefix relative path with basepath if given
+            filepath = path
+            if not path.is_absolute() and basepath:
+                filepath  = basepath / path
+
+            if not filepath.exists():
+                self.log.warning("📄 Unable to find file: {}".format(path))
+            else:
+                # Build a Django File ready to save
+                return File(filepath.open("rb"), name=filepath)
+
+        return None
+
+    def process_directory(self, device, directories, covers_basepath):
         """
         Process a directory entry from a dump to create Directory and process its
         children files.
 
-        TODO: On deovi>=0.5.1 a directory checksum should be available to be able to
-              quickly check for changes with current object, obviously model will need
-              to store it.
+        .. NOTE::
+            Deovi provide a checksum for the cover file itself but we don't implement
+            it, we just care about the directory checksum since the cover filename is
+            included in directory content to checksum and a cover filename change
+            everytime (it's a UUID4).
 
         Arguments:
             device (django_deovi.models.Device): Device object to assign all the files.
             directories (dict): Dictionnary of dumped directories.
+            covers_basepath (pathlib.Path):
 
         Returns:
             list: List of tuple for each saved directory. Tuple has two elements, the
@@ -250,12 +287,11 @@ class DumpLoader:
         """
         saved = []
 
-        print()
         for dump_dir_name, dump_dir_data in directories.items():
             batch_date = timezone.now()
 
             self.log.info("📂 Working on directory: {}".format(dump_dir_data["path"]))
-            directory, created = Directory.objects.get_or_create(
+            directory, created = Directory.objects.update_or_create(
                 device=device,
                 path=dump_dir_data["path"],
             )
@@ -266,10 +302,30 @@ class DumpLoader:
             ):
                 continue
 
+            # Save additional directory data
             if created:
                 self.log.debug("- New directory created")
+                directory.title = dump_dir_data.get("title", "")
+                directory.checksum = dump_dir_data.get("checksum", "")
+                directory.cover = self.get_attached_file(
+                    dump_dir_data.get("cover"),
+                    basepath=covers_basepath,
+                )
+                # TODO: Payload should not include everything, only what has not been
+                # filled in model fields
+                directory.payload = json.dumps(dump_dir_data)
+                directory.save()
             else:
                 self.log.debug("- Got an existing directory")
+                if directory.checksum != dump_dir_data.get("checksum", ""):
+                    directory.title = dump_dir_data.get("title", "")
+                    directory.checksum = dump_dir_data.get("checksum", "")
+                    directory.cover = self.get_attached_file(
+                        dump_dir_data.get("cover"),
+                        basepath=covers_basepath,
+                    )
+                    directory.payload = json.dumps(dump_dir_data)
+                    directory.save()
 
             # Distribute file to bulk chains
             to_create, to_edit = self.file_distribution(
@@ -287,17 +343,20 @@ class DumpLoader:
 
         return saved
 
-    def load(self, device_slug, dump):
+    def load(self, device_slug, dump, covers_basepath=None):
         """
         Load a Deovi dump to create and update MediaFile objects for the dump directory
         and files.
-
-        All files from a same directory will share the same exact loaded datetime.
 
         Arguments:
             device_slug (string): Slug name for the Device object to attach all the
                 directories and files.
             dump (pathlib.Path): The path object for the dump file to load.
+
+        Keyword Arguments:
+            covers_basepath (pathlib.Path): A path object to use to resolve cover
+                filepath. If empty, the current working directory is used. Finally
+                every cover files paths are resolved from this base dir.
         """
         self.log.info("🏷️Using device slug: {}".format(device_slug))
         device, created = Device.objects.get_or_create(
@@ -310,6 +369,9 @@ class DumpLoader:
             msg = "- Got an existing device for given slug"
         self.log.debug(msg)
 
+        covers_basepath = covers_basepath or Path.cwd()
+        self.log.info("🏷️Using cover basepath: {}".format(covers_basepath))
+
         dump_content = self.open_dump(dump)
 
-        self.process_directory(device, dump_content)
+        self.process_directory(device, dump_content, covers_basepath)

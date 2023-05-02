@@ -58,6 +58,11 @@ def test_dumploader_load(db, caplog, tests_settings):
         (
             __pkgname__,
             logging.INFO,
+            "🏷️Using cover basepath: {}".format(tests_settings.package_path)
+        ),
+        (
+            __pkgname__,
+            logging.INFO,
             "📂 Working on directory: /videos/series/BillyBoy"
         ),
         (
@@ -102,7 +107,7 @@ def test_dumploader_load_new_device_no_dirs(db, caplog, tests_settings):
 
     # Proceed to loading
     loader = DumpLoader()
-    loader.load("nope", {})
+    loader.load("nope", {}, covers_basepath=tests_settings.fixtures_path)
 
     assert MediaFile.objects.count() == 0
 
@@ -116,5 +121,10 @@ def test_dumploader_load_new_device_no_dirs(db, caplog, tests_settings):
             __pkgname__,
             logging.DEBUG,
             "- New device created for given slug"
+        ),
+        (
+            __pkgname__,
+            logging.INFO,
+            "🏷️Using cover basepath: {}".format(tests_settings.fixtures_path)
         ),
     ]

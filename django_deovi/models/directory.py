@@ -19,7 +19,7 @@ class Directory(SmartFormatMixin, models.Model):
 
     TODO:
     * 'genres' from payload should be a many2many, we ignore this feature for now;
-    * Payload should contains:
+    * Payload should contains something like:
         tmdb_id: 14009
         tmdb_type: tv
         number_of_episodes: 64
