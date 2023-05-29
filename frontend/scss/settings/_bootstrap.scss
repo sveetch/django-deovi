@@ -11,3 +11,8 @@ $bootstrap-icons-font-file: "#{$bootstrap-icons-font-dir}/#{$bootstrap-icons-fon
 
 // Custom bread crumb divider
 $breadcrumb-divider: quote(">");
+// No radius around breadcrumb
+$breadcrumb-border-radius: 0;
+
+// Enable CSS Grid system
+$enable-cssgrid: true;

@@ -167,7 +167,7 @@ class Directory(SmartFormatMixin, models.Model):
         ]
 
     def __str__(self):
-        return self.path
+        return self.title or self.directory_name()
 
     def get_absolute_url(self):
         """

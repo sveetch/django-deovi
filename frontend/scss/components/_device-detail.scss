@@ -1,0 +1,125 @@
+///
+/// Device detail page
+///
+
+.device-detail {
+    margin: 0 auto;
+    max-width: rem-calc(1700px);
+
+    &__head {
+        display: flex;
+        justify-content: space-between;
+        margin-top: map-get($spacers, 4);
+        margin-bottom: map-get($spacers, 5);
+        padding-right: map-get($spacers, 2) * .5;
+        padding-left: map-get($spacers, 2) * .5;
+    }
+
+    &__title {
+        @include bb-flex(0, 1);
+        align-self: center;
+        font-size: rfs-fluid-value(map-get($display-font-sizes, 3));
+        margin: 0;
+        text-shadow: 0 0 rem-calc(4px) $gray-700;
+    }
+
+    &__stats {
+        @include bb-flex(0, 1);
+        margin-left: auto;
+    }
+
+    &__directories {
+        margin-top: -1 * $spacer;
+        margin-right: -.5 * $spacer;
+        margin-left: -.5 * $spacer;
+        margin-bottom: 3rem;
+    }
+
+    .head-grid {
+        display: flex;
+        flex-wrap: wrap;
+
+        &__cell {
+            @include bb-flex(0, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-top: map-get($spacers, 2);
+            padding-right: map-get($spacers, 3);
+            padding-left: map-get($spacers, 3);
+            text-align: center;
+        }
+    }
+
+    .directory-list {
+        display: flex;
+        flex-wrap: wrap;
+
+        .directory-list__item {
+            max-width: 100%;
+            padding-right: map-get($spacers, 2);
+            padding-left: map-get($spacers, 2);
+            margin-top: $spacer;
+            flex: 0 0 auto;
+            width: 16.5%;
+
+            .directory-list__title {
+                @include font-size($h6-font-size);
+                color: $white;
+                font-weight: $font-weight-bold;
+                margin: 0;
+                padding: 0;
+                text-decoration: none;
+                text-align: center;
+                text-shadow: rem-calc(1px) rem-calc(1px) rem-calc(2px) $black;
+                width: 100%;
+            }
+
+            .card {
+                height: 100%;
+                border-color: $black;
+
+                &:hover {
+                    border-color: $white;
+                }
+
+                .card-img-top {
+                    border-radius: 0 0 var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius);
+                }
+
+                .card-body {
+                    align-items: flex-start;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    min-height: rem-calc(56px);
+                    padding: map-get($spacers, 1);
+                    border-bottom: 1px solid rgba($gray-700, 0.7);
+                }
+
+                .card-footer {
+                    bottom: 0;
+                    display: flex;
+                    left: 0;
+                    padding: map-get($spacers, 2);
+                    position: absolute;
+                    right: 0;
+                    background: rgba($card-bg, 0.8);
+                    border-top: 1px solid rgba($gray-700, 0.7);
+                }
+
+                .directory-list__medias {
+                    @include font-size($small1-font-size);
+                    flex: 0 0 auto;
+                    width: auto;
+                }
+
+                .directory-list__size {
+                    @include font-size($small1-font-size);
+                    flex: 1 0 0%;
+                    text-align: right;
+                }
+            }
+        }
+    }
+}

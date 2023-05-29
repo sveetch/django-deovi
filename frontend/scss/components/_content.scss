@@ -1,7 +1,14 @@
 ///
-/// Page main content container
+/// Page content
 ///
 
+// Document body
+body {
+    background-image: image-url('micro_carbon.png');
+    background-repeat: repeat;
+}
+
+// Page container
 #page-content {
     padding-bottom: 4rem;
 }

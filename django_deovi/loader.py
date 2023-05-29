@@ -272,9 +272,9 @@ class DumpLoader:
 
         .. NOTE::
             Deovi provide a checksum for the cover file itself but we don't implement
-            it, we just care about the directory checksum since the cover filename is
-            included in directory content to checksum and a cover filename change
-            everytime (it's a UUID4).
+            it, we just care about the directory checksum. Since checksum is computed
+            from a resume from directory and its mediafiles details, any change trigger
+            a new checksum and so it is safe to stand on it.
 
         Arguments:
             device (django_deovi.models.Device): Device object to assign all the files.
@@ -296,7 +296,7 @@ class DumpLoader:
                 path=dump_dir_data["path"],
             )
 
-            # Don't process directory if not elligible
+            # Don't process directory (and its mediafiles) if not elligible
             if not self._is_directory_elligible(
                 directory.checksum, dump_dir_data.get("checksum"), created=None
             ):
@@ -328,9 +328,6 @@ class DumpLoader:
                     directory.save()
 
             # Distribute file to bulk chains
-            # TODO: Should the directory have to be processed if checksum is not
-            # different ? Have to check if directory checksum computed medias files for
-            # changes (probably not)
             to_create, to_edit = self.file_distribution(
                 directory, dump_dir_data["children_files"]
             )

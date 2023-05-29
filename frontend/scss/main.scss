@@ -21,7 +21,7 @@
 @import "./settings/site";
 
 // Bootswatch theme variables
-@import "./themes/zephyr/variables";
+@import "./themes/darkly/variables";
 
 // Bootstrap functions and mixins
 @import "bootstrap/scss/functions";
@@ -83,7 +83,7 @@
 @import "bootstrap/scss/utilities/api";
 
 // Bootswatch theme patcher
-@import "./themes/zephyr/bootswatch";
+@import "./themes/darkly/bootswatch";
 
 // Generic rules
 @import "./bootbutt/generic/type";
@@ -105,6 +105,7 @@
 @import "./components/header";
 @import "./components/footer";
 @import "./components/content";
+@import "./components/device-detail";
 
 // Trumps patchs would goes here
 // @import "./trumps/...";

@@ -3,12 +3,11 @@ Directory admin interface
 """
 from django.contrib import admin
 
+from smart_media.admin import SmartModelAdmin
+
 from ..models import Directory
 
 
-class DirectoryAdmin(admin.ModelAdmin):
+@admin.register(Directory)
+class DirectoryAdmin(SmartModelAdmin):
     pass
-
-
-# Registering interface to model
-admin.site.register(Directory, DirectoryAdmin)

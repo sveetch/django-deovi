@@ -7,12 +7,12 @@
 <div class="directory-detail">
     <h2 class="directory-title mt-4 mb-5 text-center">
         {{ directory_object.name }}
-        <span>{{ directory_object.directory_name }}</span><br>
+        <span>{{ directory_object }}</span><br>
         <small class="text-muted sm-2 fw-normal user-select-all">{{ directory_object.path }}</small>
     </h2>
 
     {% with directory_object.resume as resume %}
-    <div class="row g-5 justify-content-md-center mb-5">
+    <div class="row justify-content-md-center mb-5">
         <div class="col-md-auto text-center">
             <div><i class="h5 bi bi-device-hdd"></i></div>
             <div><small class="text-muted sm-2 fw-normal">{% trans "Device" %}</small></div>

@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block head_title %}{% trans "Django Deovi" %}{% endblock head_title %}</title>
     {% block head_metas %}{% endblock head_metas %}
+    {% block head_favicon %}
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+        <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
+        <link rel="mask-icon" href="{% static 'favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+        <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="msapplication-config" content="{% static 'favicon/browserconfig.xml' %}">
+        <meta name="theme-color" content="#ffffff">
+    {% endblock head_favicon %}
     {% block head_styles %}
     <link href="{% static "css/main.css" %}" rel="stylesheet">
     {% endblock head_styles %}
@@ -12,10 +23,10 @@
 </head>
 
 <body>{% spaceless %}
-    <div class="d-grid gap-3 p-3">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="d-grid">
+        <nav id="page-header" class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/{{ LANGUAGE_CODE }}/">{% trans "Django Deovi" %}</a>
+                <a class="navbar-brand" href="/">{% trans "Django Deovi" %}</a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navbar-toggler" aria-controls="main-navbar-toggler" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -40,10 +51,10 @@
             </div>
         </nav>
 
-        <div id="page-content" class="container-xxl">
-            {% block breadcrumbs %}
-                {% render_breadcrumbs "view_breadcrumbs/bootstrap5.html" %}
-            {% endblock %}
+        {% block breadcrumbs %}
+            {% render_breadcrumbs "view_breadcrumbs/bootstrap5.html" %}
+        {% endblock %}
+        <div id="page-content" class="container-fluid">
             {% block content %}Sandbox skeleton{% endblock %}
         </div>
     </div>
