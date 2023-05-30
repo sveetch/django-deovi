@@ -1,0 +1,90 @@
+///
+/// Directory detail page
+///
+
+.directory-detail {
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+
+    &__head {
+        @include bb-flex(1, 0, 21%);
+        padding-left: map-get($spacers, 2);
+    }
+
+    &__title {
+        @include font-size($h3-font-size);
+        margin: 0;
+        padding: map-get($spacers, 4) map-get($spacers, 2);
+        text-align: center;
+        text-shadow: 0 0 rem-calc(4px) $gray-700;
+    }
+
+    &__stats {
+        // justify-content-md-center mb-5
+    }
+
+    &__mediafiles {
+        @include bb-flex(1, 0, 79%);
+        border-radius: 0;
+        padding: map-get($spacers, 2);
+    }
+
+    .card-img-top {
+        border: rem-calc(2px) solid $gray-700;
+    }
+
+    .stats {
+        display: flex;
+        flex-wrap: wrap;
+
+        &__cell {
+            @include bb-flex(1, 0, auto);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-top: -$onepixel;
+            padding: map-get($spacers, 2);
+            text-align: center;
+            border: 1px solid $gray-700;
+
+            &--full {
+                @include bb-flex(1, 0, 100%);
+            }
+        }
+
+        &__icon {
+            @include font-size($h5-font-size);
+            color: $text-muted;
+        }
+
+        &__label {
+            font-size: $small2-font-size;
+            color: $text-muted;
+        }
+
+        &__value {
+            @include font-size($h6-font-size);
+            font-weight: $font-weight-bold;
+        }
+    }
+
+    .mediafiles {
+        display: flex;
+        flex-wrap: wrap;
+        padding: map-get($spacers, 1);
+
+        &__item {
+            @include bb-flex(1, 0, calc(33.3333% - #{map-get($spacers, 1) * 2}));
+            background-color: $gray-800;
+            border: $onepixel solid $gray-700;
+            margin:  map-get($spacers, 1);
+            padding:  map-get($spacers, 2);
+        }
+
+        // Pagination is a full width cell
+        nav {
+            @include bb-flex(1, 0, 100%);
+        }
+    }
+}

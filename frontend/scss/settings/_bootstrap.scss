@@ -13,6 +13,8 @@ $bootstrap-icons-font-file: "#{$bootstrap-icons-font-dir}/#{$bootstrap-icons-fon
 $breadcrumb-divider: quote(">");
 // No radius around breadcrumb
 $breadcrumb-border-radius: 0;
+// No bottom margin
+$breadcrumb-margin-bottom: 0;
 
 // Enable CSS Grid system
 $enable-cssgrid: true;

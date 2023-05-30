@@ -42,7 +42,7 @@ class DirectoryDetailView(DeoviBreadcrumMixin, SingleObjectMixin, ListView):
                 DeviceDetailView.crumb_urlname,
                 kwargs=device_kwargs,
             )),
-            (self.object.path, reverse(
+            (self.object, reverse(
                 self.crumb_urlname,
                 kwargs=directory_kwargs,
             )),
