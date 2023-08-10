@@ -14,7 +14,6 @@ from django.utils import timezone
 from .dump import DumpedFile
 from .models import Device, Directory, MediaFile
 from .outputs import BaseOutput
-from .serializers import MediaFileSerializer
 
 
 class DumpLoader:
@@ -125,8 +124,8 @@ class DumpLoader:
         NOTE:
             Performance could be better with a diff implementation to know the fields
             that have really changed and to avoid to always edit all allowed fields.
-            Especially since the common updates will probably be on some few fields (like
-            size or date).
+            Especially since the common updates will probably be on some few fields
+            (like size or date).
 
             Also, any file from given batch files will be edited even if it does not
             have any changes.
@@ -255,7 +254,7 @@ class DumpLoader:
             # Prefix relative path with basepath if given
             filepath = path
             if not path.is_absolute() and basepath:
-                filepath  = basepath / path
+                filepath = basepath / path
 
             if not filepath.exists():
                 self.log.warning("📄 Unable to find file: {}".format(path))

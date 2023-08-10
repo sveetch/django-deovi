@@ -6,19 +6,19 @@ These are the default settings you can override in your own project settings
 right after the line which load the default app settings.
 
 """
-DEVICE_PAGINATION = 20
+DEVICE_PAGINATION = 15
 """
 Device entry per page limit for pagination, set it to ``None`` to disable
 pagination.
 """
 
-DIRECTORY_PAGINATION = 50
+DIRECTORY_PAGINATION = 48
 """
 Directory entry per page limit for pagination, set it to ``None`` to disable
 pagination.
 """
 
-MEDIAFILE_PAGINATION = 50
+MEDIAFILE_PAGINATION = 60
 """
 MediaFile entry per page limit for pagination, set it to ``None`` to disable
 pagination.

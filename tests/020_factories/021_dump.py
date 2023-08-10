@@ -1,7 +1,5 @@
 import datetime
 
-import pytest
-
 from django.utils import timezone
 
 from django_deovi.dump import DumpedFile
@@ -21,12 +19,12 @@ def test_dumpedfile_creation(db):
 
     mediafile = DumpedFileFactory(path="/home/foo/plop.avi")
 
-    #print()
-    #print("mediafile.path:", mediafile.path)
-    #print("mediafile.name:", mediafile.name)
-    #print("mediafile.extension:", mediafile.extension)
-    #print("mediafile.container:", mediafile.container)
-    #print()
+    # print()
+    # print("mediafile.path:", mediafile.path)
+    # print("mediafile.name:", mediafile.name)
+    # print("mediafile.extension:", mediafile.extension)
+    # print("mediafile.container:", mediafile.container)
+    # print()
 
     assert mediafile.name == "plop.avi"
     assert mediafile.directory == "foo"

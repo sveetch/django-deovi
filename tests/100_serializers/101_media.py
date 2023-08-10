@@ -1,5 +1,4 @@
 import datetime
-import json
 
 from django.utils import timezone
 
@@ -24,9 +23,9 @@ def test_mediafile_serialize_single(db):
     # Serialize mediafile
     serializer = MediaFileSerializer(plop)
 
-    print()
-    print(json.dumps(serializer.data, indent=4))
-    print()
+    # print()
+    # print(json.dumps(serializer.data, indent=4))
+    # print()
 
     expected = {
         "id": plop.id,
@@ -64,8 +63,8 @@ def test_mediafile_deserialize_json(db):
     serializer = MediaFileSerializer(data=data)
     is_valid = serializer.is_valid()
 
-    print()
-    print(serializer.errors)
-    print()
+    # print()
+    # print(serializer.errors)
+    # print()
 
-    assert is_valid == True
+    assert is_valid is True

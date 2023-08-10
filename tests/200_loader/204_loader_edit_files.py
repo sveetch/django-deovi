@@ -32,7 +32,7 @@ def test_dumploader_edit_files(db):
         path="/videos/BillyBoy_S01E03.mkv",
         filesize=300,
     )
-    mediafile_s01e04 = MediaFileFactory(
+    MediaFileFactory(
         path="/videos/BillyBoy_S01E04.mkv",
         filesize=400,
     )

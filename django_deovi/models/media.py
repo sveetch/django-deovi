@@ -4,13 +4,10 @@ from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.urls import reverse
 
 from smart_media.modelfields import SmartMediaField
 from smart_media.mixins import SmartFormatMixin
 from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
-
-from deovi.collector import MEDIAS_CONTAINERS
 
 
 class MediaFile(SmartFormatMixin, models.Model):

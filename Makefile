@@ -305,9 +305,7 @@ flake:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Flake <---$(FORMATRESET)\n"
 	@echo ""
-	$(FLAKE) --statistics --show-source $(APPLICATION_NAME)
-	$(FLAKE) --statistics --show-source sandbox
-	$(FLAKE) --statistics --show-source tests
+	$(FLAKE) --statistics --show-source $(APPLICATION_NAME) sandbox tests
 .PHONY: flake
 
 test:

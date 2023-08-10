@@ -1,5 +1,3 @@
-import datetime
-
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
@@ -7,7 +5,6 @@ from django.utils import timezone
 
 import pytest
 
-from django_deovi.dump import DumpedFile
 from django_deovi.models import Device, Directory, MediaFile
 
 

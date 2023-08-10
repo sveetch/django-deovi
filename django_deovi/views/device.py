@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
@@ -15,7 +14,7 @@ class DeviceIndexView(DeoviBreadcrumMixin, ListView):
     """
     model = Device
     template_name = "django_deovi/device/index.html"
-    paginate_by = 20
+    paginate_by = settings.DEVICE_PAGINATION
     context_object_name = "device_list"
     crumb_title = _("Devices")
     crumb_urlname = "django_deovi:device-index"
@@ -23,7 +22,7 @@ class DeviceIndexView(DeoviBreadcrumMixin, ListView):
     @property
     def crumbs(self):
         return [
-            #(self.crumb_title, reverse(self.crumb_urlname)),
+            # (self.crumb_title, reverse(self.crumb_urlname)),
         ]
 
     def get_queryset(self):
@@ -40,7 +39,7 @@ class DeviceDetailView(DeoviBreadcrumMixin, SingleObjectMixin, ListView):
     model = Device
     listed_model = Directory
     template_name = "django_deovi/device/detail.html"
-    paginate_by = 50
+    paginate_by = settings.DIRECTORY_PAGINATION
     context_object_name = "device_object"
     crumb_title = None
     crumb_urlname = "django_deovi:device-detail"

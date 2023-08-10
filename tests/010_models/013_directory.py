@@ -154,8 +154,10 @@ def test_directory_resume(db):
     kiwi_last = MediaFileFactory(directory=kiwis, filesize=128, loaded_date=date_31_oct)
     MediaFileFactory(directory=kiwis, filesize=256, loaded_date=date_1_jan)
     MediaFileFactory(directory=apples, filesize=100, loaded_date=date_1_jan)
-    apple_last = MediaFileFactory(directory=apples, filesize=11, loaded_date=date_14_jul)
-    banana_last = MediaFileFactory(directory=bananas, filesize=555, loaded_date=date_1_jan)
+    apple_last = MediaFileFactory(directory=apples, filesize=11,
+                                  loaded_date=date_14_jul)
+    banana_last = MediaFileFactory(directory=bananas, filesize=555,
+                                   loaded_date=date_1_jan)
 
     assert kiwis.resume() == {
         "mediafiles": 3,

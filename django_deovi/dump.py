@@ -59,8 +59,9 @@ class DumpedFile:
 
         Arguments:
             **kwargs: Items to set field attributes. Only allowed field names from
-                ``DumpedFile.FIELDNAMES`` are set as object attribute. Every field value
-                is expected to be a string except for the few integer ones like ``size``.
+                ``DumpedFile.FIELDNAMES`` are set as object attribute. Every field
+                value is expected to be a string except for the few integer ones like
+                ``size``.
         """
         _missing_kwargs = []
 
@@ -91,7 +92,8 @@ class DumpedFile:
 
     def __getitem__(self, item):
         """
-        This method ensure the object is subscriptable but only with getter, not setter.
+        This method ensure the object is subscriptable but only with getter, not
+        setter.
 
         This is not really safe but the DumpedFile is a pretty simple and naive object
         so don't bother.

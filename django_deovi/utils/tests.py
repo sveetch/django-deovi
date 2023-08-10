@@ -2,7 +2,6 @@
 Some various utilities to ease making tests around Django and HTML responses.
 
 """
-import os
 import hashlib
 
 from django.contrib.sites.models import Site

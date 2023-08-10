@@ -1,4 +1,4 @@
-from django_deovi.factories import DeviceFactory, DirectoryFactory, MediaFileFactory
+from django_deovi.factories import DirectoryFactory, MediaFileFactory
 
 
 def test_mediafile_creation(db):

@@ -2,7 +2,7 @@
 Django settings for tests
 """
 
-from sandbox.settings.base import *
+from sandbox.settings.base import *  # noqa: F403
 
 DATABASES = {
     "default": {
@@ -13,4 +13,4 @@ DATABASES = {
 
 # Media directory dedicated to tests to avoid polluting other environment
 # media directory
-MEDIA_ROOT = join(VAR_PATH, "media-tests")
+MEDIA_ROOT = join(VAR_PATH, "media-tests")  # noqa: F405

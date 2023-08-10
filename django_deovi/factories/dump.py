@@ -1,8 +1,6 @@
 import datetime
 from pathlib import Path
 
-from django.utils import timezone
-
 import factory
 
 from ..dump import DumpedFile

@@ -1,11 +1,9 @@
 from django.conf import settings
-from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 
-from ..models import Device, Directory, MediaFile
+from ..models import Directory, MediaFile
 
 from .device import DeviceIndexView, DeviceDetailView
 from .mixins import DeoviBreadcrumMixin
@@ -18,7 +16,7 @@ class DirectoryDetailView(DeoviBreadcrumMixin, SingleObjectMixin, ListView):
     model = Directory
     listed_model = MediaFile
     template_name = "django_deovi/directory/detail.html"
-    paginate_by = 50
+    paginate_by = settings.MEDIAFILE_PAGINATION
     context_object_name = "directory_object"
     crumb_title = None
     crumb_urlname = "django_deovi:directory-detail"

@@ -56,7 +56,7 @@ def test_dumploader_create_uniqueness_path(db):
     dump_third = DumpedFileFactory(path="/videos/foo_2.mkv")
 
     # Create the first dump file as an existing MediaFile object
-    media_first = MediaFileFactory(
+    MediaFileFactory(
         directory=directory,
         **dump_first.convert_to_orm_fields()
     )

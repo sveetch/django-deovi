@@ -162,4 +162,5 @@ INSTALLED_APPS = [
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW
 """
-from django_deovi.settings import *
+from smart_media.settings import *  # noqa: E402,F401,F403
+from django_deovi.settings import *  # noqa: E402,F401,F403

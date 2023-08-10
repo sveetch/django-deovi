@@ -1,7 +1,6 @@
 import logging
 
 from django_deovi import __pkgname__
-from django_deovi.models import MediaFile
 from django_deovi.factories import (
     DeviceFactory, DirectoryFactory, MediaFileFactory
 )

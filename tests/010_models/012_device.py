@@ -85,7 +85,7 @@ def test_device_resume(db):
     good_last = MediaFileFactory(directory=goods, filesize=128, loaded_date=date_31_oct)
     MediaFileFactory(directory=goods, filesize=256, loaded_date=date_1_jan)
     MediaFileFactory(directory=bads, filesize=100, loaded_date=date_1_jan)
-    bad_last = MediaFileFactory(directory=bads, filesize=11, loaded_date=date_14_jul)
+    MediaFileFactory(directory=bads, filesize=11, loaded_date=date_14_jul)
     nope_last = MediaFileFactory(directory=nopes, filesize=555, loaded_date=date_1_jan)
 
     assert primary.resume() == {

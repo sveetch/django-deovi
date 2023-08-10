@@ -25,7 +25,7 @@ from django_deovi.utils.tests import sum_file_object
     ("foo", "bar", False, True),
 ])
 def test_loader_is_directory_elligible(from_checksum, to_checksum, created,
-                                           expected):
+                                       expected):
     """
     Method should correctly check if directory has change to be done.
     """
@@ -101,7 +101,7 @@ def test_loader_process_directory_basic(db, caplog, tests_settings):
         directory=billyserie_dir,
         filesize=300,
     )
-    BillyBoy_S02E01 = MediaFileFactory(
+    MediaFileFactory(
         path="/videos/series/BillyBoy/BillyBoy_S02E01.mkv",
         directory=billyserie_dir,
     )
@@ -238,12 +238,12 @@ def test_loader_process_directory_checksum(db, caplog, tests_settings):
     )
 
     # Create existing MediaFile objects
-    BillyBoy_S01E01 = MediaFileFactory(
+    MediaFileFactory(
         path="/videos/series/BillyBoy/BillyBoy_S01E01.mkv",
         directory=billyserie_dir,
         filesize=100,
     )
-    Coucou_1982 = MediaFileFactory(
+    MediaFileFactory(
         path="/videos/theatre/Coucou_1982.avi",
         directory=theatre_dir,
         filesize=1982,

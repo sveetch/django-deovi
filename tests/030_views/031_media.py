@@ -4,6 +4,7 @@ from tests.utils import html_pyquery
 
 from django_deovi.factories import MediaFileFactory
 
+
 @pytest.mark.xfail(reason="detail view deprecated, keep this temporarly")
 def test_mediafile_detail_404(db, client):
     """
