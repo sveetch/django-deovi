@@ -1,11 +1,11 @@
 import datetime
 
+import pytest
+
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils import timezone
-
-import pytest
 
 from django_deovi.models import Device
 from django_deovi.factories import DeviceFactory, DirectoryFactory, MediaFileFactory
@@ -107,4 +107,108 @@ def test_device_resume(db):
         "mediafiles": 0,
         "filesize": 0,
         "last_media_update": None,
+    }
+
+
+def test_device_get_directory_tree(db):
+    """
+    Method should recursively retrieves all device directories and output a tree as a
+    nested dictionnary.
+    """
+    # Create device
+    device = DeviceFactory(title="Master", slug="master")
+
+    # Directories to fill with a mediafile
+    filled_dirs = [
+        DirectoryFactory(device=device, path="/home/a"),
+        DirectoryFactory(device=device, path="/home/b"),
+        DirectoryFactory(device=device, path="/home/a/aa/aaa"),
+        DirectoryFactory(device=device, path="/home/b/bb"),
+    ]
+    # Additional empty dir between two filled dirs
+    DirectoryFactory(device=device, path="/home/a/aa")
+
+    # Empty directory without any file
+    DirectoryFactory(device=device, path="/home/a/empty")
+
+    # Fill directories
+    for item in filled_dirs:
+        path = "{base}/plop.avi".format(base=item)
+        MediaFileFactory(directory=item, path=path, filesize=5)
+
+    # Additional files only for last filled dir
+    last_dir = filled_dirs[-1]
+    path = "{base}/plip.avi".format(base=last_dir)
+    MediaFileFactory(directory=last_dir, path=path, filesize=11)
+
+    # Build tree
+    result = device.get_directory_tree()
+
+    # print()
+    # print(json.dumps(result, indent=4))
+    # print()
+
+    assert result == {
+        "name": "home",
+        "filepath": "/home",
+        "total_files": 0,
+        "total_filesize": 0,
+        "recursive_files": 5,
+        "recursive_filesize": 31,
+        "children": [
+            {
+                "name": "a",
+                "filepath": "/home/a",
+                "total_files": 1,
+                "total_filesize": 5,
+                "recursive_files": 2,
+                "recursive_filesize": 10,
+                "children": [
+                    {
+                        "name": "aa",
+                        "filepath": "/home/a/aa",
+                        "total_files": 0,
+                        "total_filesize": 0,
+                        "recursive_files": 1,
+                        "recursive_filesize": 5,
+                        "children": [
+                            {
+                                "name": "aaa",
+                                "filepath": "/home/a/aa/aaa",
+                                "total_files": 1,
+                                "total_filesize": 5,
+                                "recursive_files": 1,
+                                "recursive_filesize": 5
+                            }
+                        ]
+                    },
+                    {
+                        "name": "empty",
+                        "filepath": "/home/a/empty",
+                        "total_files": 0,
+                        "total_filesize": 0,
+                        "recursive_files": 0,
+                        "recursive_filesize": 0
+                    }
+                ]
+            },
+            {
+                "name": "b",
+                "filepath": "/home/b",
+                "total_files": 1,
+                "total_filesize": 5,
+                "recursive_files": 3,
+                "recursive_filesize": 21,
+                "children": [
+                    {
+                        "name": "bb",
+                        "filepath": "/home/b/bb",
+                        "total_files": 2,
+                        "total_filesize": 16,
+                        "recursive_files": 2,
+                        "recursive_filesize": 16
+                    }
+                ]
+            }
+        ]
     }

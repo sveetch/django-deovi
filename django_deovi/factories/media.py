@@ -21,7 +21,7 @@ class MediaFileFactory(factory.django.DjangoModelFactory):
     directory = factory.SubFactory(DirectoryFactory)
     title = ""
     path = factory.Faker("file_path", depth=3, category="video", absolute=True)
-    filesize = factory.Faker("random_int", min=128, max=40960)
+    filesize = factory.Faker("random_int", min=5, max=30)
 
     class Meta:
         model = MediaFile

@@ -1,4 +1,5 @@
-# Frozen requirement versions from '0.6.0rc5' installation
+# Frozen requirement versions from '0.6.0rc6' installation
+bigtree==0.10.3
 deovi==0.5.1
 Django==4.0.7
 django-smart-media==0.3.0

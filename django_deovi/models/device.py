@@ -3,6 +3,10 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
+from bigtree import dict_to_tree, tree_to_nested_dict
+
+from ..utils.tree import DirectoryInfosNode
+
 
 class Device(models.Model):
     """
@@ -89,3 +93,47 @@ class Device(models.Model):
             "filesize": sum([item.total_filesize for item in directories]),
             "last_media_update": last_media_update,
         }
+
+    def get_directory_tree(self):
+        """
+        Get recursive tree structure for all related device directories.
+
+        Returns:
+            dict: A nested tree structure of paths from parent to children. Each
+            directory item will carries a payload with some informations:
+
+            * ``filepath``: directory path;
+            * ``total_files``: children files counter;
+            * ``total_filesize``: total size of children files in bytes;
+
+            Additionally a 'children' item can be set to a list of children directories
+            if any.
+        """
+        # Get all device directories
+        directories = self.directories.all().order_by("path")
+
+        # Internal function to compute directory informations from its mediafiles
+        def _compute_payload(directory):
+            mediafiles = directory.mediafiles.annotate(
+                total_filesize=models.Sum("filesize"),
+            )
+            return {
+                "filepath": directory.path,
+                "total_files": len(mediafiles),
+                "total_filesize": sum([item.total_filesize for item in mediafiles]),
+            }
+
+        # Build tree from a flat dict
+        tree = dict_to_tree({
+            directory.path: _compute_payload(directory)
+            for directory in directories
+        }, node_type=DirectoryInfosNode)
+
+        # Then export it to a nested tree structure into a dictionnary
+        return tree_to_nested_dict(tree, attr_dict={
+            "filepath": "filepath",
+            "total_files": "total_files",
+            "total_filesize": "total_filesize",
+            "recursive_files": "recursive_files",
+            "recursive_filesize": "recursive_filesize",
+        })
