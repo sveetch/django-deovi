@@ -1,13 +1,12 @@
 """
 Application URLs
 """
-from django.urls import path, include
+from django.urls import path
 
 from .views import (
     DeviceIndexView, DeviceDetailView, DeviceTreeView, DirectoryDetailView,
     DeviceTreeExportView,
 )
-from .routers import router
 
 
 app_name = "django_deovi"
@@ -15,7 +14,6 @@ app_name = "django_deovi"
 
 urlpatterns = [
     path("", DeviceIndexView.as_view(), name="device-index"),
-    path("api/", include(router.urls)),
     path(
         "<slug:device_slug>/",
         DeviceDetailView.as_view(),

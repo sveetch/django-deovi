@@ -149,7 +149,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.forms",
     "django_deovi",
-    "rest_framework",
     "sorl.thumbnail",
     "smart_media",
 ]
@@ -161,15 +160,6 @@ LOGOUT_REDIRECT_URL = "/"
 # directory, require also 'django.forms' in INSTALLED_APPS
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
-
-# Django REST Framework configuration
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
-}
 
 """
 django-view-breadcrumbs optional part
