@@ -33,6 +33,11 @@
         margin-right: -.5 * $spacer;
         margin-left: -.5 * $spacer;
         margin-bottom: 3rem;
+
+        &.treegrid {
+            margin: 0 auto;
+            max-width: rem-calc(1200px);
+        }
     }
 
     // Pagination is a full width cell

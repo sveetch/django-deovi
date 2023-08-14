@@ -1,0 +1,23 @@
+{% load i18n deovi %}
+<li class="treegrid__item">
+    <details class="treegrid__wrapper{% if not directory.children %}treegrid__wrapper--empty{% endif %}" open>
+        <summary class="treegrid__directory">
+            <div class="name">
+                <input type="checkbox" name="pol" id="{{ directory.filepath|slugify }}" value="{{ directory.filepath }}">
+                <label for="{{ directory.filepath|slugify }}">{{ directory.name }}</label>
+            </div>
+            <div class="counter">{{ directory.total_files }}</div>
+            {% comment %}<div class="size">{{ directory.total_filesize|filesizeformat }}</div>{% endcomment %}
+            <div class="counter">{{ directory.recursive_files }}</div>
+            <div class="size">{{ directory.recursive_filesize|filesizeformat }}</div>
+        </summary>
+
+        {% if directory.children %}
+            <ul class="treegrid__children">
+                {% for child in directory.children %}
+                    {% include "django_deovi/device/_tree-item.html" with device=device directory=child %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </details>
+</li>

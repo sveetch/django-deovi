@@ -103,11 +103,13 @@ class Device(models.Model):
             directory item will carries a payload with some informations:
 
             * ``filepath``: directory path;
-            * ``total_files``: children files counter;
-            * ``total_filesize``: total size of children files in bytes;
+            * ``total_files``: current directory files counter;
+            * ``total_filesize``: total size of current directory files in bytes;
+            * ``recursive_files``: children files counter;
+            * ``recursive_filesize``: total size of children files in bytes;
 
-            Additionally a 'children' item can be set to a list of children directories
-            if any.
+            Additionally a ``children`` item can be set to a list of children
+            directories if any.
         """
         # Get all device directories
         directories = self.directories.all().order_by("path")

@@ -46,6 +46,18 @@
         {% endwith %}
     </div>
     <div class="device-detail__directories directory-list">
+        <div class="btn-toolbar w-100 justify-content-between pb-2 mb-2"
+             role="toolbar" aria-label="Device toolbar">
+            <div class="btn-group btn-group-sm" role="group"
+                 aria-label="Device navigation">
+                <a class="btn btn-secondary"
+                   href="{% url "django_deovi:device-tree" device_slug=device_object.slug %}">
+                    <i class="bi bi-folder me-1"></i>
+                    Device tree
+                </a>
+            </div>
+        </div>
+
         {% for directory_object in object_list %}
         <div class="directory-list__item">
             <div class="card">

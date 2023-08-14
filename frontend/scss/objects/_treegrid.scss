@@ -1,0 +1,131 @@
+.treegrid {
+    --spacing: 2rem;
+    --radius: #{rem-calc(10px)};
+
+    // Base children item
+    .treegrid__item {
+        display: block;
+        position: relative;
+        padding-left: calc(2 * var(--spacing) - var(--radius) - 2px);
+        border-top: $onepixel dotted $gray-700;
+    }
+
+    // Root node
+    .treegrid__container {
+        margin-left: 0 !important;
+    }
+
+    // List of directory children items
+    .treegrid__children {
+        margin-left: calc(var(--radius) - var(--spacing));
+        padding-left: 0;
+        background: rgba($gray-800, 0.3);
+
+        // Direct children item from the root node
+        &.treegrid__container > .treegrid__item {
+            border-top: 0;
+
+            &::before {
+                display: none;
+            }
+        }
+
+        .treegrid__item {
+            border-left : 2px solid #ddd;
+
+            &:last-child {
+                border-color : $gray-700 transparent transparent transparent;
+            }
+
+            // Tree line
+            &::before {
+                content: '';
+                display: block;
+                position: absolute;
+                top: calc(var(--spacing) / -2);
+                left: -2px;
+                width: calc(var(--spacing) + 2px);
+                height: calc(var(--spacing) + 1px);
+                border: solid #ddd;
+                border-width : 0 0 2px 2px;
+            }
+        }
+    }
+
+    // Holder of directory item informations
+    .treegrid__directory {
+        //cursor: pointer;
+        display: flex;
+        flex-wrap: nowrap;
+        padding: 0.1rem 0;
+
+        &--headers::before,
+        &--headers::after {
+            display: none !important;
+        }
+
+        .name {
+            @include bb-flex(1, 1, auto);
+
+            input {
+                margin-right: 0.3rem;
+            }
+        }
+        .counter {
+            @include bb-flex(0, 1, 5rem);
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            text-align: right;
+            border-left: 1px solid $gray-700;
+        }
+        .size {
+            @include bb-flex(0, 1, 6rem);
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            text-align: right;
+            border-left: 1px solid $gray-700;
+        }
+
+        // Directory infos highlight
+        &:hover {
+            background: rgba($gray-700, 0.4);
+        }
+
+        // Accessibility adjustments
+        &::marker,
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:focus-visible {
+            outline: 1px dotted #000;
+        }
+    }
+
+    // Add item folder icon
+    .treegrid__item::after,
+    .treegrid__directory::before {
+        @include bi-icon("folder-fill");
+        position: absolute;
+        top: calc(var(--spacing) / 2 - var(--radius));
+        left: calc(var(--spacing) - var(--radius) - 1px);
+        width: calc(2 * var(--radius));
+        height: calc(2 * var(--radius));
+    }
+
+    // React to clic event on folder
+    .treegrid__wrapper:not(.treegrid__wrapper--empty) > .treegrid__directory::before {
+        z-index: 1;
+        @include bi-icon("plus");
+        color: $gray-800;
+    }
+
+    .treegrid__wrapper:not(.treegrid__wrapper--empty)[open] > .treegrid__directory::before{
+        @include bi-icon("dash");
+        color: $gray-800;
+    }
+}
