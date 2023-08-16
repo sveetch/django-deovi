@@ -4,7 +4,7 @@
 History
 =======
 
-Version 0.6.0 - Unreleased
+Version 0.6.0 - 2023/08/16
 --------------------------
 
 * Implemented new features from Deovi version 0.5.2 to 0.6.1;
