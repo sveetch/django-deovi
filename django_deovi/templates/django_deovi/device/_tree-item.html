@@ -3,7 +3,14 @@
     <details class="treegrid__wrapper{% if not directory.children %}treegrid__wrapper--empty{% endif %}" open>
         <summary class="treegrid__directory">
             <div class="name">
-                <input type="checkbox" name="pol" id="{{ directory.filepath|slugify }}" value="{{ directory.filepath }}">
+                <input type="checkbox" name="path-selection" class="path-selection"
+                       id="{{ directory.filepath|slugify }}"
+                       value="{{ directory.filepath }}"
+                       data-name="{{ directory.name }}"
+                       data-total_files="{{ directory.total_files }}"
+                       data-total_filesize="{{ directory.total_filesize }}"
+                       data-recursive_files="{{ directory.recursive_files }}"
+                       data-recursive_filesize="{{ directory.recursive_filesize }}">
                 <label for="{{ directory.filepath|slugify }}">{{ directory.name }}</label>
             </div>
             <div class="counter">{{ directory.total_files }}</div>

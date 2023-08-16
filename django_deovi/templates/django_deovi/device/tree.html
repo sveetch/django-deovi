@@ -76,14 +76,18 @@
                     <ul class="dropdown-menu">
                         <li>
                             <a class="dropdown-item treegrid-export-action"
-                               data-treegrid-action="path-list-text"
+                               data-treegrid-form="#treegrid-form"
+                               data-treegrid-action="list-text"
+                               data-treegrid-title="Export selection to a plain text list"
                                href="#">
                                 A list of paths
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item treegrid-form"
-                               data-treegrid-action="path-details-json"
+                            <a class="dropdown-item treegrid-export-action"
+                               data-treegrid-form="#treegrid-form"
+                               data-treegrid-action="details-json"
+                               data-treegrid-title="Export selection details to JSON"
                                href="#">
                                 Path details as JSON
                             </a>
@@ -101,41 +105,30 @@
             <div class="size">Filesize</div>
         </div>
 
-        <form action="" id="treegrid-form">
+        <form action="{% url "django_deovi:device-tree-export" device_slug=device_object.slug %}" id="treegrid-form">
+            {% csrf_token %}
             <ul class="treegrid__container treegrid__children" id="device-detail-tree">
                 {% include "django_deovi/device/_tree-item.html" with parent_last=True level=1 device=device directory=device_object.get_directory_tree %}
             </ul>
         </form>
     </div>
 </div>
+
+<div id="treegrid-export-modal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="copy-button btn btn-primary">
+                    <i class="copy-icon"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endspaceless %}{% endblock app_content %}
-
-{% block javascript %}{{ block.super }}
-    <script>
-        // Remove 'open' attribute from all treegrid items to close them all
-        function handleTreegridCloseAllItem(button) {
-            let target = button.dataset.treegridTarget + " .treegrid__wrapper";
-            document.querySelectorAll(target).forEach(
-                item => item.removeAttribute("open")
-            );
-        }
-        // Set 'open' attribute from all treegrid items to open them all
-        function handleTreegridOpenAllItem(button) {
-            let target = button.dataset.treegridTarget + " .treegrid__wrapper";
-            document.querySelectorAll(target).forEach(
-                item => item.setAttribute("open", "true")
-            );
-        }
-
-        // Bind click event on buttons to open/close treegrid items
-        document.querySelectorAll("#treegrid-open-all").forEach(button => button.addEventListener(
-            "click",
-            () => handleTreegridOpenAllItem(button)
-        ));
-        document.querySelectorAll("#treegrid-close-all").forEach(button => button.addEventListener(
-            "click",
-            () => handleTreegridCloseAllItem(button)
-        ));
-    </script>
-{% endblock javascript %}
-

@@ -28,19 +28,24 @@ window.bootstrap = require("bootstrap/dist/js/bootstrap.bundle.js");
 import {
     Alert,
     Button,
-    Carousel,
     Collapse,
     Dropdown,
     Modal,
     Popover,
-    ScrollSpy,
     Tab,
     Toast,
     Tooltip,
 } from "bootstrap/dist/js/bootstrap.bundle.js";
 
+import { DeviceTreeDisplay, DeviceTreeExport } from "./components/device-tree";
+
 //
-// NOTE: Sample how to instanciate a Bootstrap component object.
+// Run components once DOM is loaded
 //
-// var myModal = new Modal(document.getElementById("exampleModalDefault"));
-// myModal.show();
+document.addEventListener("DOMContentLoaded", function () {
+    // Device tree UI features
+    DeviceTreeDisplay();
+
+    // Device tree export features
+    DeviceTreeExport();
+});

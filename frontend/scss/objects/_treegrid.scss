@@ -1,3 +1,8 @@
+///
+/// Treegrid components
+///
+
+// The tree itself
 .treegrid {
     --spacing: 2rem;
     --radius: #{rem-calc(10px)};
@@ -127,5 +132,25 @@
     .treegrid__wrapper:not(.treegrid__wrapper--empty)[open] > .treegrid__directory::before{
         @include bi-icon("dash");
         color: $gray-800;
+    }
+}
+
+
+// Modal object related to Tree export feature
+#treegrid-export-modal {
+    .copy-button {
+        // Initial icon
+        .copy-icon::after {
+            @include bi-icon("clipboard2-fill");
+        }
+
+        // Button state on copy success
+        &.active {
+            background: $success;
+
+            .copy-icon::after {
+                @include bi-icon("clipboard2-check-fill");
+            }
+        }
     }
 }
