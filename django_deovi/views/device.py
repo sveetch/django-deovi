@@ -132,23 +132,87 @@ class DeviceTreeExportView(SingleObjectMixin, View):
     payload for tasks will be given. Expected task payload structure may vary from a
     task to another.
 
+    Expected base data structure is always: ::
+
+        {
+            "action": "...",
+            "data": ...
+        }
+
+    Where ``action`` is always a name available in DeviceTreeExportView attribute
+    ``task_actions``. And ``data`` content depends from task.
+
     Implemented tasks:
 
     ping
         A very basic task that won't do anything except return a basic dictionnary,
         this is only for debugging purpose.
 
+        Expected payload would be: ::
+
+            {
+                "action": "ping",
+                "data": ...
+            }
+
+        With this task, the ``data`` content can be anything since we don't care about
+        it.
+
     list-text
         Just returns a list of paths from selection in payload.
 
+        Expected payload would be: ::
+
+            {
+                "action": "list-text",
+                "data": {
+                    "paths": [
+                        {
+                            "path": "...",
+                        }
+                    ]
+                }
+            }
+
+        A 'paths' item can contains more fields than ``path`` but they are useless.
+
     details-json
         Returns the selected path detail into a dumped JSON (string).
+
+        Expected payload would be: ::
+
+            {
+                "action": "details-json",
+                "data": {
+                    "paths": [
+                        {
+                            "path": "...",
+                            "name": "...",
+                            "total_files":"22",
+                            "total_filesize": "9538655531",
+                            "recursive_files": "22",
+                            "recursive_filesize": "9538655531"
+                        }
+                    ]
+                }
+            }
+
+        But for true, ``paths`` content structure is almost free since it is just
+        dumped to JSON without any computation.
+
+    Finally all success responses will return a payload alike: ::
+
+        {
+            "content": ...
+        }
+
+    Where ``content`` will contains action output.
 
     """
     model = Device
     http_method_names = ["post"]
     slug_url_kwarg = "device_slug"
-    task_actions = ["ping", "details-json", "list-text"]
+    task_actions = ["details-json", "list-text", "ping"]
 
     def get_queryset(self):
         """
@@ -193,14 +257,19 @@ class DeviceTreeExportView(SingleObjectMixin, View):
 
     def action_ping(self, request, payload):
         """
-        Just return given payload in payload item ``back``.
+        Just return given payload in payload item ``content``.
         """
-        return JsonResponse({"back": payload})
+        return JsonResponse({"content": payload})
 
     def action_list_text(self, request, payload):
         """
-        Just returns a list of paths from selection in payload.
+        Just returns a sorted list of paths from selection in payload.
         """
+        if "paths" not in payload:
+            return HttpResponseBadRequest(
+                "Request data is invalid, details items must have a 'path' item"
+            )
+
         return JsonResponse({"content": "\n".join(
             sorted([
                 item["path"]
@@ -210,8 +279,13 @@ class DeviceTreeExportView(SingleObjectMixin, View):
 
     def action_details_json(self, request, payload):
         """
-        Returns the selected path detail into a dumped JSON (string)
+        Returns the selected paths details into a dumped JSON (carried in a string).
         """
+        if "paths" not in payload:
+            return HttpResponseBadRequest(
+                "Request data is invalid, details items must have a 'path' item"
+            )
+        print(json.dumps(payload["paths"], indent=4))
         return JsonResponse({
             "content": json.dumps(payload["paths"], indent=4)
         })

@@ -12,6 +12,7 @@ DJANGO_MANAGE=$(SANDBOX_DIR)/manage.py
 FLAKE=$(VENV_PATH)/bin/flake8
 PYTEST=$(VENV_PATH)/bin/pytest
 SPHINX_RELOAD=$(VENV_PATH)/bin/python sphinx_reload.py
+TOX=$(VENV_PATH)/bin/tox
 
 DEMO_DJANGO_SECRET_KEY=samplesecretfordev
 PACKAGE_NAME=django-deovi
