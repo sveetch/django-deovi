@@ -4,6 +4,12 @@
 History
 =======
 
+Version 0.6.1 - 2023/11/06
+--------------------------
+
+Fixed missing management command from released package.
+
+
 Version 0.6.0 - 2023/08/16
 --------------------------
 

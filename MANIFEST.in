@@ -5,8 +5,7 @@ include README.rst
 exclude sphinx_reload.py
 
 recursive-include django_deovi/templates *
-recursive-include django_deovi/static *
-recursive-include django_deovi/locale *
+recursive-include django_deovi/management *
 
 recursive-exclude tests *
 recursive-exclude sandbox *
