@@ -1,6 +1,11 @@
 import logging
 import json
 
+import pytest
+
+from django.core.management.base import CommandError
+
+from django_deovi.exceptions import DjangoDeoviError
 from django_deovi import __pkgname__
 from django_deovi.models import MediaFile
 from django_deovi.factories import (
@@ -128,3 +133,16 @@ def test_dumploader_load_new_device_no_dirs(db, caplog, tests_settings):
             "🏷️Using cover basepath: {}".format(tests_settings.fixtures_path)
         ),
     ]
+
+
+def test_dumploader_load_wrong_slug(db, caplog, tests_settings):
+    """
+    Invalid device slug should raise an error.
+    """
+    caplog.set_level(logging.DEBUG, logger=__pkgname__)
+
+    # Proceed to loading
+    loader = DumpLoader()
+
+    with pytest.raises((DjangoDeoviError, CommandError)):
+        loader.load("L'éléctricté, yo.", {})

@@ -8,7 +8,9 @@ import json
 
 from pathlib import Path
 
+from django.core.exceptions import ValidationError
 from django.core.files import File
+from django.core.validators import validate_slug
 from django.utils import timezone
 
 from .dump import DumpedFile
@@ -358,8 +360,15 @@ class DumpLoader:
                 every cover files paths are resolved from this base dir.
         """
         self.log.info("🏷️Using device slug: {}".format(device_slug))
+
+        try:
+            validate_slug(device_slug)
+        except ValidationError as e:
+            self.log.critical("Invalid device slug: {}".format("; ".join(e)))
+
         device, created = Device.objects.get_or_create(
             slug=device_slug,
+            defaults={"title": device_slug},
         )
 
         if created:
