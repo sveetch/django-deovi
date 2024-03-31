@@ -285,7 +285,7 @@ class DeviceTreeExportView(SingleObjectMixin, View):
             return HttpResponseBadRequest(
                 "Request data is invalid, details items must have a 'path' item"
             )
-        print(json.dumps(payload["paths"], indent=4))
+
         return JsonResponse({
             "content": json.dumps(payload["paths"], indent=4)
         })
