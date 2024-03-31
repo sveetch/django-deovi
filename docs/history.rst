@@ -4,6 +4,14 @@
 History
 =======
 
+Version 0.6.2 - Unreleased
+--------------------------
+
+* Fixed requirements for optional ``bigtree`` dependency to ``pandas``;
+* Added field ``last_update`` to ``Device`` model;
+* Improved model admins with list display, list filters and field search;
+
+
 Version 0.6.1 - 2023/11/06
 --------------------------
 

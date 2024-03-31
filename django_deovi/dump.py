@@ -130,7 +130,7 @@ class DumpedFile:
 
     def _convert_type(self, modelname, value):
         """
-        Should convert value type to the right one according to the field.
+        Convert value type to the right one according to the field.
 
         stored_date
             If a string it will be converted to a datetime else it is assumed to

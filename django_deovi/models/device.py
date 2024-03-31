@@ -42,6 +42,18 @@ class Device(models.Model):
     Required datetime for when the file has been loaded.
     """
 
+    last_update = models.DateTimeField(
+        _("last update"),
+        db_index=True,
+        default=timezone.now,
+        help_text=_(
+            "The last update date for this device."
+        ),
+    )
+    """
+    Last device change date.
+    """
+
     COMMON_ORDER_BY = ["title"]
     """
     List of field order commonly used in frontend view/api
@@ -139,3 +151,9 @@ class Device(models.Model):
             "recursive_files": "recursive_files",
             "recursive_filesize": "recursive_filesize",
         })
+
+    def save(self, *args, **kwargs):
+        # Auto update 'last_update' value on each save
+        self.last_update = timezone.now()
+
+        super().save(*args, **kwargs)

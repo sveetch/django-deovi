@@ -6,9 +6,10 @@ from django.contrib import admin
 from ..models import Device
 
 
+@admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
-    pass
-
-
-# Registering interface to model
-admin.site.register(Device, DeviceAdmin)
+    list_display = (
+        "slug",
+        "created_date",
+        "last_update",
+    )
