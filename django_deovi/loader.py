@@ -381,5 +381,7 @@ class DumpLoader:
         self.log.info("🏷️Using cover basepath: {}".format(covers_basepath))
 
         dump_content = self.open_dump(dump)
+        device_stats = dump_content["device"]
+        registry = dump_content["registry"]
 
-        self.process_directory(device, dump_content, covers_basepath)
+        self.process_directory(device, registry, covers_basepath)

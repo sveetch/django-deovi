@@ -114,10 +114,17 @@ def test_loader_process_directory_basic(db, caplog, tests_settings):
     dump_path = tests_settings.fixtures_path / "dump_directories.json"
 
     loader = DumpLoader()
-    dump_content = loader.open_dump(dump_path)
+    payload = loader.open_dump(dump_path)
+    device_stats = payload["device"]
+    dump_content = payload["registry"]
     loader.process_directory(device, dump_content, tests_settings.fixtures_path)
 
     assert MediaFile.objects.count() == 6
+
+    assert device_stats["total"] > 0
+    assert device_stats["used"] > 0
+    assert device_stats["free"] > 0
+    assert device_stats["percentage"] > 0
 
     # Ensure each difference have been applied and nothing has been dropped
     fetched_s01e01 = MediaFile.objects.get(path=BillyBoy_S01E01.path)
@@ -251,7 +258,8 @@ def test_loader_process_directory_checksum(db, caplog, tests_settings):
 
     # Open sample dump
     loader = DumpLoader()
-    dump_content = loader.open_dump(dump_path)
+    payload = loader.open_dump(dump_path)
+    dump_content = payload["registry"]
 
     # Patch dump to fill some fields that fixture file does not include
     # Identical checksum discard any update

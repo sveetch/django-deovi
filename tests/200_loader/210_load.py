@@ -22,8 +22,12 @@ def test_dumploader_load(db, caplog, tests_settings):
 
     # Simplify dump to only keep a single directory
     dump_path = tests_settings.fixtures_path / "dump_directories.json"
+    payload = json.loads(dump_path.read_text())
     dump_content = {
-        "series/BillyBoy": json.loads(dump_path.read_text())["series/BillyBoy"]
+        "device": {},
+        "registry": {
+            "series/BillyBoy": payload["registry"]["series/BillyBoy"]
+        },
     }
 
     device = DeviceFactory(slug="donald")
@@ -112,7 +116,11 @@ def test_dumploader_load_new_device_no_dirs(db, caplog, tests_settings):
 
     # Proceed to loading
     loader = DumpLoader()
-    loader.load("nope", {}, covers_basepath=tests_settings.fixtures_path)
+    loader.load(
+        "nope",
+        {"device": {}, "registry": {}},
+        covers_basepath=tests_settings.fixtures_path
+    )
 
     assert MediaFile.objects.count() == 0
 
