@@ -344,6 +344,39 @@ class DumpLoader:
 
         return saved
 
+    def set_device_stats(self, device, stats):
+        """
+        Set device disk usage values.
+
+        This will try to no update the device if no usage values have changed to avoid
+        triggering ``Device.last_update`` date change.
+
+        Arguments:
+            device (django_deovi.models.Device): Device object to update.
+            stats (dict): Dictionnary of disk usage items from dump.
+
+        Returns:
+            bool: True if device has been updated else False.
+        """
+        changed = False
+
+        if device.disk_total != stats["total"]:
+            device.disk_total = stats["total"]
+            changed = True
+
+        if device.disk_used != stats["used"]:
+            device.disk_used = stats["used"]
+            changed = True
+
+        if device.disk_free != stats["free"]:
+            device.disk_free = stats["free"]
+            changed = True
+
+        if changed:
+            device.save()
+
+        return changed
+
     def load(self, device_slug, dump, covers_basepath=None):
         """
         Load a Deovi dump to create and update MediaFile objects for the dump directory
@@ -366,6 +399,8 @@ class DumpLoader:
         except ValidationError as e:
             self.log.critical("Invalid device slug: {}".format("; ".join(e)))
 
+        # Get existing device from slug if any else create a new one using slug as the
+        # default title
         device, created = Device.objects.get_or_create(
             slug=device_slug,
             defaults={"title": device_slug},
@@ -380,8 +415,18 @@ class DumpLoader:
         covers_basepath = covers_basepath or Path.cwd()
         self.log.info("🏷️Using cover basepath: {}".format(covers_basepath))
 
-        dump_content = self.open_dump(dump)
-        device_stats = dump_content["device"]
-        registry = dump_content["registry"]
+        dump_payload = self.open_dump(dump)
+        try:
+            device_stats = dump_payload["device"]
+            registry = dump_payload["registry"]
+        except KeyError:
+            self.log.critical(
+                "The JSON dump structure does not fit to Deovi>=0.7.0, it must "
+                "have a 'device' and 'registry'."
+            )
 
+        # Update device with disk usage
+        self.set_device_stats(device, device_stats)
+
+        # Go collecting into device directories
         self.process_directory(device, registry, covers_basepath)

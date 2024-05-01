@@ -1,4 +1,4 @@
-# Frozen requirement versions from '0.6.2rc4' installation
+# Frozen requirement versions from '0.6.2rc5' installation
 bigtree==0.10.3
 deovi==0.7.0
 Django==4.0.10

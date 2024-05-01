@@ -24,7 +24,11 @@ def test_dumploader_load(db, caplog, tests_settings):
     dump_path = tests_settings.fixtures_path / "dump_directories.json"
     payload = json.loads(dump_path.read_text())
     dump_content = {
-        "device": {},
+        "device": {
+            "total": 1000,
+            "used": 250,
+            "free": 750,
+        },
         "registry": {
             "series/BillyBoy": payload["registry"]["series/BillyBoy"]
         },
@@ -118,7 +122,14 @@ def test_dumploader_load_new_device_no_dirs(db, caplog, tests_settings):
     loader = DumpLoader()
     loader.load(
         "nope",
-        {"device": {}, "registry": {}},
+        {
+            "device": {
+                "total": 1000,
+                "used": 250,
+                "free": 750,
+            },
+            "registry": {}
+        },
         covers_basepath=tests_settings.fixtures_path
     )
 

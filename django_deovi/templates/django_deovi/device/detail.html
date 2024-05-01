@@ -1,5 +1,5 @@
 {% extends "django_deovi/base.html" %}
-{% load i18n smart_image %}
+{% load i18n smart_image deovi %}
 
 {% block head_title %}{{ device_object }} - {{ block.super }}{% endblock head_title %}
 
@@ -11,7 +11,7 @@
             <div class="device-detail__stats stats">
                 <div class="stats__cell">
                     <div><i class="h5 bi bi-bar-chart-fill"></i></div>
-                    <div><small class="text-muted sm-2 fw-normal">{% trans "Total size" %}</small></div>
+                    <div><small class="text-muted sm-2 fw-normal">{% trans "Total file size" %}</small></div>
                     <h3 class="fw-bold mb-0 fs-5">{{ resume.filesize|filesizeformat }}</h3>
                 </div>
                 <div class="stats__cell">
@@ -41,6 +41,23 @@
                             {{ resume.last_media_update|date:"SHORT_DATE_FORMAT" }}
                         </abbr>
                     </h3>
+                </div>
+                <div class="stats__cell">
+                    <div><i class="h5 bi bi-hdd-fill"></i></div>
+                    <div><small class="text-muted sm-2 fw-normal">{% trans "Disk total" %}</small></div>
+                    <h3 class="fw-bold mb-0 fs-5">{{ resume.disk_total|filesizeformat }}</h3>
+                </div>
+                <div class="stats__cell">
+                    <div><i class="h5 bi bi-hdd"></i></div>
+                    <div><small class="text-muted sm-2 fw-normal">{% trans "Disk free" %}</small></div>
+                    <h3 class="fw-bold mb-0 fs-5">{{ resume.disk_free|filesizeformat }}</h3>
+                </div>
+                <div class="stats__cell">
+                    <div>
+                        {% show_occupancy_svg device_object resume=resume %}
+                    </div>
+                    <div><small class="text-muted sm-2 fw-normal">{% trans "Occupancy" %}</small></div>
+                    {% comment %}<h3 class="fw-bold mb-0 fs-5">{{ resume.filesize|filesizeformat }}</h3>{% endcomment %}
                 </div>
             </div>
         {% endwith %}

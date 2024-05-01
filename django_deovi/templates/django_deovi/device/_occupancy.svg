@@ -1,0 +1,10 @@
+{% load deovi %}{% get_circle_values resume.disk_occupancy as circle_values %}
+{% format_number circle_values.circumference unit="px" as stroke_dasharray %}
+{% format_number circle_values.offset unit="px" as stroke_dashoffset %}
+<svg style="transform: rotate(-90deg);" xmlns="http://www.w3.org/2000/svg" viewBox="-25 -25 250 250">
+    <g transform="rotate(-90,100,100)">
+        <circle stroke="#e0e0e0" stroke-dasharray="{{ stroke_dasharray }}" stroke-dashoffset="0" stroke-width="30px" style="fill: none;" cx="100" cy="100" r="90" fill="transparent" />
+        <circle stroke="{% if resume.disk_occupancy < 30 %}#2BE189{% elif resume.disk_occupancy < 60 %}#3498db{% elif resume.disk_occupancy < 90 %}#FF6530{% else %}#FA2F4B{% endif %}" stroke-dasharray="{{ stroke_dasharray }}" stroke-dashoffset="{{ stroke_dashoffset }}" stroke-width="16px" style="fill: none;" cx="100" cy="100" r="90" fill="transparent" />
+    </g>
+    <text font-size="52px" font-weight="bold" fill="#e0e0e0" style="transform: rotate(90deg) translate(0px, -196px);" x="50px" y="118px">{{ resume.disk_occupancy|floatformat:"0" }}%</text>
+</svg>

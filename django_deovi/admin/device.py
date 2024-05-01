@@ -10,6 +10,10 @@ from ..models import Device
 class DeviceAdmin(admin.ModelAdmin):
     list_display = (
         "slug",
+        "title",
+        "disk_total",
+        "disk_used",
+        "disk_free",
         "created_date",
         "last_update",
     )

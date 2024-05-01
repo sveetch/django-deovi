@@ -71,10 +71,10 @@
             padding-left: map-get($spacers, 2);
             margin-top: $spacer;
             flex: 0 0 auto;
-            width: 16.5%;
+            width: 12.5%;
 
             .directory-list__title {
-                @include font-size($h6-font-size);
+                @include font-size(0.8rem);
                 color: $white;
                 font-weight: $font-weight-bold;
                 margin: 0;

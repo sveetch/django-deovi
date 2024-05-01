@@ -24,7 +24,7 @@ def test_device_basic(db):
 
 def test_device_required_fields(db):
     """
-    Basic model validation with missing required files should fail
+    Basic model validation with missing required files should fail.
     """
     device = Device()
 
@@ -34,6 +34,28 @@ def test_device_required_fields(db):
     assert excinfo.value.message_dict == {
         "title": ["This field cannot be blank."],
         "slug": ["This field cannot be blank."],
+    }
+
+
+def test_device_positive_integer_fields(db):
+    """
+    Basic model validation with negative integer on disk usage fields should fail.
+    """
+    device = Device(
+        title="Foo bar",
+        slug="foo-bar",
+        disk_total=-1,
+        disk_used=-1,
+        disk_free=-1
+    )
+
+    with pytest.raises(ValidationError) as excinfo:
+        device.full_clean()
+
+    assert excinfo.value.message_dict == {
+        "disk_total": ["Ensure this value is greater than or equal to 0."],
+        "disk_used": ["Ensure this value is greater than or equal to 0."],
+        "disk_free": ["Ensure this value is greater than or equal to 0."],
     }
 
 
@@ -89,6 +111,10 @@ def test_device_resume(db):
     nope_last = MediaFileFactory(directory=nopes, filesize=555, loaded_date=date_1_jan)
 
     assert primary.resume() == {
+        "disk_total": 0,
+        "disk_used": 0,
+        "disk_free": 0,
+        "disk_occupancy": 0.0,
         "directories": 2,
         "mediafiles": 5,
         "filesize": 623,
@@ -96,6 +122,10 @@ def test_device_resume(db):
     }
 
     assert secondary.resume() == {
+        "disk_total": 0,
+        "disk_used": 0,
+        "disk_free": 0,
+        "disk_occupancy": 0.0,
         "directories": 1,
         "mediafiles": 1,
         "filesize": 555,
@@ -103,6 +133,10 @@ def test_device_resume(db):
     }
 
     assert empty.resume() == {
+        "disk_total": 0,
+        "disk_used": 0,
+        "disk_free": 0,
+        "disk_occupancy": 0.0,
         "directories": 0,
         "mediafiles": 0,
         "filesize": 0,

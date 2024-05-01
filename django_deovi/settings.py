@@ -23,3 +23,8 @@ MEDIAFILE_PAGINATION = 60
 MediaFile entry per page limit for pagination, set it to ``None`` to disable
 pagination.
 """
+
+DEVICE_OCCUPANCY_SVG = "django_deovi/device/_occupancy.svg"
+"""
+Path to Occupancy SVG template used by tag ``show_occupancy_svg``
+"""

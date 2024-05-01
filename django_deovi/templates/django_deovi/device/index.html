@@ -1,5 +1,5 @@
 {% extends "django_deovi/base.html" %}
-{% load i18n %}
+{% load i18n deovi %}
 
 {% block head_title %}{% trans "Devices" %} - {{ block.super }}{% endblock head_title %}
 
@@ -17,20 +17,24 @@
                     <div class="card-body">
                         {% with device_object.resume as resume %}
                         <div class="row gx-1 mt-3 mb-1">
-                            <div class="device-directories col-3 text-center">
+                            <div class="device-directories col-5 text-center">
                                 <div><i class="h4 bi bi-folder"></i></div>
                                 <div><small class="sm-2">{% trans "Directories" %}</small></div>
                                 <div class="h3">{{ resume.directories }}</div>
-                            </div>
-                            <div class="device-medias col-3 text-center">
-                                <div><i class="h4 bi bi-film"></i></div>
+                                <div class="mt-4"><i class="h4 bi bi-film"></i></div>
                                 <div><small class="sm-2">{% trans "Medias" %}</small></div>
                                 <div class="h3">{{ resume.mediafiles }}</div>
                             </div>
-                            <div class="device-size col-6 text-center">
-                                <div><i class="h4 bi bi-bar-chart-fill"></i></div>
-                                <div><small class="sm-2">{% trans "Total size" %}</small></div>
-                                <div class="h3">{{ resume.filesize|filesizeformat }}</div>
+                            <div class="device-occupancy col-7 text-center">
+                                {% show_occupancy_svg device_object resume=resume %}
+                            </div>
+                            <div class="col-4"></div>
+                            <div class="device-occupancy col-8 text-center">
+                                <div class="index-devices row g-0 row-cols-3">
+                                    <div class="col">Used<br>{{ resume.disk_used|filesizeformat }}</div>
+                                    <div class="col">Free<br>{{ resume.disk_free|filesizeformat }}</div>
+                                    <div class="col">Total<br>{{ resume.disk_total|filesizeformat }}</div>
+                                </div>
                             </div>
                         </div>
                         {% endwith %}
@@ -39,8 +43,7 @@
                         <div class="row">
                             <div class="col align-middle">
                                 <small class="text-muted">
-                                    {% comment %}TODO: This should be the last update directory or a new Device.modified field{% endcomment %}
-                                    Last updated {{ device_object.created_date|timesince }}
+                                    Last updated {{ device_object.last_update|timesince }}
                                 </small>
                             </div>
                             <div class="col-md-auto text-end">

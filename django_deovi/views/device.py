@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView, View
 from django.views.generic.detail import SingleObjectMixin
+from django.template.defaultfilters import filesizeformat
+
 
 from .mixins import DeoviBreadcrumMixin
 from ..models import Device, Directory
@@ -206,13 +208,13 @@ class DeviceTreeExportView(SingleObjectMixin, View):
             "content": ...
         }
 
-    Where ``content`` will contains action output.
+    Where ``content`` will contains action output as a string.
 
     """
     model = Device
     http_method_names = ["post"]
     slug_url_kwarg = "device_slug"
-    task_actions = ["details-json", "list-text", "ping"]
+    task_actions = ["details-json", "list-text", "size-sum", "ping"]
 
     def get_queryset(self):
         """
@@ -288,4 +290,47 @@ class DeviceTreeExportView(SingleObjectMixin, View):
 
         return JsonResponse({
             "content": json.dumps(payload["paths"], indent=4)
+        })
+
+    def action_size_sum(self, request, payload):
+        """
+        Returns the sum of selected path sizes.
+        """
+        if "paths" not in payload:
+            return HttpResponseBadRequest(
+                "Request data is invalid, details items must have a 'path' item"
+            )
+
+        # Prepare lines from selections
+        lines = [
+            [
+                item["name"],
+                int(item["recursive_filesize"]),
+                filesizeformat(item["recursive_filesize"])
+            ]
+            for item in payload["paths"]
+        ]
+
+        # Get the max size of name and formatted size
+        name_column_width = max([len(k) for k, v, f in lines]) + 1
+        size_column_width = max([len(f) for k, v, f in lines]) + 2
+
+        # Push lines in output
+        output = []
+        for name, size, formatted in lines:
+            output.append(
+                name.ljust(name_column_width) + ":" +
+                formatted.rjust(size_column_width)
+            )
+
+        # Add final divider and total sum
+        output.append("-" * (name_column_width + size_column_width + 1))
+        size_sum = sum([size for name, size, formatted in lines])
+        output.append(
+            "Total".ljust(name_column_width) + ":" +
+            filesizeformat(size_sum).rjust(size_column_width)
+        )
+
+        return JsonResponse({
+            "content": "\n".join(output)
         })

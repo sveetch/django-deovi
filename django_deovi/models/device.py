@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +12,10 @@ from ..utils.tree import DirectoryInfosNode
 class Device(models.Model):
     """
     A device container to hold Directory objects.
+
+    Even through it is called a device (because it is should be the common usage), it
+    may be a simple directory path, therefore the disk usage will not be accurate to
+    the path itself.
     """
     title = models.CharField(
         _("title"),
@@ -31,6 +36,46 @@ class Device(models.Model):
     )
     """
     Required unique slug string.
+    """
+
+    disk_total = models.BigIntegerField(
+        _("filesize"),
+        blank=False,
+        default=0,
+        validators=[MinValueValidator(0)],
+        help_text="Total available disk size of which the device belong to.",
+    )
+    """
+    Required file size integer.
+    """
+
+    disk_used = models.BigIntegerField(
+        _("filesize"),
+        blank=False,
+        default=0,
+        validators=[MinValueValidator(0)],
+        help_text=(
+            "Total used disk size of which the device belong to. This will includes"
+            "the device size and everything else that belong onto the same disk."
+        ),
+    )
+    """
+    Required file size integer.
+    """
+
+    disk_free = models.BigIntegerField(
+        _("filesize"),
+        blank=False,
+        default=0,
+        validators=[MinValueValidator(0)],
+        help_text=(
+            "Free space size on disk of which the device belong to. This will be"
+            "computed from the device size and everything else that belong onto the "
+            "same disk."
+        ),
+    )
+    """
+    Required file size integer.
     """
 
     created_date = models.DateTimeField(
@@ -100,6 +145,13 @@ class Device(models.Model):
             last_media_update = None
 
         return {
+            "disk_total": self.disk_total,
+            "disk_used": self.disk_used,
+            "disk_free": self.disk_free,
+            "disk_occupancy": (
+                (self.disk_used / self.disk_total) * 100
+                if self.disk_total else 0.0
+            ),
             "directories": len(directories),
             "mediafiles": sum([item.num_mediafiles for item in directories]),
             "filesize": sum([item.total_filesize for item in directories]),
