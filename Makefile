@@ -237,7 +237,7 @@ run:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running development server <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTHON_BIN) $(DJANGO_MANAGE) runserver 0.0.0.0:8001
+	$(PYTHON_BIN) $(DJANGO_MANAGE) runserver 0.0.0.0:8010
 .PHONY: run
 
 css:
@@ -313,7 +313,7 @@ test:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Tests <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTEST) -vv --reuse-db tests/
+	$(PYTEST) --reuse-db tests/
 	rm -Rf var/media-tests/
 .PHONY: test
 
@@ -321,7 +321,7 @@ test-initial:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Tests from zero <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTEST) -vv --reuse-db --create-db tests/
+	$(PYTEST) --reuse-db --create-db tests/
 	rm -Rf var/media-tests/
 .PHONY: test-initial
 
@@ -366,3 +366,18 @@ quality: test-initial flake docs check-release check-migrations freeze-dependenc
 	@echo "♥ ♥ Everything should be fine ♥ ♥"
 	@echo ""
 .PHONY: quality
+
+install-deploy:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Prepare local deployment <---$(FORMATRESET)\n"
+	@echo ""
+	$(PIP) install -r $(SANDBOX_DIR)/deployment/requirements.txt
+	mkdir -p run
+	mkdir -p var/logs
+.PHONY: deploy
+
+deploy:
+	$(PYTHON_BIN) $(DJANGO_MANAGE) migrate --settings=settings.production
+	$(PYTHON_BIN) $(DJANGO_MANAGE) collectstatic --settings=settings.production
+	$(PYTHON_BIN) $(DJANGO_MANAGE) build_deployment --settings=settings.production
+.PHONY: deploy
