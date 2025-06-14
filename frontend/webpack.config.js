@@ -1,5 +1,6 @@
-const path = require("path");
+const Path = require("path");
 const webpack = require('webpack');
+const BundleTracker = require('webpack-bundle-tracker');
 
 module.exports = {
     // Disable production-specific optimizations by default
@@ -17,7 +18,7 @@ module.exports = {
 
     // Built JS files goes into project staticfile directory
     output: {
-        path: path.resolve("../sandbox/static-sources/js"),
+        path: Path.resolve("../sandbox/static-sources/js"),
         filename: "[name].js",
         publicPath: "/static/js/",
         // Ensure previous bundle builds are cleaned and do not stack forever
@@ -42,5 +43,10 @@ module.exports = {
     },
 
     // Enabled webpack plugins with their config
-    plugins: [],
+    plugins: [
+        new BundleTracker({
+            path: Path.join(__dirname, '../sandbox/static-sources'),
+            filename: 'webpack-stats.json'
+        })
+    ]
 };

@@ -1,6 +1,9 @@
 # virtualenv
 .venv
 
+# pyenv
+.python-version
+
 # Packaging
 build
 dist
@@ -12,7 +15,8 @@ __pycache__/
 
 # Site media and builded statics
 /var/
-/sandbox/static
+/sandbox/static/
+/sandbox/static-sources/
 
 # Settings
 localsettings.py

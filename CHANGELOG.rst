@@ -4,8 +4,28 @@
 History
 =======
 
+Development
+***********
+
+* Added support for **Python>=3.10**;
+* Dropped support for **Django<3.10**;
+* Added support for **Django>=4.2**;
+* Dropped support for **Django<4.2**;
+* Added 'pyproject.toml' file to fix PIP warnings about editable install but package
+  config is still in 'setup.cfg' for now;
+* Moved 'manage.py' script at root of repository to fix issue with latest PIP and
+  setuptools versions that changed how *editable* install works (the sandbox was
+  missing from PYTHONPATH). This have no impact on package itself, it is just for
+  development;
+* Upgraded ``freezer.py`` script;
+* Upgraded Makefile;
+* Upgraded documentation configuration;
+* Upgraded frontend stack to a more recent one with ``sass-embedded`` but keeping
+  Bootstrap 5.2.0;
+
+
 Version 0.6.2 - 2024/05/01
---------------------------
+**************************
 
 * Updated to Deovi==0.7.0, this is a breaking changes since previous Deovi dumps won't
   be compatible anymore (you need to dump with Deovi>=0.7.0);
@@ -20,13 +40,13 @@ Version 0.6.2 - 2024/05/01
 
 
 Version 0.6.1 - 2023/11/06
---------------------------
+**************************
 
 Fixed missing management command from released package.
 
 
 Version 0.6.0 - 2023/08/16
---------------------------
+**************************
 
 * Implemented new features from Deovi version 0.5.2 to 0.6.1;
 * Added new requirement for ``bigtree``;
@@ -35,13 +55,13 @@ Version 0.6.0 - 2023/08/16
 
 
 Version 0.5.1 - Unreleased
---------------------------
+**************************
 
 Implemented new fields from Deovi 0.5.1 collector.
 
 
 Version 0.5.0 - Unreleased
---------------------------
+**************************
 
 Enhanced frontend layout with Bootstrap 5.2.x and some themes from Bootswatch. However
 only the 'Darkly' theme is enabled and internal layout components have been done
@@ -49,6 +69,6 @@ without to bother about using generic theme colors, only 'Darkly'.
 
 
 Version 0.1.0 - Unreleased
---------------------------
+**************************
 
 * First commit.
