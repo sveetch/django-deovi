@@ -22,6 +22,9 @@ Development
 * Upgraded documentation configuration;
 * Upgraded frontend stack to a more recent one with ``sass-embedded`` but keeping
   Bootstrap 5.2.0;
+* Updated settings to use ``pathlib.Path`` instead of ``os``;
+* Added new requirements ``django-haystack`` and ``whoosh-reloaded`` to implement
+  search feature;
 
 
 Version 0.6.2 - 2024/05/01

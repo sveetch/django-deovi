@@ -1,14 +1,12 @@
 """
 Django settings for deployment
 """
-from pathlib import Path
-
 from .base import *  # noqa: F403
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": join(VAR_PATH, "db", "production.sqlite3"),  # noqa: F405
+        "NAME": VAR_PATH / "db" / "production.sqlite3",  # noqa: F405
     }
 }
 
@@ -22,10 +20,10 @@ INSTALLED_APPS.append("deployment")
 DEPLOYMENT_APPNAME = "django_deovi"
 
 # Where to build all the configuration files
-DEPLOYMENT_BUILD_DESTINATION = Path(BASE_DIR) / "etc"
+DEPLOYMENT_BUILD_DESTINATION = BASE_DIR / "etc"
 
 # Where server will write logging files
-DEPLOYMENT_LOGS_DIRPATH = Path(VAR_PATH) / "logs"
+DEPLOYMENT_LOGS_DIRPATH = VAR_PATH / "logs"
 
 # List of configuration template to render with possible options
 DEPLOYMENT_CONFIGURATIONS = (

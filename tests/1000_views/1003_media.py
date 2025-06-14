@@ -1,6 +1,6 @@
 import pytest
 
-from tests.utils import html_pyquery
+from django_deovi.utils.tests import html_pyquery
 
 from django_deovi.factories import MediaFileFactory
 

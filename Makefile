@@ -63,6 +63,12 @@ help:
 	@echo "  po                         -- to update every PO files from application for enabled languages"
 	@echo "  mo                         -- to build MO files from application PO files"
 	@echo
+	@echo "  Search indexes commands"
+	@echo "  ======================="
+	@echo
+	@echo "  search-build               -- to (Re)Build search engine indexes"
+	@echo "  search-update              -- to update search engine indexes"
+	@echo
 	@echo "  Frontend commands"
 	@echo "  ================="
 	@echo
@@ -246,6 +252,20 @@ mo:
 	@echo ""
 	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages --verbosity 3
 .PHONY: mo
+
+search-build:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> (Re)Build search indexes <---$(FORMATRESET)\n"
+	@echo ""
+	$(PYTHON_BIN) $(DJANGO_MANAGE) rebuild_index -v 3 --noinput
+.PHONY: search-build
+
+search-update:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> (Re)Build search indexes <---$(FORMATRESET)\n"
+	@echo ""
+	$(PYTHON_BIN) $(DJANGO_MANAGE) update_index -v 3 --remove
+.PHONY: search-update
 
 css:
 	@echo ""

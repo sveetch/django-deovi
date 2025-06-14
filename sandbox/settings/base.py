@@ -1,25 +1,15 @@
 """
 Base Django settings for sandbox
 """
-
-from os.path import abspath, dirname, join, normpath
+from pathlib import Path
 
 
 SECRET_KEY = "***TOPSECRET***"
 
-
-# Root of project
-BASE_DIR = normpath(
-    join(
-        dirname(abspath(__file__)),
-        "..",
-        "..",
-    )
-)
-
-# Django project
-PROJECT_PATH = join(BASE_DIR, "sandbox")
-VAR_PATH = join(BASE_DIR, "var")
+# Project paths
+BASE_DIR = Path(__file__).parents[2]
+PROJECT_PATH = BASE_DIR / "sandbox"
+VAR_PATH = BASE_DIR / "var"
 
 DEBUG = False
 
@@ -56,7 +46,7 @@ LANGUAGES = (
 
 # A tuple of directories where Django looks for translation files
 LOCALE_PATHS = [
-    join(PROJECT_PATH, "locale"),
+    PROJECT_PATH / "locale",
 ]
 
 SITE_ID = 1
@@ -74,7 +64,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = join(VAR_PATH, "media")
+MEDIA_ROOT = VAR_PATH / "media"
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -85,7 +75,7 @@ MEDIA_URL = "/media/"
 # Don't put anything in this directory yourself; store your static files
 # in apps "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = join(VAR_PATH, "static")
+STATIC_ROOT = VAR_PATH / "static"
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -96,7 +86,7 @@ STATICFILES_DIRS = [
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    join(PROJECT_PATH, "static-sources"),
+    PROJECT_PATH / "static-sources",
 ]
 
 
@@ -120,7 +110,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            join(PROJECT_PATH, "templates"),
+            PROJECT_PATH / "templates",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -148,9 +138,6 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.forms",
-    "django_deovi",
-    "sorl.thumbnail",
-    "smart_media",
 ]
 
 LOGIN_REDIRECT_URL = "/"
@@ -175,7 +162,36 @@ else:
 
 
 """
-SPECIFIC BASE APPLICATIONS SETTINGS BELOW
+Search engine with django-haystack settings
+"""
+INSTALLED_APPS.append("haystack")
+
+HAYSTACK_CONNECTIONS = {
+    "default": {
+        "ENGINE": "haystack.backends.whoosh_backend.WhooshEngine",
+        "PATH": VAR_PATH / "whoosh_index",
+    },
+}
+
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
+
+
+"""
+Django Smart Media settings
 """
 from smart_media.settings import *  # noqa: E402,F401,F403
+
+INSTALLED_APPS.extend([
+    "sorl.thumbnail",
+    "smart_media",
+])
+
+"""
+Django Deovi settings
+"""
 from django_deovi.settings import *  # noqa: E402,F401,F403
+
+INSTALLED_APPS.append("django_deovi")
+
+# App local directory has higher priority over sandbox
+LOCALE_PATHS = [BASE_DIR / "django_deovi/locale"] + LOCALE_PATHS

@@ -39,7 +39,7 @@ class Device(models.Model):
     """
 
     disk_total = models.BigIntegerField(
-        _("filesize"),
+        _("disk total"),
         blank=False,
         default=0,
         validators=[MinValueValidator(0)],
@@ -50,7 +50,7 @@ class Device(models.Model):
     """
 
     disk_used = models.BigIntegerField(
-        _("filesize"),
+        _("disk usage"),
         blank=False,
         default=0,
         validators=[MinValueValidator(0)],
@@ -64,7 +64,7 @@ class Device(models.Model):
     """
 
     disk_free = models.BigIntegerField(
-        _("filesize"),
+        _("disk free"),
         blank=False,
         default=0,
         validators=[MinValueValidator(0)],

@@ -5,6 +5,7 @@ Default application settings
 These are the default settings you can override in your own project settings
 right after the line which load the default app settings.
 
+TODO: Rewrite setting name to be prefixed with 'DEOVI_'
 """
 DEVICE_PAGINATION = 15
 """
@@ -27,4 +28,12 @@ pagination.
 DEVICE_OCCUPANCY_SVG = "django_deovi/device/_occupancy.svg"
 """
 Path to Occupancy SVG template used by tag ``show_occupancy_svg``
+"""
+
+DEOVI_INDEXES_DEBUG = False
+"""
+When enabled, the build and update of search indexes will output every rendered content
+for indexed objects.
+
+This can be huge if you have hundreds or more objects to index.
 """

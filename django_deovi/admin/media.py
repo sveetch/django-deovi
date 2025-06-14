@@ -15,5 +15,10 @@ class MediaFileAdmin(admin.ModelAdmin):
         "stored_date",
         "loaded_date",
     )
-    list_filter = ("container", "stored_date", "loaded_date")
+    list_filter = (
+        "directory__device",
+        "container",
+        "stored_date",
+        "loaded_date"
+    )
     search_fields = ["filename", "path"]
