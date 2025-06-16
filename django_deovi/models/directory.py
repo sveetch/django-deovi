@@ -220,6 +220,50 @@ class Directory(SmartFormatMixin, models.Model):
 
         return json.loads(self.payload)
 
+    def get_genres(self):
+        """
+        Return stored 'genres' from payload.
+
+        Expected 'genres' type is always a list of string.
+
+        Returns:
+            list: Always return a list, either the genre list if there is any else an
+            empty list.
+        """
+        genres = self.get_payload_object().get("genres", [])
+        genres = genres if genres and isinstance(genres, list) else []
+        return [normalize_text(v) for v in genres]
+
+    def get_air_date_year(self):
+        """
+        Return stored air date year.
+
+        Expected 'first_air_date' type is always a string containing divided in three
+        parts with a ``-`` and the first part is assumed to be a four digits valid
+        integer.
+
+        Returns:
+            list: Either the air date year if there is any else None.
+        """
+        air_date = self.get_payload_object().get("first_air_date", None)
+        if (
+            not air_date
+            or not isinstance(air_date, str)
+            or len(air_date.split("-")) < 3
+        ):
+            return None
+
+        year = air_date.split("-")[0]
+        if len(year) < 4:
+            return None
+        else:
+            try:
+                year = int(year)
+            except ValueError:
+                return None
+
+        return year
+
     def resume(self):
         """
         Return a resume of some directory informations.

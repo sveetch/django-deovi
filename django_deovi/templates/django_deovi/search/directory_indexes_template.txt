@@ -1,1 +1,3 @@
-{% comment %}TODO: This should include 'genres' items and maybe 'first_air_date' year{% endcomment %}{{ object.normalized_title }}
+{{ object.normalized_title }}{% if object.get_genres %}
+{{ object.get_genres|join:" " }}{% endif %}{% if object.get_air_date_year %}
+{{ object.get_air_date_year }}{% endif %}

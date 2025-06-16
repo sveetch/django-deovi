@@ -162,6 +162,19 @@ else:
 
 
 """
+Crispy forms part
+"""
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+INSTALLED_APPS.extend([
+    "crispy_forms",
+    "crispy_bootstrap5",
+])
+
+
+"""
 Search engine with django-haystack settings
 """
 INSTALLED_APPS.append("haystack")
@@ -173,7 +186,7 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 60
 
 
 """

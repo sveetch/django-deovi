@@ -27,26 +27,6 @@ def range_filter(end, start=0):
     return list(range(start, end + 1))
 
 
-@register.inclusion_tag(settings.DEVICE_OCCUPANCY_SVG)
-def show_occupancy_svg(device, resume=None):
-    """
-    Render occupancy SVG for given device and its resume.
-
-    If resume is not given, its method will be called from device object. Commonly in
-    templates the resume as been memorized with ``{% with ... %}`` so it is more
-    efficient to use it instead of calling again the method.
-
-    Usage: ::
-
-        {% show_occupancy_svg device %}
-        {% show_occupancy_svg device resume=resume %}
-    """
-    return {
-        "device": device,
-        "resume": resume or device.resume(),
-    }
-
-
 @register.simple_tag
 def format_number(value, precision=None, unit=None):
     """
@@ -85,4 +65,24 @@ def get_circle_values(value, radius=90):
     return {
         "circumference": circumference,
         "offset": offset,
+    }
+
+
+@register.inclusion_tag(settings.DEVICE_OCCUPANCY_SVG)
+def show_occupancy_svg(device, resume=None):
+    """
+    Render occupancy SVG for given device and its resume.
+
+    If resume is not given, its method will be called from device object. Commonly in
+    templates the resume as been memorized with ``{% with ... %}`` so it is more
+    efficient to use it instead of calling again the method.
+
+    Usage: ::
+
+        {% show_occupancy_svg device %}
+        {% show_occupancy_svg device resume=resume %}
+    """
+    return {
+        "device": device,
+        "resume": resume or device.resume(),
     }

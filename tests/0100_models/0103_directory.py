@@ -179,3 +179,34 @@ def test_directory_resume(db):
         "filesize": 555,
         "last_media_update": banana_last.loaded_date,
     }
+
+
+@pytest.mark.parametrize("genres, expected", [
+    (["foo", "bart"], ["foo", "bart"]),
+    ([], []),
+    (None, []),
+    ("", []),
+    (42, []),
+    ("nope", []),
+])
+def test_directory_get_genres(genres, expected):
+    """
+    Should safely return a list of genres if directory got any one else always return
+    an empty list.
+    """
+    directory = DirectoryFactory.build(payload=json.dumps({"genres": genres}))
+    assert directory.get_genres() == expected
+
+
+@pytest.mark.parametrize("air_date, expected", [
+    ("1977-06-02", 1977),
+    ("1977", None),
+    (1977, None),
+    ("niet-06-02", None),
+])
+def test_directory_get_air_date_year(air_date, expected):
+    """
+    Should safely return a year if directory got any one else always return None.
+    """
+    directory = DirectoryFactory.build(payload=json.dumps({"first_air_date": air_date}))
+    assert directory.get_air_date_year() == expected

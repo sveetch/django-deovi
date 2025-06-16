@@ -6,6 +6,7 @@ from django.utils import timezone
 import pytest
 
 from django_deovi.models import Device, Directory, MediaFile
+from django_deovi.factories import MediaFileFactory
 
 
 def test_mediafile_basic(db):
@@ -140,3 +141,12 @@ def test_mediafile_path_uniqueness(db):
         stored_date=timezone.now(),
     )
     dump_third.save()
+
+
+def test_mediafile_normalized_filename():
+    """
+    Normalized filename should be normalized text with ending file extension removed.
+    """
+    assert MediaFileFactory.build(
+        filename="lorem_ipsum.tar.mp4"
+    ).normalized_filename() == "lorem ipsum tar"

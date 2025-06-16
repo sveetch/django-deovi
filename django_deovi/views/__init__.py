@@ -3,6 +3,7 @@ from .device import (
 )
 from .directory import DirectoryDetailView
 from .media import MediaFileDetailView
+from .search import GlobalSearchView
 
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "DeviceTreeExportView",
     "DirectoryDetailView",
     "MediaFileDetailView",
+    "GlobalSearchView",
 ]

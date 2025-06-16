@@ -1,10 +1,10 @@
 from haystack import indexes
 
-from .models import Device, MediaFile
+from .models import Directory, MediaFile
 from .search_fields import EdgeNgramField
 
 
-class DeviceIndex(indexes.SearchIndex, indexes.Indexable):
+class DirectoryIndex(indexes.SearchIndex, indexes.Indexable):
     text = EdgeNgramField(
         document=True,
         use_template=True,
@@ -12,7 +12,13 @@ class DeviceIndex(indexes.SearchIndex, indexes.Indexable):
     )
 
     def get_model(self):
-        return Device
+        return Directory
+
+    def index_queryset(self, using=None):
+        """
+        Only index directories that have a non empty title.
+        """
+        return self.get_model().objects.exclude(title="")
 
 
 class MediaFileIndex(indexes.SearchIndex, indexes.Indexable):

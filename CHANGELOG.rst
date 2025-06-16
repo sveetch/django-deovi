@@ -9,22 +9,22 @@ Development
 
 * Added support for **Python>=3.10**;
 * Dropped support for **Django<3.10**;
-* Added support for **Django>=4.2**;
-* Dropped support for **Django<4.2**;
+* Added support for **Django>=5.1**;
+* Dropped support for **Django<5.1**;
 * Added 'pyproject.toml' file to fix PIP warnings about editable install but package
   config is still in 'setup.cfg' for now;
 * Moved 'manage.py' script at root of repository to fix issue with latest PIP and
   setuptools versions that changed how *editable* install works (the sandbox was
   missing from PYTHONPATH). This have no impact on package itself, it is just for
   development;
-* Upgraded ``freezer.py`` script;
+* Upgraded 'freezer.py' script;
 * Upgraded Makefile;
 * Upgraded documentation configuration;
 * Upgraded frontend stack to a more recent one with ``sass-embedded`` but keeping
   Bootstrap 5.2.0;
 * Updated settings to use ``pathlib.Path`` instead of ``os``;
-* Added new requirements ``django-haystack`` and ``whoosh-reloaded`` to implement
-  search feature;
+* Added new requirements 'django-haystack', 'whoosh-reloaded' 'django-crispy-forms' and
+  'crispy-bootstrap5'  to implement search feature;
 
 
 Version 0.6.2 - 2024/05/01

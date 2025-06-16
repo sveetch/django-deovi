@@ -1,0 +1,49 @@
+{% extends "django_deovi/base.html" %}
+{% load crispy_forms_tags i18n %}
+
+{% block head_title %}{% translate "Search" %} - {{ block.super }}{% endblock head_title %}
+
+{% block app_content %}
+    <div class="search-results container mt-3">
+        {% crispy form %}
+
+        <hr>
+
+        {% if query %}
+            <h3 class="h4 mb-4">
+                {% translate "Results" %} ({{ paginator.count }})
+            </h3>
+
+            {% with results=page_obj.object_list %}
+                {% if results %}
+                    <div class="results stacks">
+                        {% for result in results %}
+                            {% if result.model_name == "directory" %}
+                                <div class="item">
+                                    <a href="{{ result.object.get_absolute_url }}" class="content">
+                                        <span class="title"><i class="bi bi-folder me-2"></i>{{ result.object }}</span>
+                                        <br><small class="parent ms-4">{% translate "In" %} <em>{{ result.object.device }}</em></small>
+                                    </a>
+                                </div>
+                            {% elif result.model_name == "mediafile" %}
+                                <div class="item">
+                                    <a href="{{ result.object.directory.get_absolute_url }}" class="content">
+                                        <span class="title"><i class="bi bi-film me-2"></i> {{ result.object.filename }}</span>
+                                        <br><small class="parent ms-4">{% translate "In" %} <em>{{ result.object.directory.device }}</em> &gt; <em>{{ result.object.directory }}</em></small>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="item empty">{% translate "No results found." %}</p>
+                {% endif %}
+            {% endwith %}
+
+            {% include "django_deovi/pagination.html" %}
+            {% comment %}{% include "atoum/pagination.html" with page=page_obj query=query %}{% endcomment %}
+        {% else %}
+            <p class="empty text-secondary">{% translate "No search pattern was submitted." %}</p>
+        {% endif %}
+   </div>
+{% endblock app_content %}

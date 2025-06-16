@@ -19,7 +19,7 @@ DATABASES = {
 LANGUAGE_CODE = "fr"
 TIME_ZONE = "Europe/Paris"
 
-DEOVI_INDEXES_DEBUG = True
+DEOVI_INDEXES_DEBUG = False
 
 # Import local settings if any
 try:

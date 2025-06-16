@@ -1,1 +1,1 @@
-{% comment %}TODO: Humanize filename (remove '-', '_', '.', file extension){% endcomment %}{{ object.filename }}
+{{ object.normalized_filename }}

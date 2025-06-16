@@ -9,6 +9,11 @@
 /// WARNING: DO NOT ADD ANY STYLE RULE HERE, instead add them in an accurate module to
 /// import
 ///
+/// WARNING: Since we are currently stuck with Bootstrap 5.2.x but upgraded to
+/// sass-embedded there were some patchs applied in its sources. You will probably
+/// lose them on frontend install or update, you may find the patch in
+/// 'bootstrap_patch/' that you will have to apply yourself.
+///
 
 @charset "utf-8";
 
@@ -109,6 +114,7 @@
 @import "./components/content";
 @import "./components/device-detail";
 @import "./components/directory-detail";
+@import "./components/search";
 
 // Trumps patchs would goes here
 // @import "./trumps/...";

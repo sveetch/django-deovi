@@ -1,3 +1,5 @@
+import os
+
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -8,6 +10,8 @@ from django.utils.translation import gettext_lazy as _
 from smart_media.modelfields import SmartMediaField
 from smart_media.mixins import SmartFormatMixin
 from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
+
+from ..utils.text import normalize_text
 
 
 class MediaFile(SmartFormatMixin, models.Model):
@@ -168,6 +172,13 @@ class MediaFile(SmartFormatMixin, models.Model):
 
     def __str__(self):
         return self.path
+
+    def normalized_filename(self):
+        """
+        Remove ending filename extension and normalize it.
+        """
+        ext = os.path.splitext(self.filename)[-1]
+        return normalize_text(self.filename.replace(ext, ""))
 
     def get_cover_format(self):
         return self.media_format(self.cover)
