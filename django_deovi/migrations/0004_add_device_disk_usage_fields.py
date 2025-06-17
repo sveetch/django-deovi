@@ -14,16 +14,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='device',
             name='disk_free',
-            field=models.BigIntegerField(default=0, help_text='Free space size on disk of which the device belong to. This will becomputed from the device size and everything else that belong onto the same disk.', validators=[django.core.validators.MinValueValidator(0)], verbose_name='filesize'),
+            field=models.BigIntegerField(default=0, help_text='Free space size on disk of which the device belong to. This will becomputed from the device size and everything else that belong onto the same disk.', validators=[django.core.validators.MinValueValidator(0)], verbose_name='disk free'),
         ),
         migrations.AddField(
             model_name='device',
             name='disk_total',
-            field=models.BigIntegerField(default=0, help_text='Total available disk size of which the device belong to.', validators=[django.core.validators.MinValueValidator(0)], verbose_name='filesize'),
+            field=models.BigIntegerField(default=0, help_text='Total available disk size of which the device belong to.', validators=[django.core.validators.MinValueValidator(0)], verbose_name='disk total'),
         ),
         migrations.AddField(
             model_name='device',
             name='disk_used',
-            field=models.BigIntegerField(default=0, help_text='Total used disk size of which the device belong to. This will includesthe device size and everything else that belong onto the same disk.', validators=[django.core.validators.MinValueValidator(0)], verbose_name='filesize'),
+            field=models.BigIntegerField(default=0, help_text='Total used disk size of which the device belong to. This will includesthe device size and everything else that belong onto the same disk.', validators=[django.core.validators.MinValueValidator(0)], verbose_name='disk usage'),
         ),
     ]

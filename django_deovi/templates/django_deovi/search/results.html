@@ -3,6 +3,8 @@
 
 {% block head_title %}{% translate "Search" %} - {{ block.super }}{% endblock head_title %}
 
+{% block header_search_bar %}{% endblock header_search_bar %}
+
 {% block app_content %}
     <div class="search-results container mt-3">
         {% crispy form %}

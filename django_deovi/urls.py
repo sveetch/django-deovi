@@ -17,6 +17,8 @@ urlpatterns = [
 
     # Search engine form and results
     path("search/", GlobalSearchView.as_view(), name="search-results"),
+
+    # Mount everything else on a device endpoint
     path(
         "<slug:device_slug>/",
         DeviceDetailView.as_view(),

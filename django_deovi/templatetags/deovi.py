@@ -3,6 +3,7 @@ import math
 from django import template
 from django.conf import settings
 
+from ..forms import GlobalSearchForm
 from ..utils.formatters import format_number as format_number_func
 
 register = template.Library()
@@ -65,6 +66,20 @@ def get_circle_values(value, radius=90):
     return {
         "circumference": circumference,
         "offset": offset,
+    }
+
+
+@register.inclusion_tag(settings.DEOVI_SEARCH_TAG_TEMPLATE)
+def minimal_search_form():
+    """
+    Display minimal search form.
+
+    Usage: ::
+
+        {% minimal_search_form %}
+    """
+    return {
+        "minimal_search_form": GlobalSearchForm(minimal=True),
     }
 
 

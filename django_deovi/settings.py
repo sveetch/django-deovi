@@ -30,6 +30,11 @@ DEVICE_OCCUPANCY_SVG = "django_deovi/device/_occupancy.svg"
 Path to Occupancy SVG template used by tag ``show_occupancy_svg``
 """
 
+DEOVI_SEARCH_TAG_TEMPLATE = "django_deovi/search/minimal_search_form.html"
+"""
+Path to template for the minimal search form used by tag ``sss``.
+"""
+
 DEOVI_INDEXES_DEBUG = False
 """
 When enabled, the build and update of search indexes will output every rendered content

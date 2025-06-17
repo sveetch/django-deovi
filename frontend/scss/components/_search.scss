@@ -56,3 +56,9 @@ $bb-stacks-item-padding-y: space("normal") !default;
         @include font-size($small1-font-size);
     }
 }
+
+#minimal-search {
+    & > .mb-3 {
+        margin: 0 !important;
+    }
+}

@@ -1,4 +1,4 @@
-{% load i18n static view_breadcrumbs %}
+{% load i18n static view_breadcrumbs deovi %}
 {% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>{% spaceless %}
@@ -51,15 +51,18 @@
                             </li>
                         {% endif %}
                     </ul>
+                    {% block header_search_bar %}
+                        {% minimal_search_form %}
+                    {% endblock header_search_bar %}
                 </div>
             </div>
         </nav>
 
         {% block breadcrumbs %}
             {% render_breadcrumbs "view_breadcrumbs/bootstrap5.html" %}
-        {% endblock %}
+        {% endblock breadcrumbs %}
         <div id="page-content" class="container-fluid">
-            {% block content %}Sandbox skeleton{% endblock %}
+            {% block content %}Sandbox skeleton{% endblock content %}
         </div>
     </div>
 

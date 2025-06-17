@@ -1,10 +1,12 @@
-# Frozen requirement versions for 'django-deovi==0.7.0rc2' installation
+# Frozen requirement versions for 'django-deovi==0.7.0rc3' installation
 Django==5.2.3
 deovi==0.7.0
 bigtree==0.29.2
 django-smart-media==0.5.0
 whoosh-reloaded==2.7.5
 django-haystack==3.3.0
+django-crispy-forms==2.4
+crispy-bootstrap5==2025.6
 # From extra requirements 'breadcrumbs'
 django-view-breadcrumbs==2.5.1
 # From extra requirements 'dev'

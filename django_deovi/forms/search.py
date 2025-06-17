@@ -1,7 +1,7 @@
 from haystack.forms import ModelSearchForm
 
 from ..models import Directory, MediaFile
-from ..form_helpers import AdvancedSearchFormHelper
+from ..form_helpers import AdvancedSearchFormHelper, MinimalSearchFormHelper
 from ..utils.text import normalize_text
 
 
@@ -11,6 +11,7 @@ class GlobalSearchForm(ModelSearchForm):
     """
 
     def __init__(self, *args, **kwargs):
+        minimal_form = kwargs.pop("minimal", False)
         empty_query = kwargs.pop("empty_query", False)
         empty_models = kwargs.pop("empty_models", False)
 
@@ -20,10 +21,13 @@ class GlobalSearchForm(ModelSearchForm):
         self.fields["q"].label = False
         self.fields["models"].label = False
 
-        self.helper = AdvancedSearchFormHelper(
-            empty_query=empty_query,
-            empty_models=empty_models,
-        )
+        if not minimal_form:
+            self.helper = AdvancedSearchFormHelper(
+                empty_query=empty_query,
+                empty_models=empty_models,
+            )
+        else:
+            self.helper = MinimalSearchFormHelper()
 
     def search(self):
         """

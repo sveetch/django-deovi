@@ -41,3 +41,24 @@ class AdvancedSearchFormHelper(DefaultFormHelper):
                 **models_extras
             ),
         )
+
+
+class MinimalSearchFormHelper(DefaultFormHelper):
+    """
+    Minimal search form layout helper contains only query input.
+    """
+    DEFAULT_CSSID = "minimal-search"
+    DEFAULT_METHOD = "get"
+    DEFAULT_CSSCLASSES = "search-minimal-form needs-validation"
+
+    def provide_action(self, value=None):
+        self.form_action = reverse("django_deovi:search-results")
+
+    def provide_layout(self, value=None, layout_args=None, layout_kwargs=None):
+        self.layout = Layout(
+            FieldWithButtons(
+                Field("q", placeholder=_("Search"), required=""),
+                StrictButton("Go!", type="submit", css_class="btn-primary"),
+                input_size="input-group-sm"
+            ),
+        )
