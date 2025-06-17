@@ -1,4 +1,4 @@
-# Frozen requirement versions for 'django-deovi==0.7.0rc3' installation
+# Frozen requirement versions for 'django-deovi==0.7.0' installation
 Django==5.2.3
 deovi==0.7.0
 bigtree==0.29.2

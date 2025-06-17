@@ -4,8 +4,8 @@
 History
 =======
 
-Development
-***********
+Version 0.7.0 - 2025/06/17
+**************************
 
 * Added support for **Python>=3.10**;
 * Dropped support for **Django<3.10**;
