@@ -33,12 +33,12 @@ help:
 	@echo "  ========"
 	@echo
 	@echo "  clean                      -- to clean EVERYTHING (Warning)"
-	@echo "  clean-var                  -- to clean data (uploaded medias, database, etc..)"
-	@echo "  clean-doc                  -- to remove documentation builds"
+	@echo "  clean-var                  -- to clean all data (Warning)"
+	@echo "  clean-doc                  -- to clean documentation builds"
 	@echo "  clean-backend-install      -- to clean Python side installation"
 	@echo "  clean-frontend-install     -- to clean frontend installation"
 	@echo "  clean-frontend-build       -- to clean frontend built files"
-	@echo "  clean-pycache              -- to recursively remove all Python cache files"
+	@echo "  clean-pycache              -- to clean all Python cache files recursively"
 	@echo
 	@echo "  Documentation"
 	@echo "  ============="
@@ -68,6 +68,12 @@ help:
 	@echo
 	@echo "  search-build               -- to (Re)Build search engine indexes"
 	@echo "  search-update              -- to update search engine indexes"
+	@echo
+	@echo "  Deployment"
+	@echo "  =========="
+	@echo
+	@echo "  build-deployment           -- to build all deployment configurations defined in settings"
+	@echo "  deploy                     -- to build and deploy all configurations"
 	@echo
 	@echo "  Frontend commands"
 	@echo "  ================="
@@ -99,7 +105,7 @@ help:
 
 clean-pycache:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Clear Python cache <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Cleaning Python cache <---$(FORMATRESET)\n"
 	@echo ""
 	rm -Rf .pytest_cache
 	find . -type d -name "__pycache__"|xargs rm -Rf
@@ -108,7 +114,7 @@ clean-pycache:
 
 clean-backend-install:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Clear installation <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Cleaning installation <---$(FORMATRESET)\n"
 	@echo ""
 	rm -Rf $(VENV_PATH)
 	rm -Rf $(PACKAGE_SLUG).egg-info
@@ -116,14 +122,14 @@ clean-backend-install:
 
 clean-doc:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Clear documentation <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Cleaning documentation <---$(FORMATRESET)\n"
 	@echo ""
 	rm -Rf docs/_build
 .PHONY: clean-doc
 
 clean-var:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Clear 'var/' directory <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Cleaning data from 'var/' directory <---$(FORMATRESET)\n"
 	@echo ""
 	rm -Rf var
 .PHONY: clean-var
@@ -151,6 +157,7 @@ create-var-dirs:
 	@mkdir -p var/db
 	@mkdir -p var/static/css
 	@mkdir -p var/media
+	@mkdir -p var/media-production
 	@mkdir -p $(SANDBOX_DIR)/media
 	@mkdir -p $(STATICFILES_DIR)/css
 .PHONY: create-var-dirs
@@ -165,14 +172,14 @@ icon-font:
 
 venv:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Install virtual environment <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing virtual environment <---$(FORMATRESET)\n"
 	@echo ""
 	virtualenv -p $(PYTHON_INTERPRETER) $(VENV_PATH)
 .PHONY: venv
 
 install-backend:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Install everything for development <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing everything for development <---$(FORMATRESET)\n"
 	@echo ""
 	$(PIP_BIN) install -e .[breadcrumbs,dev,quality,doc,doc-live,release]
 .PHONY: install-backend
@@ -211,7 +218,7 @@ check-migrations:
 
 reset-migrations:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Remove all application migrations and local databases <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Removing all application migrations and local databases <---$(FORMATRESET)\n"
 	@echo ""
 	rm -Rf $(APPLICATION_NAME)/migrations
 	rm -Rf var/db/*.sqlite3
@@ -220,14 +227,14 @@ reset-migrations:
 
 migrate:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Apply pending migrations <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Applying pending migrations <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTHON_BIN) $(DJANGO_MANAGE) migrate
 .PHONY: migrate
 
 superuser:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Create new superuser <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Creating new superuser <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTHON_BIN) $(DJANGO_MANAGE) createsuperuser
 .PHONY: superuser
@@ -255,17 +262,35 @@ mo:
 
 search-build:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> (Re)Build search indexes <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> (Re)Building search indexes <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTHON_BIN) $(DJANGO_MANAGE) rebuild_index -v 3 --noinput
 .PHONY: search-build
 
 search-update:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> (Re)Build search indexes <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> (Re)Building search indexes <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTHON_BIN) $(DJANGO_MANAGE) update_index -v 3 --remove
 .PHONY: search-update
+
+build-deployment:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building deployment configurations <---$(FORMATRESET)\n"
+	@echo ""
+	$(PYTHON_BIN) $(DJANGO_MANAGE) build_deployment --settings=sandbox.settings.production
+.PHONY: build-deployment
+
+deploy: build-deployment
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Deploying configurations <---$(FORMATRESET)\n"
+	@echo ""
+	sudo cp ./etc/010_django_deovi /etc/nginx/sites-available/
+	sudo rm -f /etc/nginx/sites-enabled/010_django_deovi
+	sudo ln -s /etc/nginx/sites-available/010_django_deovi /etc/nginx/sites-enabled/
+	# TODO Run gunicorn script into a screen
+	@printf "$(FORMATRED)$(FORMATBOLD)---> You will need now to run 'gunicorn_launcher.sh' script, remember to kill the previously runned identical script. <---$(FORMATRESET)\n"
+.PHONY: deploy
 
 css:
 	@echo ""
@@ -317,7 +342,7 @@ frontend-prod: css-prod js-prod
 
 docs:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build documentation <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building documentation <---$(FORMATRESET)\n"
 	@echo ""
 	cd docs && make html
 .PHONY: docs
@@ -331,14 +356,14 @@ livedocs:
 
 flake:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Flake <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Flake <---$(FORMATRESET)\n"
 	@echo ""
 	$(FLAKE_BIN) --statistics --show-source $(APPLICATION_NAME) tests
 .PHONY: flake
 
 test:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Tests <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Testing <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTEST_BIN) -vv --reuse-db tests/
 	rm -Rf var/media-tests/
@@ -346,7 +371,7 @@ test:
 
 test-initial:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Tests from zero <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Testing from zero <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTEST_BIN) -vv --reuse-db --create-db tests/
 	rm -Rf var/media-tests/
@@ -361,7 +386,7 @@ freeze-dependencies:
 
 build-package:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build package <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building package <---$(FORMATRESET)\n"
 	@echo ""
 	rm -Rf dist
 	$(VENV_PATH)/bin/python setup.py sdist
@@ -369,21 +394,21 @@ build-package:
 
 release: build-package
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Release package <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Releasing package <---$(FORMATRESET)\n"
 	@echo ""
 	$(TWINE_BIN) upload dist/*
 .PHONY: release
 
 check-release: build-package
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Check package <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Checking package <---$(FORMATRESET)\n"
 	@echo ""
 	$(TWINE_BIN) check dist/*
 .PHONY: check-release
 
 tox:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Launch all Tox environments <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Launching all Tox environments <---$(FORMATRESET)\n"
 	@echo ""
 	$(TOX_BIN)
 .PHONY: tox

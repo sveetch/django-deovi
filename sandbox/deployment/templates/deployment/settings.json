@@ -1,0 +1,12 @@
+{
+    "description": "This JSON is a sample of useful variables available in template context.",
+    "settings_env": "{{ settings_env }}",
+    "settings.BASE_DIR": "{{ settings.BASE_DIR }}",
+    "settings.STATIC_ROOT": "{{ settings.STATIC_ROOT }}",
+    "settings.MEDIA_ROOT": "{{ settings.MEDIA_ROOT }}",
+    "settings.DEPLOYMENT_APPNAME": "{{ settings.DEPLOYMENT_APPNAME }}",
+    "settings.DEPLOYMENT_BUILD_DESTINATION": "{{ settings.DEPLOYMENT_BUILD_DESTINATION }}",
+    "settings.DEPLOYMENT_HTTPSERVER_PORT": {{ settings.DEPLOYMENT_HTTPSERVER_PORT }},
+    "SOCKET_FILEPATH": "{{ SOCKET_FILEPATH }}",
+    "APPSERVER_BINDING": "{{ APPSERVER_BINDING }}"
+}

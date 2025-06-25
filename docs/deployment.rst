@@ -28,6 +28,11 @@ Gunicorn
 
     It will be installed from included project deployment requirements.
 
+    .. Hint::
+        Once launched within a socket, the Gunicorn instance can reached with curl: ::
+
+            curl --unix-socket /path/to/socket/socketfile.sock localhost
+
 Nginx
     * As the web server mainly to serve static files;
     * And as reverse proxy to pipe to the Application server;
@@ -55,14 +60,6 @@ Steps to do
 4. Run the things
 5. ...
 6. Profit!
-
-
-Further things to concern
-*************************
-
-* Whitenoise
-* `django-downloadview <https://github.com/jazzband/django-downloadview>`_;
-* `uvicorn-worker <https://github.com/Kludex/uvicorn-worker>`_ to implement ASGI within Gunicorn;
 
 
 Another deployment helpers for Django

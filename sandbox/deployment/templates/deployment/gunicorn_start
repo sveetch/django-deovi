@@ -2,14 +2,16 @@
 
 # Name of the application
 NAME="{{ settings.DEPLOYMENT_APPNAME }}"
-# Base directory for project
+# Absolute Base directory for project
 BASE_DIRECTORY={{ settings.BASE_DIR }}
-# Django project directory
+# Absolute Gunicorn binary path
 GUNICORN_BIN=$BASE_DIRECTORY/.venv/bin/gunicorn
-# Django project directory
-DJANGODIR=$BASE_DIRECTORY/sandbox
-# We will communicate using this unix socket
-SOCKFILE=$BASE_DIRECTORY/run/gunicorn.sock
+# Absolute Django project directory (commonly at project top root so it will naturally
+# include sandbox in PYTHONPATH, it may set in sandbox if your project is correctly
+# configured to import path without 'sandbox.')
+DJANGODIR=$BASE_DIRECTORY
+{% if SOCKET_FILEPATH %}# Absolute path to the unix socket we will communicate with
+SOCKFILE={{ SOCKET_FILEPATH }}{% endif %}
 # The user to run as (use username from current session)
 USER=$USER
 # The group to run as (assume it is the same name as username)
@@ -21,23 +23,23 @@ DJANGO_SETTINGS_MODULE=sandbox.settings.production
 # WSGI module name
 DJANGO_WSGI_MODULE=sandbox.wsgi
 
-echo "Starting $NAME as `whoami`";
+echo "🚀 Starting $NAME as `whoami`";
 
 # Activate the virtual environment
 cd $DJANGODIR;
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE;
 export PYTHONPATH=$DJANGODIR:$PYTHONPATH;
-
+{% if SOCKET_FILEPATH %}
 # Create the run directory if it doesn't exist
 RUNDIR=$(dirname $SOCKFILE)
 test -d $RUNDIR || mkdir -p $RUNDIR;
-
+{% endif %}
 # Start your Django Unicorn
 # Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
 exec $GUNICORN_BIN ${DJANGO_WSGI_MODULE}:application \
 --name $NAME \
 --workers $NUM_WORKERS \
 --user=$USER --group=$GROUP \
---bind=unix:$SOCKFILE \
+--bind={{ APPSERVER_BINDING }} \
 --log-level=debug \
 --log-file=-

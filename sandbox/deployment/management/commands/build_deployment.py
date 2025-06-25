@@ -20,9 +20,13 @@ class Command(BaseCommand):
         "Build configuration files for deployment."
     )
     MANDATORY_SETTINGS = [
+        "BASE_DIR",
         "DEPLOYMENT_APPNAME",
         "DEPLOYMENT_BUILD_DESTINATION",
         "DEPLOYMENT_CONFIGURATIONS",
+        "DEPLOYMENT_LOGS_DIRPATH",
+        "DEPLOYMENT_HTTPSERVER_PORT",
+        # TODO: Custom user and group to run Gunicorn
     ]
 
     def add_arguments(self, parser):
@@ -35,51 +39,83 @@ class Command(BaseCommand):
         context_data = {
             "settings_env": settings.SETTINGS_MODULE,
             "settings": settings,
+            "SOCKET_FILEPATH": settings.BASE_DIR / "run" / "gunicorn.sock"
         }
+
+        appserver_binding = getattr(settings, "DEPLOYMENT_APPSERVER_BINDING", None)
+        # As default for empty value we assume to use the socket
+        if not appserver_binding:
+            context_data["APPSERVER_BINDING"] = "unix:" + str(
+                context_data["SOCKET_FILEPATH"]
+            )
+        # When given value is a Path object we assume it is the socket filepath
+        elif isinstance(appserver_binding, Path):
+            context_data["SOCKET_FILEPATH"] = appserver_binding
+            context_data["APPSERVER_BINDING"] = "unix:" + str(appserver_binding)
+        # Finally any other given value is used as is. Commonly it is for a 'ip:port'
+        # pattern. Socker filepath is emptied because it is useless.
+        else:
+            context_data["SOCKET_FILEPATH"] = None
+            context_data["APPSERVER_BINDING"] = appserver_binding
 
         if extra:
             context_data.update(extra)
 
         return context_data
 
-    def get_configuration(self, config):
+    def get_configuration_payload(self, config):
         """
         Return a proper dictionnary for a given configuration item.
 
-        A config item can be either a string or a dict. If it's a string it will be
-        turned to a dict.
-        """
-        data = {
-            "source": None,
-            "chmod": None,
-        }
+        A config item can be either a string or a dict. If it's a string it is
+        assumed to be the template path to use and the other configuration data will be
+        computed from.
 
-        if isinstance(config, str):
-            config = {"source": config}
-        elif not isinstance(config, dict):
+        Returns:
+            dict:
+        """
+        if not isinstance(config, str) and not isinstance(config, dict):
             raise CommandError(
                 "A deployment configuration item can only be a string or a dictionnary."
             )
 
-        data.update(config)
+        payload = {
+            "source": None,
+            "destination": None,
+            "chmod": None,
+        }
 
-        return data
+        if isinstance(config, str):
+            payload.update({"source": Path(config)})
+        elif not config.get("source", None):
+            raise CommandError("The 'source' item is mandatory.")
+        else:
+            payload.update(config)
 
-    def build_configuration(self, template_path, context):
+        if not payload["destination"]:
+            payload["destination"] = (
+                settings.DEPLOYMENT_BUILD_DESTINATION / Path(payload["source"]).name
+            )
+        else:
+            payload["destination"] = payload["destination"]
+
+        return payload
+
+    def build_configuration_file(self, configuration, context):
         """
         Render a configuration template with given context.
         """
         msg = "- Building configuration from template '{source}' to '{to}'."
-        destination = (
-            settings.DEPLOYMENT_BUILD_DESTINATION / Path(template_path).name
+
+        self.stdout.write(
+            msg.format(source=configuration["source"], to=configuration["destination"])
         )
-        self.stdout.write(msg.format(source=template_path, to=destination))
-        appserver_template = get_template(template_path)
+        appserver_template = get_template(configuration["source"])
         rendered_configuration = appserver_template.render(context)
 
-        destination.write_text(rendered_configuration)
+        configuration["destination"].write_text(rendered_configuration)
 
-        return destination
+        return configuration["destination"]
 
     def process_configurations(self):
         """
@@ -87,23 +123,36 @@ class Command(BaseCommand):
         """
         context = self.get_context()
 
-        for item in settings.DEPLOYMENT_CONFIGURATIONS:
-            config = self.get_configuration(item)
-            written = self.build_configuration(config["source"], context)
+        # Prebuild configuration before writting any files
+        config_jobs = [
+            self.get_configuration_payload(item)
+            for item in settings.DEPLOYMENT_CONFIGURATIONS
+        ]
+
+        for config in config_jobs:
+            # Create destination parent directory if it does not exist yet
+            if not config["destination"].parent.exists():
+                config["destination"].parent.mkdir()
+
+            # Write configuration file in its destination
+            written = self.build_configuration_file(config, context)
+
+            # Apply chmod permission on file if given
             if config["chmod"]:
                 written.chmod(config["chmod"])
 
-        return
+        return config_jobs
 
     def handle(self, *args, **options):
         self.stdout.write(
-            self.style.SUCCESS("=== Starting ===")
+            self.style.SUCCESS("🚀🚀🚀 Starting 🚀🚀🚀")
         )
 
+        # Check for mandatory settings
         missing_settings = [
             item
             for item in self.MANDATORY_SETTINGS
-            if not hasattr(settings, item)
+            if not getattr(settings, item, None)
         ]
 
         if missing_settings:
@@ -113,8 +162,5 @@ class Command(BaseCommand):
                 )
             )
 
-        # Create destination directory
-        if not settings.DEPLOYMENT_BUILD_DESTINATION.exists():
-            settings.DEPLOYMENT_BUILD_DESTINATION.mkdir()
-
+        # Start to process each defined configuration item
         self.process_configurations()
