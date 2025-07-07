@@ -49,7 +49,7 @@ DEPLOYMENT_LOGS_DIRPATH = VAR_PATH / "logs"
 # The host port which be listened by the web server to respond to requests
 DEPLOYMENT_HTTPSERVER_PORT = 8101
 
-# The system user and group that will run the service
+# The system user and group that will run the Gunicorn service
 DEPLOYMENT_USER = "emencia"
 DEPLOYMENT_GROUP = "www-data"
 

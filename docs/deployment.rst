@@ -30,7 +30,7 @@ Deployment
 Introduction
 ************
 
-We will deploy this project with:
+The application will be runned with:
 
 Gunicorn
     The Application server using Web Server Gateway Interface (WSGI).
@@ -41,7 +41,7 @@ Gunicorn
         Once launched within a socket, the Gunicorn instance can be reached with
         curl: ::
 
-            curl --unix-socket /path/to/socket/socketfile.sock localhost
+            curl --unix-socket /run/socketfile.sock localhost
 
         This can be helpful to debug deployment on Gunicorn part.
 
@@ -53,7 +53,7 @@ Nginx
     * As the web server mainly to serve static files;
     * And as reverse proxy to pipe requests to the Application server;
 
-    You will have to install it yourself on your system, on some distribution like
+    You will have to install it yourself on your system but on some distribution like
     Ubuntu it is commonly already installed.
 
 Systemd services
@@ -76,6 +76,29 @@ Steps to do
 4. Run the things
 5. ...
 6. Profit!
+
+Filesystem permissions
+**********************
+
+There is a lot of issues to happen with Filesystem permissions.
+
+* With our SystemV and Gunicorn configurations the Gunicorn processes will be
+  runned through the user and group configured in settings;
+* Nginx is runned with ``www-data`` user and group ``www-data``;
+* Almost all command executed in our deployment shellscript use ``sudo``, however
+  we care to the right permissions when needed;
+
+The first thing to care is to set the right user and group for Gunicorn in
+production settings. If you installed the project with user ``foobar`` and group
+``foobar``, then it is these ones to configure in settings.
+
+Finally Nginx user ``www-data`` need must be in the group ``foobar`` else it
+won't be able to read static files, even if they are set with permission ``0777``,
+to the user ``www-data`` and group ``www-data``.
+
+.. Notes::
+Some Linux distribution use another user like ``nginx`` to run Nginx, in this
+document replace ``www-data`` with the right Nginx user if it is your case.
 
 
 Another deployment helpers for Django
