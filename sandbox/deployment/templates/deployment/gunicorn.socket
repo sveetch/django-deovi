@@ -1,0 +1,8 @@
+[Unit]
+Description={{ settings.DEPLOYMENT_APPNAME }} gunicorn socket
+
+[Socket]
+ListenStream={{ APPSERVER_BINDING }}
+
+[Install]
+WantedBy=sockets.target

@@ -1,0 +1,18 @@
+[Unit]
+Description={{ settings.DEPLOYMENT_APPNAME }} gunicorn daemon
+Requires=gunicorn_{{ settings.DEPLOYMENT_APPNAME }}.socket
+After=network.target
+
+[Service]
+User={{ settings.DEPLOYMENT_USER }}
+Group={{ settings.DEPLOYMENT_GROUP }}
+WorkingDirectory={{ settings.BASE_DIR }}
+ExecStart={{ settings.BASE_DIR }}/.venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind {{ APPSERVER_BINDING_INTERFACE }} \
+          --env DJANGO_SETTINGS_MODULE={{ settings_env }} \
+          wsgi:application
+
+[Install]
+WantedBy=multi-user.target

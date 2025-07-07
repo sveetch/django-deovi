@@ -13,15 +13,15 @@ DJANGODIR=$BASE_DIRECTORY
 {% if SOCKET_FILEPATH %}# Absolute path to the unix socket we will communicate with
 SOCKFILE={{ SOCKET_FILEPATH }}{% endif %}
 # The user to run as (use username from current session)
-USER=$USER
+USER={{ settings.DEPLOYMENT_USER }}
 # The group to run as (assume it is the same name as username)
-GROUP=$USER
+GROUP={{ settings.DEPLOYMENT_GROUP }}
 # How many worker processes should Gunicorn spawn
 NUM_WORKERS=3
 # Which Django settings file to use
 DJANGO_SETTINGS_MODULE=sandbox.settings.production
 # WSGI module name
-DJANGO_WSGI_MODULE=sandbox.wsgi
+DJANGO_WSGI_MODULE=wsgi
 
 echo "🚀 Starting $NAME as `whoami`";
 
@@ -29,17 +29,20 @@ echo "🚀 Starting $NAME as `whoami`";
 cd $DJANGODIR;
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE;
 export PYTHONPATH=$DJANGODIR:$PYTHONPATH;
+{% comment %}
+# WARNING: Can lead to removing /run/ if socket path is not defined in a user directory
 {% if SOCKET_FILEPATH %}
 # Create the run directory if it doesn't exist
 RUNDIR=$(dirname $SOCKFILE)
-test -d $RUNDIR || mkdir -p $RUNDIR;
+test -d {{ SOCKET_FILEPATH.parent }} || mkdir -p {{ SOCKET_FILEPATH.parent }};
 {% endif %}
+{% endcomment %}
 # Start your Django Unicorn
 # Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
 exec $GUNICORN_BIN ${DJANGO_WSGI_MODULE}:application \
 --name $NAME \
 --workers $NUM_WORKERS \
 --user=$USER --group=$GROUP \
---bind={{ APPSERVER_BINDING }} \
+--bind={{ APPSERVER_BINDING_INTERFACE }} \
 --log-level=debug \
 --log-file=-

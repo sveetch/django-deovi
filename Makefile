@@ -285,11 +285,8 @@ deploy: build-deployment
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Deploying configurations <---$(FORMATRESET)\n"
 	@echo ""
-	sudo cp ./etc/010_django_deovi /etc/nginx/sites-available/
-	sudo rm -f /etc/nginx/sites-enabled/010_django_deovi
-	sudo ln -s /etc/nginx/sites-available/010_django_deovi /etc/nginx/sites-enabled/
-	# TODO Run gunicorn script into a screen
-	@printf "$(FORMATRED)$(FORMATBOLD)---> You will need now to run 'gunicorn_launcher.sh' script, remember to kill the previously runned identical script. <---$(FORMATRESET)\n"
+	./etc/deploy.sh
+	# TODO: A message to start service
 .PHONY: deploy
 
 css:

@@ -104,7 +104,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "sandbox.urls"
 
 # Python dotted path to the WSGI application used by Django"s runserver.
-WSGI_APPLICATION = "sandbox.wsgi.application"
+WSGI_APPLICATION = "wsgi.application"
 
 TEMPLATES = [
     {

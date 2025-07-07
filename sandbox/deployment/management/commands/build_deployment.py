@@ -26,7 +26,8 @@ class Command(BaseCommand):
         "DEPLOYMENT_CONFIGURATIONS",
         "DEPLOYMENT_LOGS_DIRPATH",
         "DEPLOYMENT_HTTPSERVER_PORT",
-        # TODO: Custom user and group to run Gunicorn
+        "DEPLOYMENT_USER",
+        "DEPLOYMENT_GROUP",
     ]
 
     def add_arguments(self, parser):
@@ -38,25 +39,37 @@ class Command(BaseCommand):
         """
         context_data = {
             "settings_env": settings.SETTINGS_MODULE,
+            # Include the whole setting object
             "settings": settings,
-            "SOCKET_FILEPATH": settings.BASE_DIR / "run" / "gunicorn.sock"
+            # Additional computed variables
+            "SOCKET_FILEPATH": settings.BASE_DIR / "run" / "gunicorn.sock",
+            "APPSERVER_BINDING": None,
+            "APPSERVER_BINDING_INTERFACE": None,
         }
 
+        # Append search index alias if it exists
+        context_data["SEARCH_INDEX"] = getattr(settings, "DEPLOYMENT_SEARCH_INDEX", None)
+
         appserver_binding = getattr(settings, "DEPLOYMENT_APPSERVER_BINDING", None)
-        # As default for empty value we assume to use the socket
+        # As default without any binding we assume to use the socket
         if not appserver_binding:
-            context_data["APPSERVER_BINDING"] = "unix:" + str(
+            context_data["APPSERVER_BINDING"] = str(context_data["SOCKET_FILEPATH"])
+            context_data["APPSERVER_BINDING_INTERFACE"] = "unix:" + str(
                 context_data["SOCKET_FILEPATH"]
             )
-        # When given value is a Path object we assume it is the socket filepath
+        # When given binding value is a Path object we assume it is the socket filepath
         elif isinstance(appserver_binding, Path):
             context_data["SOCKET_FILEPATH"] = appserver_binding
-            context_data["APPSERVER_BINDING"] = "unix:" + str(appserver_binding)
+            context_data["APPSERVER_BINDING"] = str(appserver_binding)
+            context_data["APPSERVER_BINDING_INTERFACE"] = (
+                "unix:" + str(appserver_binding)
+            )
         # Finally any other given value is used as is. Commonly it is for a 'ip:port'
         # pattern. Socker filepath is emptied because it is useless.
         else:
             context_data["SOCKET_FILEPATH"] = None
             context_data["APPSERVER_BINDING"] = appserver_binding
+            context_data["APPSERVER_BINDING_INTERFACE"] = appserver_binding
 
         if extra:
             context_data.update(extra)
@@ -145,7 +158,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(
-            self.style.SUCCESS("🚀🚀🚀 Starting 🚀🚀🚀")
+            self.style.SUCCESS("👷 Starting 👷")
         )
 
         # Check for mandatory settings
