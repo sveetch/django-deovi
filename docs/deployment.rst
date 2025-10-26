@@ -80,7 +80,7 @@ Steps to do
 Filesystem permissions
 **********************
 
-There is a lot of issues to happen with Filesystem permissions.
+There is a lot of issues to happen with Filesystem permissions:
 
 * With our SystemV and Gunicorn configurations the Gunicorn processes will be
   runned through the user and group configured in settings;
@@ -97,8 +97,8 @@ won't be able to read static files, even if they are set with permission ``0777`
 to the user ``www-data`` and group ``www-data``.
 
 .. Notes::
-Some Linux distribution use another user like ``nginx`` to run Nginx, in this
-document replace ``www-data`` with the right Nginx user if it is your case.
+    Some Linux distribution use another user like ``nginx`` to run Nginx, in this
+    document replace ``www-data`` with the right Nginx user if it is your case.
 
 
 Another deployment helpers for Django

@@ -22,15 +22,18 @@ sudo systemctl daemon-reload
 echo "🏗️Preparing static files"
 $MANAGE_SCRIPT collectstatic --settings $SETTINGS_MODULE;
 mkdir -p $STATICDIR
-chmod -R 0777 $STATICDIR
+chmod -R 0755 $STATICDIR
+chown -R $DEPLOY_USER:$DEPLOY_USER $STATICDIR
 
 echo "🏗️Preparing media files"
 mkdir -p $MEDIADIR
-chmod -R 0777 $MEDIADIR
+chmod -R 0755 $MEDIADIR
+chown -R $DEPLOY_USER:$DEPLOY_USER $MEDIADIR
 
 echo "🏗️Preparing search index"
 mkdir -p $SEARCH_INDEX
-chmod -R 0777 $SEARCH_INDEX
+chmod -R 0755 $SEARCH_INDEX
+chown -R $DEPLOY_USER:$DEPLOY_USER $SEARCH_INDEX
 
 echo "🔧 Deploying Nginx site configuration"
 sudo cp $DEPLOY_BUILDDIR/$NGINX_CONFIG_FILENAME /etc/nginx/sites-available/
